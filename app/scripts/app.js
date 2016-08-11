@@ -34,9 +34,9 @@ angular
                     name:'sbAdminApp',
                     files:[
                     'scripts/directives/header/header.js',
-                    'scripts/directives/header/header-notification/header-notification.js',
+//                    'scripts/directives/header/header-notification/header-notification.js',
                     'scripts/directives/sidebar/sidebar.js',
-                    'scripts/directives/sidebar/sidebar-search/sidebar-search.js'
+//                   'scripts/directives/sidebar/sidebar-search/sidebar-search.js'
                     ]
                 }),
                 $ocLazyLoad.load(
@@ -130,9 +130,9 @@ angular
         url:'/table'
     })
       .state('dashboard.panels-wells',{
-          templateUrl:'views/ui-elements/panels-wells.html',
-          url:'/panels-wells'
-      })
+        templateUrl:'views/ui-elements/panels-wells.html',
+        url:'/panels-wells'
+    })
       .state('dashboard.buttons',{
         templateUrl:'views/ui-elements/buttons.html',
         url:'/buttons'
@@ -146,12 +146,22 @@ angular
        url:'/typography'
    })
       .state('dashboard.icons',{
-       templateUrl:'views/ui-elements/icons.html',
-       url:'/icons'
+        templateUrl:'views/ui-elements/icons.html',
+        url:'/icons'
    })
       .state('dashboard.grid',{
-       templateUrl:'views/ui-elements/grid.html',
-       url:'/grid'
+        templateUrl:'views/ui-elements/grid.html',
+        url:'/grid'
+   })
+      .state('dashboard.overview',{
+        controller: 'MainCtrl',
+        templateUrl:'views/products/overview.html',
+        url:'/poverview'
+   })
+      .state('dashboard.signfile',{
+        controller: 'MainCtrl',
+        templateUrl:'views/products/signfile.html',
+        url:'/signfile'
    })
   }]);
 

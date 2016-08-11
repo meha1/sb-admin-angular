@@ -15,10 +15,16 @@ angular.module('sbAdminApp')
       replace: true,
       scope: {
       },
-      controller:function($scope){
+      controller:function($scope, ProductsFact){
+        $scope.products = ProductsFact.products;
+        $scope.productImages = ProductsFact.productImages;
         $scope.selectedMenu = 'dashboard';
         $scope.collapseVar = 0;
         $scope.multiCollapseVar = 0;
+
+        $scope.setSelected = function(productIndex, imageIndex){
+          ProductsFact.setSelected(productIndex, imageIndex)
+        }
         
         $scope.check = function(x){
           

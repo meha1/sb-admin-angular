@@ -8,5 +8,5 @@
  */
 angular.module('sbAdminApp')
   .controller('FormCtrl', function($scope) {
-    
+    //$scope.clientName = "Verizon1"
 });

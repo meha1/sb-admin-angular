@@ -81,3 +81,94 @@ body {
 text-decoration: none;
 background-color: #eee;
 }
+
+
+/* Added by O.R */
+
+@font-face {
+    font-family: 'CiscoSansExtraLight'; 
+    src: url('fonts/CiscoSansExtraLight.otf');
+}
+
+.bg-gradient {
+    background: linear-gradient(154deg, #008fe2 0, #00b29c 100%);
+}
+
+.cisco-logo {
+  height: 54px;
+  float: right;
+  margin: 7px;
+  margin-top: -60px;
+}
+
+.navbar-static-top { 
+  height: 68px;
+}
+
+.navbar-brand {
+  font-size: 23px;
+  padding-top: 23px;
+  color: white !important;
+}
+
+@media (min-width: 768px){
+    .sidebar {
+      margin-top: 0px;
+  }
+}
+
+body{
+  font-family: 'CiscoSansExtraLight' !important;
+  color: black;
+  background-color: white;
+}
+.sidebar-nav{
+  background-color: white;
+}
+
+#page-wrapper {
+  background-color: #fafcfe;
+  border-left: 0px;
+}
+
+.nav>li>a {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.sidebar ul li {
+  border-bottom: 0px;
+}
+
+.center-div {
+  float: none!important;
+  margin-right: auto!important;
+  margin-left: auto!important;
+  text-align: center!important;
+}
+
+.client-name {
+  float: left;
+  margin-left: 52px;
+  margin-top: -30px;
+  font-size: 17px;
+}
+
+.client-logo {
+  height: 44px;
+  padding-top: 4px;
+}
+
+.client-circle{
+  height: 40px; 
+  width: 40px; 
+  background-color: white; 
+  border-radius: 30px; 
+  border:1.5px solid #ddd;
+}
+
+.client-panel{
+  margin-top:13px;
+  color: #f1f1f1;
+  margin-left: -51px;
+}

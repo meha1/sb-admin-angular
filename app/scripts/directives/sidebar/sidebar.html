@@ -5,16 +5,22 @@
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.home"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
             </li>
-            <li ui-sref-active="active">
-
+            <!-- <li ui-sref-active="active">
                 <a ui-sref="dashboard.chart"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span></span></a>
-
             </li>
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.table"><i class="fa fa-table fa-fw"></i> Tables</a>
             </li>
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.form"><i class="fa fa-edit fa-fw"></i> Forms</a>
+            </li> -->
+            <li ng-repeat="product in products" ng-class="{active: collapseVar==(10 + $index)}">
+                <a ng-click="check(10 + $index)" ui-sref="dashboard.overview"><i class="fa fa-shield fa-fw"></i> {{product}}<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" collapse="collapseVar!=(10 + $index)">
+                    <li ng-repeat="productImage in productImages[product]">
+                        <a ng-click="setSelected($parent.$index, $index)" ui-sref="dashboard.signfile">{{productImage.name}}</a>
+                    </li>
+                </ul>
             </li>
             <li ng-class="{active: collapseVar==1}">{{dropDown}}
                 <a href="" ng-click="check(1)"><i class="fa fa-wrench fa-fw"></i> UI Elements<span
