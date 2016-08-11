@@ -158,11 +158,20 @@ angular
         templateUrl:'views/products/overview.html',
         url:'/poverview'
    })
-      .state('dashboard.signfile',{
+      .state('dashboard.images',{
         controller: 'MainCtrl',
-        templateUrl:'views/products/signfile.html',
-        url:'/signfile'
+        templateUrl:'views/products/images.html',
+        url:'/images'
    })
+      .state('dashboard.instances',{
+        controller: 'MainCtrl',
+        templateUrl:'views/products/instances.html',
+        url:'/instances'
+   })
+      .state('dashboard.services',{
+        templateUrl:'views/products/products.html',
+        url:'/products'
+    })
   }]);
 
     

@@ -1,0 +1,100 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Secure Sign</h1>
+<!-- 			<div>Image ID: {{prod.productImages[prod.products[prod.selected[0]]][prod.selected[1]].id}}</div>
+			<div>Image Name: {{prod.productImages[prod.products[prod.selected[0]]][prod.selected[1]].name}}</div>
+			<div>Image Description: {{prod.productImages[prod.products[prod.selected[0]]][prod.selected[1]].desc}}</div> -->
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<div class="row">
+	    <div class="col-lg-12">
+			<div class="panel panel-default my-panel">
+	            <h3 class="panel-header">
+	                Add New Image
+	            </h3>
+	            <div>&nbsp</div>
+	            <!-- /.panel-heading -->
+	            <div class="panel-body">
+	            <form class="col-lg-12 form-horizontal" role="form">
+				  <div class="form-group">
+				    <label class="control-label col-sm-2" for="image-name">Name</label>
+				    <div class="col-sm-10">
+				      <input ng-model="imageName" type="text" class="form-control" id="image-name">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label class="control-label col-sm-2" for="image-desc">Description</label>
+				    <div class="col-sm-10"> 
+				      <input ng-model="imageDesc" type="text" class="form-control" id="image-desc">
+				    </div>
+				  </div>
+				  <div class="form-group"> 
+				    <label class="control-label col-sm-2" for="image-file">Image File</label>
+				    <div class="col-sm-10"> 
+				      <input type="text" class="form-control" id="image-file">
+				    </div>
+				  </div>
+				</form>
+	            	<!-- <div class="input-group">
+	            		<label class="col-md-2" for="image-name">Name</label>
+						<div class="col-md-9">
+						  	<input class="form-control col-md-4" type="text" id="image-name">
+						</div>
+
+	            		<label class="col-md-2" for="image-desc">Description</label>
+						<div class="col-md-9">
+						  	<input class="form-control col-md-4" type="text" id="image-desc">
+						</div>
+
+	            		<label class="col-md-2" for="image-file">Image File</label>
+						<div class="col-md-9">
+						  	<input class="form-control col-md-4" type="text" id="image-file">
+						</div>
+					</div> -->
+					<div class="col-md-12 input-group center-btn-container">
+						<button type="button" class="btn btn-default btn-circle btn-lg btn-accept" ng-click="addProductImage(prod.products[prod.selected[0]],imageName, imageDesc)"><a href=""><i class="fa fa-check"></i></a></button>
+					</div>
+	            </div>
+	        </div>
+		</div>
+	</div>
+	<div class="row">
+	    <div class="col-lg-12">
+	        <div class="panel panel-default my-panel">
+	            <h3 class="panel-header">
+	                Loaded images
+	            </h3>
+	            <!-- /.panel-heading -->
+	            <div class="panel-body">
+	                <div class="table-responsive col-lg-12">
+	                    <table class="table table-hover">
+	                        <thead>
+	                            <tr>
+	                                <th>Name</th>
+	                                <th>Description</th>
+	                                <th class="text-center">Signature</th>
+	                                <th class="text-center">Token</th>
+	                                <th class="text-center">Protect File</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+	                            <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]">
+	                                <td>{{image.name}}</td>
+	                                <td>{{image.desc}}</td>
+	                                <td class="text-center"><a ng-href="{{image.sig}}"><i class="fa fa-key fa-fw"></i></a></td>
+	                                <td class="text-center"><a ng-href="{{image.token}}"><i class="fa fa-lock fa-fw"></i></a></td>
+	                                <td><input class="form-control"></td>
+	                            </tr>
+	                        </tbody>
+	                    </table>
+	                </div>
+	                <!-- /.table-responsive -->
+	            </div>
+	            <!-- /.panel-body -->
+	        </div>
+	        <!-- /.panel -->
+	    </div>
+	<!-- /.row -->
+	</div>
