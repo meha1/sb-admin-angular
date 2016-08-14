@@ -26,6 +26,7 @@ angular
     $stateProvider
       .state('dashboard', {
         url:'/dashboard',
+        controller: 'MainCtrl',
         templateUrl: 'views/dashboard/main.html',
         resolve: {
             loadMyDirectives:function($ocLazyLoad){
@@ -43,8 +44,7 @@ angular
                 {
                    name:'toggle-switch',
                    files:["bower_components/angular-toggle-switch/angular-toggle-switch.min.js",
-                          "bower_components/angular-toggle-switch/angular-toggle-switch.css"
-                      ]
+                          "bower_components/angular-toggle-switch/angular-toggle-switch.css"]
                 }),
                 $ocLazyLoad.load(
                 {
@@ -70,6 +70,10 @@ angular
                 {
                   name:'ngTouch',
                   files:['bower_components/angular-touch/angular-touch.js']
+                })
+                $ocLazyLoad.load({
+                  name:'sbAdminApp',
+                  files:['scripts/controllers/main.js']
                 })
             }
         }
@@ -129,9 +133,9 @@ angular
         templateUrl:'views/table.html',
         url:'/table'
     })
-      .state('dashboard.panels-wells',{
-        templateUrl:'views/ui-elements/panels-wells.html',
-        url:'/panels-wells'
+      .state("dashboard.panels-wells",{
+        templateUrl:"views/ui-elements/panels-wells.html",
+        url:"/panels-wells"
     })
       .state('dashboard.buttons',{
         templateUrl:'views/ui-elements/buttons.html',
@@ -156,21 +160,55 @@ angular
       .state('dashboard.overview',{
         controller: 'MainCtrl',
         templateUrl:'views/products/overview.html',
-        url:'/poverview'
+        url:'/poverview',
+        resolve: {
+          loadMyDirectives:function($ocLazyLoad){
+            return $ocLazyLoad.load({
+              name:'sbAdminApp',
+              files:['scripts/controllers/main.js', 
+              'scripts/controllers/chartContoller.js']
+            })}
+          }
    })
       .state('dashboard.images',{
         controller: 'MainCtrl',
         templateUrl:'views/products/images.html',
-        url:'/images'
+        url:'/images',
+        resolve: {
+          loadMyDirectives:function($ocLazyLoad){
+            return $ocLazyLoad.load({
+              name:'sbAdminApp',
+              files:['scripts/controllers/main.js',
+              'scripts/controllers/chartContoller.js']
+            })}
+          }
    })
       .state('dashboard.instances',{
         controller: 'MainCtrl',
         templateUrl:'views/products/instances.html',
-        url:'/instances'
+        url:'/instances',
+        resolve: {
+          loadMyDirectives:function($ocLazyLoad){
+            return $ocLazyLoad.load({
+              name:'sbAdminApp',
+              files:['scripts/controllers/main.js',
+              'scripts/controllers/chartContoller.js']
+            })}
+          }
    })
       .state('dashboard.services',{
+        controller: 'MainCtrl',
         templateUrl:'views/products/products.html',
-        url:'/products'
+        url:'/products',
+        resolve: {
+          loadMyDirectives:function($ocLazyLoad){
+            return 
+            $ocLazyLoad.load({
+              name:'sbAdminApp',
+              files:['scripts/controllers/main.js',
+              'scripts/controllers/chartContoller.js']
+            })}
+          }
     })
   }]);
 
