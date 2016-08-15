@@ -9,9 +9,7 @@
                 <a ui-sref="dashboard.services"><i class="fa fa-suitcase fa-fw"></i> Services Managment<span></span></a>
             </li>
 
-            <li ui-sref-active="active">
-                <a ui-sref="dashboard.chart"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span></span></a>
-            </li> <!--
+            <!--
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.table"><i class="fa fa-table fa-fw"></i> Tables</a>
             </li>
@@ -39,6 +37,9 @@
                     </li>
                 </ul>
             </li>
+            <li ui-sref-active="active">
+                <a ui-sref="dashboard.chart"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span></span></a>
+            </li> 
             <li ng-class="{active: collapseVar==1}">{{dropDown}}
                 <a href="" ng-click="check(1)"><i class="fa fa-wrench fa-fw"></i> UI Elements<span
                         class="fa arrow"></span></a>

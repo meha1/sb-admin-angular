@@ -14,7 +14,7 @@
                         general chart
                     </div>
                     <div class="panel-body">
-              			<canvas id="doughnut" class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas>
                     </div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                         Info Chart
                     </div>
                     <div class="panel-body">
-              			<canvas id="doughnut" class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                         Important Chart
                     </div>
                     <div class="panel-body">
-              			<canvas id="doughnut" class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                         Very important chart
                     </div>
                     <div class="panel-body">
-              			<canvas id="doughnut" class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas>
                     </div>
                 </div>
             </div>
@@ -65,8 +65,8 @@
 	                                <th>Name</th>
 	                                <th>IP</th>
 	                                <th>Image</th>
-	                                <th>Status</th>
-	                                <th>CPU Load</th>
+	                                <th class="text-center">Status</th>
+	                                <th class="text-center">CPU Load</th>
 	                                <th>Up Time</th>
 	                                <th class="text-center">Log</th>
 	                            </tr>
@@ -76,10 +76,10 @@
 	                                <td>{{instance.name}}</td>
 	                                <td>{{instance.ip}}</td>
 	                                <td>{{mapImageIdToName[instance.imageId]}}</td>
-	                                <td><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
-	                                <td>{{instance.cpuLoad}}</td>
+	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
+	                                <td class="text-center">{{instance.cpuLoad}}</td>
 	                                <td>{{instance.upTime | date:'medium'}}</td>
-	                                <td class="text-center"><a ng-href="" ng-click="searchLog.id = instance.id"><i class="fa fa-filter"></i></a></td>
+	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instanceId = instance.id"><i class="fa fa-filter"></i></a></td>
 	                            </tr>
 	                        </tbody>
 	                    </table>
@@ -111,7 +111,7 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:search:strict">
+	                            <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
 	                                <td>{{logRow.timestamp | date:'medium'}}</td>
 	                                <td>{{mapInstanceIdToName[logRow.instanceId]}}</td>
 	                                <td>{{logRow.type}}</td>

@@ -13,6 +13,7 @@ angular
     'ui.router',
     'ui.bootstrap',
     'angular-loading-bar',
+    "chart.js"
   ])
   .config(['$stateProvider','$urlRouterProvider','$ocLazyLoadProvider',function ($stateProvider,$urlRouterProvider,$ocLazyLoadProvider) {
     
@@ -202,8 +203,7 @@ angular
         url:'/products',
         resolve: {
           loadMyDirectives:function($ocLazyLoad){
-            return 
-            $ocLazyLoad.load({
+            return $ocLazyLoad.load({
               name:'sbAdminApp',
               files:['scripts/controllers/main.js',
               'scripts/controllers/chartContoller.js']

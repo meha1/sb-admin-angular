@@ -305,6 +305,9 @@ app.controller('MainCtrl', function($scope,$position, ProductsFact) {
 		//TODO: Send to server and add the result to the list
 		ProductsFact.addProductImage(serviceName, iName, iDesc);  		
   	}
+
+  	$scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
+	$scope.data = [300, 500, 100];
   	//$scope.products = ["vRouter", "vSwitch"];
   	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
   
