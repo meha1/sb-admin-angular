@@ -11,10 +11,15 @@
 			<div class="col-lg-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        general chart
+                        cpu usage
                     </div>
                     <div class="panel-body">
-              			<canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas>
+                    	<div class="row center-div">
+              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent" options="options">
+								<span class="percent">{{percentText}}</span>
+							</span>
+						</div>
                     </div>
                 </div>
             </div>
@@ -24,7 +29,13 @@
                         Info Chart
                     </div>
                     <div class="panel-body">
-              			<canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+              			<div class="row center-div">
+              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent2" options="options2">
+								<span class="percent">{{percentText2}}</span>
+							</span>
+						</div>
                     </div>
                 </div>
             </div>
@@ -34,7 +45,13 @@
                         Important Chart
                     </div>
                     <div class="panel-body">
-              			<canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+              			<div class="row center-div">
+              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+								<span class="percent">{{percentText3}}</span>
+							</span>
+						</div>
                     </div>
                 </div>
             </div>
@@ -44,7 +61,13 @@
                         Very important chart
                     </div>
                     <div class="panel-body">
-              			<canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas>
+              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+              			<div class="row center-div">
+              			<!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent4" options="options4">
+								<span class="percent">{{percentText4}}</span>
+							</span>
+						</div>
                     </div>
                 </div>
             </div>
@@ -77,7 +100,7 @@
 	                                <td>{{instance.ip}}</td>
 	                                <td>{{mapImageIdToName[instance.imageId]}}</td>
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
-	                                <td class="text-center">{{instance.cpuLoad}}</td>
+	                                <td class="text-center">{{instance.cpuLoad}}%</td>
 	                                <td>{{instance.upTime | date:'medium'}}</td>
 	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instanceId = instance.id"><i class="fa fa-filter"></i></a></td>
 	                            </tr>

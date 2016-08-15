@@ -84,6 +84,97 @@ background-color: #eee;
 
 
 /* Added by O.R */
+/*
+@font-face {
+    font-family: 'CiscoSansExtraLight'; 
+    src: url('fonts/CiscoSansExtraLight.otf');
+}
+
+.bg-gradient {
+    background: linear-gradient(154deg, #008fe2 0, #00b29c 100%);
+}
+
+.cisco-logo {
+  height: 54px;
+  float: right;
+  margin: 7px;
+  margin-top: -60px;
+}
+
+.navbar-static-top { 
+  height: 68px;
+}
+
+.navbar-brand {
+  font-size: 23px;
+  padding-top: 23px;
+  color: white !important;
+}
+
+@media (min-width: 768px){
+    .sidebar {
+      margin-top: 0px;
+  }
+}
+
+body{
+  font-family: 'CiscoSansExtraLight' !important;
+  color: black;
+  background-color: white;
+}
+.sidebar-nav{
+  background-color: white;
+}
+
+#page-wrapper {
+  background-color: #fafcfe;
+  border-left: 0px;
+}
+
+.nav>li>a {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.sidebar ul li {
+  border-bottom: 0px;
+}
+
+.center-div {
+  float: none!important;
+  margin-right: auto!important;
+  margin-left: auto!important;
+  text-align: center!important;
+}
+
+.client-name {
+  float: left;
+  margin-left: 52px;
+  margin-top: -30px;
+  font-size: 17px;
+}
+
+.client-logo {
+  height: 44px;
+  padding-top: 4px;
+}
+
+.client-circle{
+  height: 40px; 
+  width: 40px; 
+  background-color: white; 
+  border-radius: 30px; 
+  border:1.5px solid #ddd;
+}
+
+.client-panel{
+  margin-top:13px;
+  color: #f1f1f1;
+  margin-left: -51px;
+}
+*/
+
+/* Added by O.R */
 
 @font-face {
     font-family: 'CiscoSansExtraLight'; 
@@ -172,3 +263,106 @@ body{
   color: #f1f1f1;
   margin-left: -51px;
 }
+
+.panel-header {
+  padding-left: 15px;
+  text-transform: uppercase;
+  font-size: 21px;
+  opacity: .7;
+}
+
+.panel-heading {
+  color: white; 
+  border-bottom: 0px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.panel-primary {
+  background-color:#3067B9; 
+  border-color: #0A4AA8;
+  color: white;
+}
+
+.panel-primary > .panel-heading{
+  background-color:#6088C2; 
+}
+
+.panel-info {
+  background-color:#26CF43; 
+  border-color: #00C322;
+  color: white;
+}
+
+.panel-info > .panel-heading{
+  color: white;
+  background-color:#5FD574; 
+}
+
+.panel-warning {
+  background-color:#FFCB2F; 
+  border-color: #FFBF00;
+  color: white;
+}
+
+.panel-warning > .panel-heading{
+  color: white;
+  background-color:#FFDC72; 
+}
+
+.panel-error {
+  background-color:#FF672F; 
+  border-color: #FF4500;
+  color: white;
+}
+
+.panel-error > .panel-heading{
+  background-color:#FF9872; 
+}
+
+.easyChart {
+  position: relative;
+  /*display: inline-block;*/
+  width: 110px;
+  height: 110px;
+  /* margin-top: 50px; */
+  /* margin-bottom: 50px; */
+  text-align: center;
+}
+
+.percent {
+  /*display: inline-block;*/
+  line-height: 110px;
+  z-index: 2;
+  position: absolute;
+  margin-left: 40px;
+  font-size: 22px;
+}
+
+.percent:after {
+  content: '%';
+  margin-left: 0.1em;
+  font-size: .8em;
+}
+/*
+
+var initPieChart=function(){
+  $(".chart").easyPieChart(
+    {
+      barColor:function(a){return a/=100,"rgb("+Math.round(254*(1-a))+", "+Math.round(255*a)+", 0)"},
+      animate:1e3,
+      scaleColor:"#ccc",
+      lineWidth:3,
+      size:100,
+      lineCap:"cap",
+      onStep:function(a){this.$el.find("span").text(~~a)}}),
+  $(".chart-home").easyPieChart(
+    {
+      barColor:"rgba(255,255,255,0.5)",
+      trackColor:"rgba(255,255,255,0.1)",
+      animate:1e3,
+      scaleColor:"rgba(255,255,255,0.3)",
+      lineWidth:3,size:100,lineCap:"cap",
+      onStep:function(a){this.$el.find("span").text(~~a)}
+    }
+      ),$(".chart-alt").easyPieChart({barColor:function(a){return a/=100,"rgb("+Math.round(255*(1-a))+", "+Math.round(255*a)+", 0)"},trackColor:"#333",scaleColor:!1,lineCap:"butt",rotate:-90,lineWidth:20,animate:1500,onStep:function(a){this.$el.find("span").text(~~a)}}),$(".chart-alt-1").easyPieChart({barColor:function(a){return a/=100,"rgb("+Math.round(255*(1-a))+", "+Math.round(255*a)+", 0)"},trackColor:"#e1ecf1",scaleColor:"#c4d7e0",lineCap:"cap",rotate:-90,lineWidth:10,size:80,animate:2500,onStep:function(a){this.$el.find("span").text(~~a)}}),$(".chart-alt-2").easyPieChart({barColor:function(a){return a/=100,"rgb("+Math.round(255*(1-a))+", "+Math.round(255*a)+", 0)"},trackColor:"#fff",scaleColor:!1,lineCap:"butt",rotate:-90,lineWidth:4,size:50,animate:1500,onStep:function(a){this.$el.find("span").text(~~a)}}),$(".chart-alt-3").easyPieChart({barColor:function(a){return a/=100,"rgb("+Math.round(255*(1-a))+", "+Math.round(255*a)+", 0)"},trackColor:"#333",scaleColor:!0,lineCap:"butt",rotate:-90,lineWidth:4,size:50,animate:1500,onStep:function(a){this.$el.find("span").text(~~a)}}),$(".chart-alt-10").easyPieChart({barColor:"rgba(255,255,255,255.4)",trackColor:"rgba(255,255,255,0.1)",scaleColor:"transparent",lineCap:"round",rotate:-90,lineWidth:4,size:100,animate:2500,onStep:function(a){this.$el.find("span").text(~~a)}}),$(".updateEasyPieChart").on("click",function(a){a.preventDefault(),$(".chart-home, .chart, .chart-alt, .chart-alt-1, .chart-alt-2, .chart-alt-3, .chart-alt-10").each(function(){$(this).data("easyPieChart").update(Math.round(100*Math.random()))})})};$(document).ready(function(){initPieChart()});*/

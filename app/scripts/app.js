@@ -13,7 +13,9 @@ angular
     'ui.router',
     'ui.bootstrap',
     'angular-loading-bar',
-    "chart.js"
+    "chart.js",
+    "easypiechart",
+    'angularFileUpload'
   ])
   .config(['$stateProvider','$urlRouterProvider','$ocLazyLoadProvider',function ($stateProvider,$urlRouterProvider,$ocLazyLoadProvider) {
     
@@ -120,7 +122,7 @@ angular
               name:'chart.js',
               files:[
                 'bower_components/angular-chart.js/dist/angular-chart.min.js',
-                'bower_components/angular-chart.js/dist/angular-chart.css'
+                //'bower_components/angular-chart.js/dist/angular-chart.css'
               ]
             }),
             $ocLazyLoad.load({
