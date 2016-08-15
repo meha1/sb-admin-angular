@@ -7,32 +7,85 @@
     </div>
     <!-- /.row -->
     <div class="row">
-        
-        <stats number="6" comments="New comments!qw" colour="primary" type="comments" goto="dashboard.home"></stats>
-        <stats number="12" comments="New tasks!" colour="primary" type="user" goto="dashboard.home"></stats>
-        <stats number="18" comments="New orders!" colour="yellow" type="shopping-cart" goto="dashboard.home"></stats>
-        <stats number="24" comments="Support tickets!" colour="red" type="support" goto="dashboard.home"></stats>
-
-    </div>
-    
-    <!-- /.panel -->
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="panel panel-default">
+        <div class="col-lg-3">
+            <div class="panel panel-primary panel-min-size">
                 <div class="panel-heading">
-                    <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
+                    Active instances
                 </div>
-                <!-- /.panel-heading -->
-                <timeline></timeline>
-                <!-- /.panel-body -->
+                <div class="panel-body">
+                    <div class="row panel-text center-div">
+                        <span>16</span>
+                    </div>
+                </div>
             </div>
-            <!-- /.panel -->
         </div>
-        <!-- /.col-lg-8 -->
+        <div class="col-lg-3">
+            <div class="panel panel-info panel-min-size">
+                <div class="panel-heading">
+                    Verifications   
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                        <span>150</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-warning panel-min-size">
+                <div class="panel-heading">
+                    CPU Load
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                        <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+                            <span class="percent">{{percentText3}}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-error panel-min-size">
+                <div class="panel-heading">
+                    Alerts in 24H
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+                        <span>7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-sm-12" id="line-chart" ng-controller="ChartCtrl">
+            <div class="panel panel-default">
+                <div class="panel-heading">CPU Load </div>
+                <div class="panel-body">
+                    <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true"
+                    click="line.onClick" chart-series="line.series" height="165"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
+            <div class="panel panel-default">
+                <div class="panel-heading">Some info</div>
+                <div class="panel-body">
+                <canvas id="doughnut" class="chart chart-doughnut chart-xs" chart-data="donut.data" chart-labels="donut.labels" legend="false"></canvas>
+                </div>
+            </div>
+        </div> -->
         <div class="col-lg-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bell fa-fw"></i> Notifications Panel
+                    <i class="fa fa-bell fa-fw"></i> Activity log
                 </div>
                 <!-- /.panel-heading -->
                 <notifications></notifications> 
@@ -40,10 +93,39 @@
             </div>
             <!-- /.panel -->
 
-            <chat></chat>
+            <!-- <chat></chat> -->
              <!-- /.panel .chat-panel -->
         </div>
-        <!-- /.col-lg-4 -->
     </div>
-    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Activity Map</div>
+                <div class="panel-body">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d25017226.9005833!2d-98.5471355262944!3d37.199325073030835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sil!4v1471293145493" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
+                </div>
+                <timeline></timeline>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bell fa-fw"></i> Notifications Panel
+                </div>
+                <notifications></notifications> 
+            </div>
+
+            <chat></chat>
+        </div>
+    </div> -->
 </div>

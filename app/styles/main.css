@@ -344,6 +344,26 @@ body{
   margin-left: 0.1em;
   font-size: .8em;
 }
+
+.vertical-middle{
+  vertical-align: middle !important;
+}
+
+.panel-default {
+    border-color: #dfe8f1;
+}
+
+.btn-accept{
+  border-color: #337ab7;
+}
+
+.panel-text{
+  font-size: 83px;
+}
+
+.panel-min-size{
+  height: 188px;
+}
 /*
 
 var initPieChart=function(){

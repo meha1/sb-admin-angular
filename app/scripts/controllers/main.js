@@ -291,7 +291,7 @@ app.factory('ProductsFact', function(){
 	
 	return map;
 });
-app.controller('MainCtrl', function($scope, ProductsFact, FileUploader) {
+app.controller('MainCtrl', function($scope, ProductsFact) {
   	$scope.clientName = "Verizon" //"AT&T"
   	$scope.prod = ProductsFact;
 	$scope.searchLog = {};
@@ -302,17 +302,21 @@ app.controller('MainCtrl', function($scope, ProductsFact, FileUploader) {
   	$scope.mapInstanceIdToName = ProductsFact.instanceIdToName;
   	$scope.mapImageIdToName = ProductsFact.imageIdToName;
 
-
   	$scope.addProductImage = function(serviceName, iName, iDesc){
 		//TODO: Send to server and add the result to the list
 		ProductsFact.addProductImage(serviceName, iName, iDesc);  
 		$scope.imageName = "";
 		$scope.imageDesc = "";	
 		$scope.uploader = "";
-		$scope.uploader = new FileUploader();	
+		$scope.uploadImageFile.value = "";
+		//$scope.uploader = new FileUploader();	
   	}
 
-	$scope.uploader = new FileUploader();
+  	$scope.setFile = function(file){
+  		$scope.uploadImageFile = file;
+  	}
+
+	//$scope.uploader = new FileUploader();
 
   	$scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
 	$scope.data = [300, 500, 100];
@@ -382,3 +386,22 @@ app.controller('MainCtrl', function($scope, ProductsFact, FileUploader) {
   	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
   
 });
+var _DEBUG;
+app.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
+                    });
+                }
+                reader.readAsDataURL(changeEvent.target.files[0]);
+            });
+        }
+    }
+}]);

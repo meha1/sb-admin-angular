@@ -15,7 +15,7 @@ angular
     'angular-loading-bar',
     "chart.js",
     "easypiechart",
-    'angularFileUpload'
+    //'angularFileUpload'
   ])
   .config(['$stateProvider','$urlRouterProvider','$ocLazyLoadProvider',function ($stateProvider,$urlRouterProvider,$ocLazyLoadProvider) {
     

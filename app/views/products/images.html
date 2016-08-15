@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div>
 	<div class="row">
 		<div class="col-lg-12">
 			<h1 class="page-header">Secure Sign</h1>
@@ -33,8 +33,9 @@
 				  <div class="form-group"> 
 				    <label class="control-label col-sm-2" for="image-file">Image File</label>
 				    <div class="col-sm-10"> 
-				      <!-- <input type="text" class="form-control" id="image-file"> -->
-				      <input type="file" nv-file-select uploader="uploader" class="form-control" id="image-file"/>
+				      <input type="file" ng-model="someFile" onchange="angular.element(this).scope().setFile(this)" class="form-control" id="image-file">
+				      <!-- <input type="file" fileread="someFile" class="form-control" id="image-file"/> -->
+
 				    </div>
 				  </div>
 				</form>
@@ -54,7 +55,7 @@
 						  	<input class="form-control col-md-4" type="text" id="image-file">
 						</div>
 					</div> -->
-					<div class="col-md-12 input-group center-btn-container">
+					<div class="col-md-12 input-group center-div">
 						<button type="button" class="btn btn-default btn-circle btn-lg btn-accept" ng-click="addProductImage(prod.products[prod.selected[0]],imageName, imageDesc)"><a href=""><i class="fa fa-check"></i></a></button>
 					</div>
 	            </div>
@@ -82,10 +83,10 @@
 	                        </thead>
 	                        <tbody>
 	                            <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]">
-	                                <td>{{image.name}}</td>
-	                                <td>{{image.desc}}</td>
-	                                <td class="text-center"><a ng-href="{{image.sig}}"><i class="fa fa-key fa-fw"></i></a></td>
-	                                <td class="text-center"><a ng-href="{{image.token}}"><i class="fa fa-lock fa-fw"></i></a></td>
+	                                <td class="vertical-middle">{{image.name}}</td>
+	                                <td class="vertical-middle">{{image.desc}}</td>
+	                                <td class="text-center vertical-middle"><a ng-href="{{image.sig}}"><i class="fa fa-key fa-fw"></i></a></td>
+	                                <td class="text-center vertical-middle"><a ng-href="{{image.token}}"><i class="fa fa-lock fa-fw"></i></a></td>
 				      				<td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td>
 	                            </tr>
 	                        </tbody>
