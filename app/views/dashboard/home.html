@@ -14,7 +14,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="row panel-text center-div">
-                        <span>16</span>
+                        <span ng-init="setValueBySteps('numOfInstances', 0, 17, 1000, 17)">{{numOfInstances}}</span>
                     </div>
                 </div>
             </div>
@@ -28,7 +28,8 @@
                     <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
                     <div class="row center-div panel-text">
                     <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                        <span>150</span>
+                        <!-- <span>153</span> -->
+                        <span ng-init="setValueBySteps('numOfVerifications', 0, 150, 1000, 150)">{{numOfVerifications}}</span>
                     </div>
                 </div>
             </div>
@@ -58,7 +59,8 @@
                     <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
                     <div class="row center-div panel-text">
                     <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
-                        <span>7</span>
+                        <!-- <span>7</span> -->
+                        <span ng-init="setValueBySteps('numOfAlerts', 0, 7, 1000, 7)">{{numOfAlerts}}</span>
                     </div>
                 </div>
             </div>

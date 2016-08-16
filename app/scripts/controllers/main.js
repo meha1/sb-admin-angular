@@ -291,7 +291,7 @@ app.factory('ProductsFact', function(){
 	
 	return map;
 });
-app.controller('MainCtrl', function($scope, ProductsFact) {
+app.controller('MainCtrl', function($scope, $timeout, ProductsFact) {
   	$scope.clientName = "Verizon" //"AT&T"
   	$scope.prod = ProductsFact;
 	$scope.searchLog = {};
@@ -381,6 +381,27 @@ app.controller('MainCtrl', function($scope, ProductsFact) {
   		$scope.$apply(function(){
   			$scope.percentText4 = $scope.percent4; 
   		})	
+  	}
+
+  	$scope.numOfInstances = 0;
+  	$scope.numOfVerifications = 0;
+  	$scope.numOfAlerts = 0;
+  	$scope.timerStepsCallback = function(millis, steps, callback, finalCallback){
+  		if (steps <= 0 || millis <= 0){
+  			finalCallback();
+  			return;
+  		}
+  		var time = millis / steps;
+  		$timeout(function(){
+  			callback()
+  			$scope.timerStepsCallback(millis - time, steps-1, callback, finalCallback)
+  		},time);
+  	}
+
+  	$scope.setValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
+  		$scope[targetVar] = startValue;
+  		var valJump = targetValue / steps;
+  		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
   	}
   	//$scope.products = ["vRouter", "vSwitch"];
   	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
