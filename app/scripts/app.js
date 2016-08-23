@@ -15,7 +15,7 @@ angular
     'angular-loading-bar',
     "chart.js",
     "easypiechart",
-    //'angularFileUpload'
+    'angularFileUpload'
   ])
   .config(['$stateProvider','$urlRouterProvider','$ocLazyLoadProvider',function ($stateProvider,$urlRouterProvider,$ocLazyLoadProvider) {
     
@@ -74,10 +74,10 @@ angular
                   name:'ngTouch',
                   files:['bower_components/angular-touch/angular-touch.js']
                 })
-                $ocLazyLoad.load({
-                  name:'sbAdminApp',
-                  files:['scripts/controllers/main.js']
-                })
+                // $ocLazyLoad.load({
+                //   name:'sbAdminApp',
+                //   files:['scripts/controllers/main.js']
+                // })
             }
         }
     })
@@ -90,7 +90,7 @@ angular
             return $ocLazyLoad.load({
               name:'sbAdminApp',
               files:[
-              'scripts/controllers/main.js',
+              //'scripts/controllers/main.js',
               'scripts/directives/timeline/timeline.js',
               'scripts/directives/notifications/notifications.js',
               'scripts/directives/chat/chat.js',
@@ -168,7 +168,7 @@ angular
           loadMyDirectives:function($ocLazyLoad){
             return $ocLazyLoad.load({
               name:'sbAdminApp',
-              files:['scripts/controllers/main.js', 
+              files:[/*'scripts/controllers/main.js', */
               'scripts/controllers/chartContoller.js']
             })}
           }
@@ -181,7 +181,7 @@ angular
           loadMyDirectives:function($ocLazyLoad){
             return $ocLazyLoad.load({
               name:'sbAdminApp',
-              files:['scripts/controllers/main.js',
+              files:[/*'scripts/controllers/main.js',*/
               'scripts/controllers/chartContoller.js']
             })}
           }
@@ -194,7 +194,7 @@ angular
           loadMyDirectives:function($ocLazyLoad){
             return $ocLazyLoad.load({
               name:'sbAdminApp',
-              files:['scripts/controllers/main.js',
+              files:[/*'scripts/controllers/main.js',*/
               'scripts/controllers/chartContoller.js']
             })}
           }
@@ -207,7 +207,7 @@ angular
           loadMyDirectives:function($ocLazyLoad){
             return $ocLazyLoad.load({
               name:'sbAdminApp',
-              files:['scripts/controllers/main.js',
+              files:[/*'scripts/controllers/main.js',*/
               'scripts/controllers/chartContoller.js']
             })}
           }

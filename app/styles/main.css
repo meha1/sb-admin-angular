@@ -332,17 +332,18 @@ body{
 
 .percent {
   /*display: inline-block;*/
+  position: absolute;
   line-height: 110px;
   z-index: 2;
-  position: absolute;
-  margin-left: 40px;
+  width: 100%;
+  /*margin-left: 40px;*/
   font-size: 22px;
 }
 
 .percent:after {
   content: '%';
   margin-left: 0.1em;
-  font-size: .8em;
+  font-size: .9em;
 }
 
 .vertical-middle{

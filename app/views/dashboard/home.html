@@ -35,6 +35,21 @@
             </div>
         </div>
         <div class="col-lg-3">
+            <div class="panel panel-error panel-min-size">
+                <div class="panel-heading">
+                    Alerts in 24H
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+                        <!-- <span>7</span> -->
+                        <span ng-init="setValueBySteps('numOfAlerts', 0, 7, 1000, 7)">{{numOfAlerts}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
             <div class="panel panel-warning panel-min-size">
                 <div class="panel-heading">
                     CPU Load
@@ -46,21 +61,6 @@
                         <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
                             <span class="percent">{{percentText3}}</span>
                         </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="panel panel-error panel-min-size">
-                <div class="panel-heading">
-                    Alerts in 24H
-                </div>
-                <div class="panel-body">
-                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                    <div class="row center-div panel-text">
-                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
-                        <!-- <span>7</span> -->
-                        <span ng-init="setValueBySteps('numOfAlerts', 0, 7, 1000, 7)">{{numOfAlerts}}</span>
                     </div>
                 </div>
             </div>

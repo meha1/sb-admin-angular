@@ -11,14 +11,15 @@
 			<div class="col-lg-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        cpu usage
+                        CPU Load Avg.
                     </div>
                     <div class="panel-body">
                     	<div class="row center-div">
               			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent" options="options">
-								<span class="percent">{{percentText}}</span>
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadAvg" options="options">
+								<span class="percent">{{cpuLoadAvgText | number: 2}}</span>
 							</span>
+							<input type="range" min="0" max="100" step="0.1" ng-model="cpuLoadAvg" />
 						</div>
                     </div>
                 </div>
@@ -26,14 +27,14 @@
             <div class="col-lg-3">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Info Chart
+                        CPU Load Max.
                     </div>
                     <div class="panel-body">
               			<!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
               			<div class="row center-div">
               			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent2" options="options2">
-								<span class="percent">{{percentText2}}</span>
+	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadMax" options="options2">
+								<span class="percent">{{cpuLoadMaxText | number: 2}}</span>
 							</span>
 						</div>
                     </div>
