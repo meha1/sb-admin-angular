@@ -15,7 +15,9 @@ angular
     'angular-loading-bar',
     "chart.js",
     "easypiechart",
-    'angularFileUpload'
+    //'angularFileUpload',
+    'googlechart',
+    'ngFileUpload'
   ])
   .config(['$stateProvider','$urlRouterProvider','$ocLazyLoadProvider',function ($stateProvider,$urlRouterProvider,$ocLazyLoadProvider) {
     
@@ -83,7 +85,7 @@ angular
     })
       .state('dashboard.home',{
         url:'/home',
-        controller: 'MainCtrl',
+        //controller: 'MainCtrl',
         templateUrl:'views/dashboard/home.html',
         resolve: {
           loadMyFiles:function($ocLazyLoad) {
@@ -161,7 +163,7 @@ angular
         url:'/grid'
    })
       .state('dashboard.overview',{
-        controller: 'MainCtrl',
+        //controller: 'MainCtrl',
         templateUrl:'views/products/overview.html',
         url:'/poverview',
         resolve: {
@@ -174,7 +176,7 @@ angular
           }
    })
       .state('dashboard.images',{
-        controller: 'MainCtrl',
+        //controller: 'MainCtrl',
         templateUrl:'views/products/images.html',
         url:'/images',
         resolve: {
@@ -187,7 +189,7 @@ angular
           }
    })
       .state('dashboard.instances',{
-        controller: 'MainCtrl',
+        //controller: 'MainCtrl',
         templateUrl:'views/products/instances.html',
         url:'/instances',
         resolve: {
@@ -200,7 +202,7 @@ angular
           }
    })
       .state('dashboard.services',{
-        controller: 'MainCtrl',
+        //controller: 'MainCtrl',
         templateUrl:'views/products/products.html',
         url:'/products',
         resolve: {

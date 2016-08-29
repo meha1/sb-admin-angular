@@ -1,6 +1,6 @@
 <nav class="navbar navbar-default navbar-static-top bg-gradient" role="navigation" style="margin-bottom: 0">
-    <div class="row" style="height:100%;" ng-controller="MainCtrl">
-    <!-- <div class="row" style="height:100%;" > -->
+    <!-- <div class="row" style="height:100%;" ng-controller="MainCtrl"> -->
+    <div id="dontremove" ng-click="test()" class="row" style="height:100%;" >
         <div class="navbar-header col-md-10">
     <!-- 
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -12,11 +12,41 @@
             <a class="navbar-brand" href="index.html">Product Dashboard</a>
         </div>
         <div class="col-md-2 client-panel">
-            <div class="client-circle">
-                <img class="client-logo" ng-src="scripts/directives/header/img/{{clientName}}-logo.png">
+            <div>
+                <img class="client-circle" ng-src="scripts/directives/header/img/{{clientName}}-logo.png">
             </div>
-            <div class="client-name">{{clientName}}</div>
-
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <div class="dropdown-label">&nbsp Service Providers</div>
+                        <li ng-repeat="sp in clients.serviceProviders">
+                            <a href="#" ng-click="setSelectedClient('serviceProviders', $index)">
+                                <i class="fa fa-user fa-fw"></i> 
+                                {{sp.name}}
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <div class="dropdown-label">&nbsp Customers</div>
+                        <li ng-repeat="cust in clients.customers">
+                            <a href="#" ng-click="setSelectedClient('customers', $index)">
+                                <i class="fa fa-user fa-fw"></i> 
+                                {{cust.name}}
+                            </a>
+                        </li>
+                        <!-- <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a> -->
+                        <!-- </li> -->
+                        <!-- <li><a href="http://www.strapui.com/"><i class="fa fa-eye fa-fw"></i> Premium Angular Themes</a></li> -->
+                        <!-- <li class="divider"></li> -->
+                        <!-- <li><a ui-sref="login"><i class="fa fa-sign-out fa-fw"></i> Logout</a> -->
+                        <!-- </li> -->
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+            </ul>
+            <div class="client-name" style="width:30px;">{{clientName}}</div>
         </div>
         <div class="col-md-1">
         </div>

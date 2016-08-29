@@ -17,9 +17,9 @@
                     	<div class="row center-div">
               			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
 	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadAvg" options="options">
-								<span class="percent">{{cpuLoadAvgText | number: 2}}</span>
+								<span class="percent">{{toFixed(cpuLoadAvgText, 2)}}</span>
 							</span>
-							<input type="range" min="0" max="100" step="0.1" ng-model="cpuLoadAvg" />
+							<!-- <input type="range" min="0" max="100" step="0.1" ng-model="cpuLoadAvg" /> -->
 						</div>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
               			<div class="row center-div">
               			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
 	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadMax" options="options2">
-								<span class="percent">{{cpuLoadMaxText | number: 2}}</span>
+								<span class="percent">{{toFixed(cpuLoadMaxText, 2)}}</span>
 							</span>
 						</div>
                     </div>
@@ -97,13 +97,15 @@
 	                        </thead>
 	                        <tbody>
 	                            <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]">
-	                                <td>{{instance.name}}</td>
+	                                <!-- <td>{{instance.name}}</td> -->
+	                                <td>{{instance.pc_id}}</td>
 	                                <td>{{instance.ip}}</td>
-	                                <td>{{mapImageIdToName[instance.imageId]}}</td>
+	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
+	                                <td>{{instance.image_id}}</td>
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
 	                                <td class="text-center">{{instance.cpuLoad}}%</td>
-	                                <td>{{instance.upTime | date:'medium'}}</td>
-	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instanceId = instance.id"><i class="fa fa-filter"></i></a></td>
+	                                <td>{{instance.start_time | date:'medium'}}</td>
+	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
 	                            </tr>
 	                        </tbody>
 	                    </table>
@@ -116,6 +118,12 @@
 	    </div>
 	</div>
 	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div google-chart chart="chart" style="width:100%">
+		  	</div>
+		</div>
+	</div>
 	<div class="row">
 	    <div class="col-lg-12">
 	        <div class="panel panel-default my-panel">
@@ -135,12 +143,18 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
+	                            <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog">
+	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
+	                                <td>{{mapInstanceIdToName[logRow.instanceId]}}</td>
+	                                <td>{{logRow.type}}</td>
+	                                <td>{{logRow.txt}}</td>
+	                            </tr>
+	                            <!-- <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
 	                                <td>{{logRow.timestamp | date:'medium'}}</td>
 	                                <td>{{mapInstanceIdToName[logRow.instanceId]}}</td>
 	                                <td>{{logRow.type}}</td>
 	                                <td>{{logRow.message}}</td>
-	                            </tr>
+	                            </tr> -->
 	                        </tbody>
 	                    </table>
 	                </div>

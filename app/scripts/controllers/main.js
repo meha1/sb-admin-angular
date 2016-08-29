@@ -10,38 +10,282 @@ var app = angular.module('sbAdminApp')
 
 //angular.module('sbAdminApp')
 
-app.factory('ProductsFact', function($http){
+app.factory('LogFact', function($http, $interval){
 	var ES_URL = "http://52.28.149.249:9200/"
 	var map = {};
-	map.updateInstances = function(){
-		$http.get(ES_URL + "instances/instances")
+	map.logs = {};
+	map.fullLogs = [];
+	map.updateLog = function(pass){
+		var that = this == undefined ? pass : this;
+		$http.get(ES_URL + "events*/_search")
 		.then(function successCallback(response) {
 		    // this callback will be called asynchronously
 		    // when the response is available
 		    if (response.error){
 		    	console.info(response.error)
 		    }else{
-		    	var res = response.hits.hits;
+		    	var res = response.data.hits.hits;
 		    	var len = res.length;
-	    		this.productInstances = {};
+	    		that.logs = {};
+	    		that.fullLogs = [];
+		    	
+		    	for ( var i = 0 ; i < len ; i++){
+		    		if(!that.logs[res[i].instance_id]){
+		    			that.logs[res[i].instance_id] = [];
+		    		}
+		    		res[i]._source.id = res[i]._id; // adding instance id into the data
+		    		that.fullLogs.push(res[i]._source)
+		    		that.logs[res[i].instance_id].push(res[i]._source);
+		    	}
+		    }
+		    console.log(that.fullLogs)
+		 }, function errorCallback(response) {
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+		});
+	}
+	
+	var logInterval;
+	
+	map.startLogPolling = function(millis){
+		map.updateLog();
+		this.stopLogPolling();
+		logInterval = $interval(this.updateLog, millis, 0, true, this);
+	}
 
+	map.stopLogPolling = function(){
+		if(angular.isDefined(logInterval)){
+      		$interval.cancel(logInterval);
+      		logInterval = undefined;
+      	}
+	}
+	
+	return map;
+})
+
+app.factory('ServiceFact', function(){
+	var map = {};
+	map.services = {
+		serviceProviders:[
+			{
+				name: "Cisco"	
+			}
+		]
+	}
+})
+
+app.factory('ClientFact', function($http){
+	var ES_URL = "http://52.28.149.249:9200/"
+
+	var map = {};
+	map.clients = {
+		serviceProviders: [
+			{
+				id: 1,
+				name: "Cisco",
+				services: [
+					{
+						//id: 1,
+						id: "Orange",
+						name: "vRouter",
+						desc: "Cisco secure virtual router"
+					},
+					{
+						id: 2,
+						name: "vSwitch",
+						desc: "Cisco secure virtual switch"	
+					},
+					{
+						id: 3,
+						name: "vFirewall",
+						desc: "Cisco secure virtual firewall"
+					}
+				]
+			},
+			{
+				id: 2,
+				name: "OwnBackup",
+				services:[
+					{
+						id: 11,
+						name: "SecureBackup",
+						desc: "Encrypted backup service"
+					}
+				]
+			}
+		],
+		customers: [
+			{
+				//id: 100,
+				id: "014",
+				spId: 1,
+				name: "Cisco",
+				services : [1,2]
+			},
+			{
+				id: 101,
+				spId: 1,
+				name: "Verizon",
+				services : [1]
+			},
+			{
+				id: 102,
+				spId: 2,
+				name: "myStartup",
+				services: [3]
+			}
+		]
+	}
+
+	map.getFromES = function(type, clientId){
+		var client = this.getClientById[clientId]
+		var that = this;
+		$http.get(ES_URL + type + "/_search?q=user_id:" + clientId + "&size=1000")
+		.then(function successCallback(response) {
+		    // this callback will be called asynchronously
+		    // when the response is available
+		    if (response.error){
+		    	console.info(response.error)
+		    }else{
+		    	var res = response.data.hits.hits;
+		    	var len = res.length;
+		    	client[type] = [];
+		    	for ( var i = 0 ; i < len ; i++){
+		    		res[i]._source.id = res[i]._id; // adding instance id into the data
+		    		client[type].push(res[i]._source);
+		    	}
+		    }
+		}, function errorCallback(response){
+			console.error("Got error from ES: ");
+			console.info(response);
+		})
+	}
+
+	map.getInstancesPerClient = function(clientId){
+		//var client = this.getClientById[clientId];
+		this.getFromES("instances", clientId)
+
+	}
+
+	map.getImagesPerClient = function(clientId){
+		//var client = this.getClientById[clientId];
+		this.getFromES("images", clientId);
+	}
+
+	map.getAllClientsInfo = function(){
+		for (var clientId in this.getClientById){
+			if(this.getClientById[clientId].type != "serviceProviders"){
+				this.getInstancesPerClient(clientId);
+			}
+			this.getImagesPerClient(clientId)
+		}
+		console.info("Clients Mapping updated with info:")
+		console.info(this.getClientById)
+	}
+
+	map.getClientById = {};
+
+	map.getClientByIdMapping = function(){
+		//var len = this.clients.serviceProviders.length
+		for (var key in this.clients){
+			var len = this.clients[key].length;
+			for(var i = 0; i < len; i++){
+				//this.getSpById[this.clients.serviceProviders[i].id] = this.clients.serviceProviders[i];
+				this.getClientById[this.clients[key][i].id] = this.clients[key][i];
+				this.getClientById[this.clients[key][i].id].type = key;
+			}
+		}
+		console.info("Clients Mapping:")
+		console.info(this.getClientById)
+	}
+
+	map.getClientByIdMapping();
+
+	map.getServiceById = {};
+
+	map.getServiceByIdMapping = function(){
+		var spLen = this.clients.serviceProviders.length
+		for(var i = 0; i < spLen; i++){
+			var servicesLen = this.clients.serviceProviders[i].services.length;
+			for (var j = 0; j < servicesLen; j++){
+				this.getServiceById[this.clients.serviceProviders[i].services[j].id] = this.clients.serviceProviders[i].services[j];
+			} 
+		}
+	}
+
+	map.getServiceByIdMapping();
+	
+	map.getSelected = function(){
+		// return this.clients[this.selected[0]][this.selected[1]];
+		return this.selected;
+	}
+
+	map.setSelected = function(type, index){
+		this.selectedIndex = [type, index];
+		this.selected = this.clients[this.selectedIndex[0]][this.selectedIndex[1]];
+	}
+
+	map.addService = function(sName, sDesc){
+		//this.clients[this.selected[0]][this.selected[1]].services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
+		this.selected.services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
+	}
+	
+	map.subscribeToService = function(sId){
+		//this.clients[this.selected[0]][this.selected[1]].services.push(sId);
+		if(this.selected.services.indexOf(sId) == -1){
+			this.selected.services.push(sId);	
+		}
+	}
+
+	map.unSubscribeFromService = function(sId){
+		//this.clients[this.selected[0]][this.selected[1]].services.push(sId);
+		if(this.selected.services.indexOf(sId) != -1){
+			this.selected.services.splice(this.selected.services.indexOf(sId), 1);	
+		}
+	}
+
+	map.getAllClientsInfo();
+	//map.selectedIndex = ['serviceProviders', 0];
+	map.setSelected('serviceProviders', 0)
+	//map.selected = map.getSelected();
+
+	return map;
+})
+
+app.factory('ProductsFact', function($http){
+	var ES_URL = "http://52.28.149.249:9200/"
+	var map = {};
+	map.updateInstances = function(){
+		var that = this;
+		$http.get(ES_URL + "instances/_search?q=*:*&size=1000")
+		.then(function successCallback(response) {
+		    // this callback will be called asynchronously
+		    // when the response is available
+		    if (response.error){
+		    	console.info(response.error)
+		    }else{
+		    	var res = response.data.hits.hits;
+		    	var len = res.length;
+	    		that.productInstances = {};
+    			that.instancesPer
 	    		// TODO: DELETE IT!!! - workaround until type will be updated
-	    		this.productInstances["vRouter"] = [];
-	    		this.productInstances["vSwutch"] = [];
+	    		that.productInstances["vRouter"] = [];
+	    		that.productInstances["vSwutch"] = [];
 	    		// TODO: DELETE IT!!!
 		    	
 		    	for ( var i = 0 ; i < len ; i++){
-		    		if(!this.productInstances[res[i]._type]){
-		    			this.productInstances[res[i]._type] = [];
+		    		if(!that.productInstances[res[i]._type]){
+		    			that.productInstances[res[i]._type] = [];
 		    		}
-		    		this.productInstances[res[i]._type].push(res[i]._source);
+		    		res[i]._source.id = res[i]._id; // adding instance id into the data
+		    		that.productInstances[res[i]._type].push(res[i]._source);
 		    		
 		    		// TODO: DELETE IT!!! - workaround until type will be updated
-		    		this.productInstances["vRouter"].push(res[i]._source);
-		    		this.productInstances["vSwutch"].push(res[i]._source);
+		    		that.productInstances["vRouter"].push(res[i]._source);
+		    		that.productInstances["vSwutch"].push(res[i]._source);
 		    		// TODO: DELETE IT!!!
 		    	}
-		    	this.mapInstanceIdToName();
+		    	that.mapInstanceIdToName();
 		    }
 		 }, function errorCallback(response) {
 	    // called asynchronously if an error occurs
@@ -297,7 +541,8 @@ app.factory('ProductsFact', function($http){
 			var len = this.productInstances[productName].length;
 			for (var i = 0 ; i < len ; i++){
 				var inst = this.productInstances[productName][i];
-				this.instanceIdToName[inst.id] = inst.name;
+				// this.instanceIdToName[inst.id] = inst.name;
+				this.instanceIdToName[inst._id] = inst.name;
 			}
 		}
 	}
@@ -328,48 +573,61 @@ app.factory('ProductsFact', function($http){
 	
 	return map;
 });
-app.controller('MainCtrl', function($scope, $timeout, $http, $interval, ProductsFact, FileUploader) {
+app.controller('MainCtrl', function($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload/*FileUploader*/) {
 	var CLOUD_WATCH_URL = "http://localhost:3000/cpuutilization"
-	var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
+	//var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
+	var ADD_IMAGE_URL = "http://10.56.178.56:33555/secure_server/upload_image";
 	var SIGN_FILE_URL = "";
-	var uploader = $scope.uploader = new FileUploader();
+	//var uploader = $scope.uploader = new FileUploader();
 
-    uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
-        console.info('onWhenAddingFileFailed', item, filter, options);
-    };
-    uploader.onAfterAddingFile = function(fileItem) {
-        console.info('onAfterAddingFile', fileItem);
-    };
-    uploader.onAfterAddingAll = function(addedFileItems) {
-        console.info('onAfterAddingAll', addedFileItems);
-    };
-    uploader.onBeforeUploadItem = function(item) {
-        console.info('onBeforeUploadItem', item);
-    };
-    uploader.onProgressItem = function(fileItem, progress) {
-        console.info('onProgressItem', fileItem, progress);
-    };
-    uploader.onProgressAll = function(progress) {
-        console.info('onProgressAll', progress);
-    };
-    uploader.onSuccessItem = function(fileItem, response, status, headers) {
-        console.info('onSuccessItem', fileItem, response, status, headers);
-    };
-    uploader.onErrorItem = function(fileItem, response, status, headers) {
-        console.info('onErrorItem', fileItem, response, status, headers);
-    };
-    uploader.onCancelItem = function(fileItem, response, status, headers) {
-        console.info('onCancelItem', fileItem, response, status, headers);
-    };
-    uploader.onCompleteItem = function(fileItem, response, status, headers) {
-        console.info('onCompleteItem', fileItem, response, status, headers);
-    };
-    uploader.onCompleteAll = function() {
-        console.info('onCompleteAll');
-        //$scope.uploader.clearQueue();
-    };
+	$scope.serviceSelect = -1;
 
-  	$scope.clientName = "Verizon" //"AT&T"
+    // uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+    //     console.info('onWhenAddingFileFailed', item, filter, options);
+    // };
+    // uploader.onAfterAddingFile = function(fileItem) {
+    //     console.info('onAfterAddingFile', fileItem);
+    // };
+    // uploader.onAfterAddingAll = function(addedFileItems) {
+    //     console.info('onAfterAddingAll', addedFileItems);
+    // };
+    // uploader.onBeforeUploadItem = function(item) {
+    //     console.info('onBeforeUploadItem', item);
+    // };
+    // uploader.onProgressItem = function(fileItem, progress) {
+    //     console.info('onProgressItem', fileItem, progress);
+    // };
+    // uploader.onProgressAll = function(progress) {
+    //     console.info('onProgressAll', progress);
+    // };
+    // uploader.onSuccessItem = function(fileItem, response, status, headers) {
+    //     console.info('onSuccessItem', fileItem, response, status, headers);
+    // };
+    // uploader.onErrorItem = function(fileItem, response, status, headers) {
+    //     console.info('onErrorItem', fileItem, response, status, headers);
+    // };
+    // uploader.onCancelItem = function(fileItem, response, status, headers) {
+    //     console.info('onCancelItem', fileItem, response, status, headers);
+    // };
+    // uploader.onCompleteItem = function(fileItem, response, status, headers) {
+    //     console.info('onCompleteItem', fileItem, response, status, headers);
+    // };
+    // uploader.onCompleteAll = function() {
+    //     console.info('onCompleteAll');
+    //     //$scope.uploader.clearQueue();
+    // };
+
+    $scope.test =  function(){
+    	console.info("Passed!");
+    }
+
+  	//$scope.serviceProviderNames = ["Cisco", "OwnBackup"];
+  	//$scope.customerNames = ["Verizon", "Cisco", "myCompany"];
+  	$scope.LogFact = LogFact;
+  	$scope.ClientFact = ClientFact;
+  	$scope.clients = ClientFact.clients;
+  	$scope.selectedClient = ClientFact.getSelected();
+  	$scope.clientName = $scope.selectedClient.name;//$scope.customerName[0]; //"Verizon" //"AT&T"
   	$scope.prod = ProductsFact;
 	$scope.searchLog = {};
   	$scope.searchLog.id = "";
@@ -379,22 +637,68 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	$scope.mapInstanceIdToName = ProductsFact.instanceIdToName;
   	$scope.mapImageIdToName = ProductsFact.imageIdToName;
 
+	$scope.imageFileUpload;
 
-  	$scope.addProductImage = function(serviceName, iName, iDesc){
+  	$scope.setSelectedClient = function(type, index){
+  		ClientFact.setSelected(type, index);
+  		$scope.selectedClient = ClientFact.getSelected()
+  		$scope.clientName = $scope.selectedClient.name//$scope.customerName[0]; //"Verizon" //"AT&T"	
+  	}
+  	$scope.uploadPic = function (file) {
+    $scope.formUpload = true;
+    if (file != null) {
+      $scope.upload(file);
+    }
+  };
+
+  	$scope.upload = function(file, resumable) {
+    $scope.errorMsg = null;
+    if ($scope.howToSend === 1) {
+      uploadUsingUpload(file, resumable);
+    } else if ($scope.howToSend == 2) {
+      uploadUsing$http(file);
+    } else {
+      uploadS3(file);
+    }
+  };
+
+  	$scope.addProductImage = function(serviceId, file){
 		//TODO: Send to server and add the result to the list
-		ProductsFact.addProductImage(serviceName, iName, iDesc);  
-		$scope.imageName = "";
-		$scope.imageDesc = "";	
+		
+		//ProductsFact.addProductImage(serviceId, $scope.imageName, $scope.imageDesc);  
+		
 		//$scope.uploader = "";
 		//$scope.uploadImageFile.value = "";
 		//$scope.uploader = new FileUploader();
-		console.info("Uploader: " + $scope.uploader);
-		$scope.uploader.queue[0].url = ADD_IMAGE_URL;
-		$scope.uploader.queue[0].data = {name: iName, desc: iDesc};
-		// $scope.uploader.queue[0].removeAfterUpload = true
-		$scope.uploader.queue[0].upload();
+		//console.info("Uploader: " + $scope.uploader);
+		//$scope.uploader.queue[0].url = ADD_IMAGE_URL;
+		//$scope.uploader.queue[0].formData = {client_id: ClientFact.getSelected().id, name: iName, desc: iDesc};
+		//$scope.uploader.queue[0].upload();
+		//$scope.uploader.queue[0].formData = [ClientFact.getSelected().id, iName, iDesc];
+		//$scope.uploader.queue[0].removeAfterUpload = true
 		//$scope.uploader.queue[0].value = "";
 		//$scope.uploader = new FileUploader();
+		if (file) {
+        	Upload.upload({
+            	url: ADD_IMAGE_URL,
+            	data: {
+            		file: file, 
+            		client_id: ClientFact.getSelected().id,
+            		service_id: serviceId,
+            		name: $scope.imageName,
+            		desc: $scope.imageDesc
+            	}
+	        }).then(function (resp) {
+	            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+	        }, function (resp) {
+	            console.log('Error status: ' + resp.status);
+	        }, function (evt) {
+	            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+	        });
+      	}
+		$scope.imageName = "";
+		$scope.imageDesc = "";	
   	}
 
   	// $scope.setFile = function(file){
@@ -492,9 +796,9 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	}
   	//$scope.products = ["vRouter", "vSwitch"];
   	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
-  	// $scope.changeValue = function(target, value){
-  	// 	$scope[target] = value;
-  	// }
+  	$scope.setValue = function(target, value){
+  		$scope[target] = value;
+  	}
 
   	$scope.updateCPUUtilization = function(){
   		$http({
@@ -515,20 +819,74 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 		    // or server returns response with an error status.
 		});
 	}
+
+	$scope.toFixed = function(number, occ){
+		var num = parseFloat(number);
+		var mul = Math.pow(10, occ);
+		var res = Math.round(num * mul) / mul;
+		return res;
+	}
+
+	var chart1 = {};
+    chart1.type = "Timeline";
+    chart1.data = [
+      [ 'ins #1', 'Normal',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+      [ 'ins #1', 'Error',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #1', 'Normal', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+      [ 'ins #2', 'Normal',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #2', 'Error',    new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
+      [ 'ins #2', 'Normal',   new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+      [ 'ins #3', 'Normal',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #3', 'Error',        new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #3', 'Normal',       new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+      ];
+    //chart1.data.push(['Services',20000]);
+    chart1.options = {
+    	colors : ["#FF0000", "#00FF00"],
+        displayExactValues: true,
+        width: "100%",
+        height: "100%",
+        is3D: true,
+        chartArea: {left:10,top:10,bottom:0,height:"100%"},
+        avoidOverlappingGridLines: false
+    };
+
+    chart1.formatters = {
+      number : [{
+        columnNum: 1,
+        pattern: "$ #,##0.00"
+      }]
+    };
+
+    $scope.chart = chart1;
 	
 	var cpuUtilInterval;
   	if(!angular.isDefined(cpuUtilInterval)){
   		$scope.updateCPUUtilization()
-		console.info("init!");
+  		//LogFact.updateLog();
+		console.info("init cpu interval");
+  		//logInterval = $interval(LogFact.updateLog, 5000);//, [count], [invokeApply], [Pass]);
   		cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000);//, [count], [invokeApply], [Pass]);
 	}
 
+	// var logInterval;
+ //  	if(!angular.isDefined(logInterval)){
+	// 	console.info("init log interval");
+ //  		logInterval = $interval(LogFact.updateLog, 5000);//, [count], [invokeApply], [Pass]);
+	// }
+	LogFact.startLogPolling(5000);
 	$scope.$on('$destroy', function() {
       // Make sure that the interval is destroyed too
       if(angular.isDefined(cpuUtilInterval)){
       	$interval.cancel(cpuUtilInterval);
       	cpuUtilInterval = undefined;
       }
+      LogFact.stopLogPolling();
+
+      // if(angular.isDefined(logInterval)){
+      // 	$interval.cancel(logInterval);
+      // 	logInterval = undefined;
+      // }
     });
 	//ProductsFact.isLoaded = true;
 	//_DEBUG = $scope;

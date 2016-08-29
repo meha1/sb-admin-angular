@@ -365,6 +365,30 @@ body{
 .panel-min-size{
   height: 188px;
 }
+
+.navbar-top-links{
+  margin-top: -43px;
+  margin-right: 20px;
+}
+
+.dropdown-label{
+  color: black;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.nav>li>a:focus, .nav>li>a:hover{
+  background-color: rgba(238, 238, 238, 0);
+}
+
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+  background-color: rgba(238, 238, 238, 0);
+}
+
+.navbar-header {
+  width: 80%;
+}
+
 /*
 
 var initPieChart=function(){
