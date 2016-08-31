@@ -81,7 +81,7 @@
 	                Instances
 	            </h3>
 	            <!-- /.panel-heading -->
-	            <div class="panel-body">
+	            <div class="panel-body panel-body-overscroll">
 	                <div class="table-responsive col-lg-12">
 	                    <table class="table table-hover">
 	                        <thead>
@@ -96,8 +96,8 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]">
-	                                <!-- <td>{{instance.name}}</td> -->
+	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
+	                            <tr ng-repeat="instance in ClientFact.getSelected().instances">
 	                                <td>{{instance.pc_id}}</td>
 	                                <td>{{instance.ip}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
@@ -131,7 +131,7 @@
 	                Log
 	            </h3>
 	            <!-- /.panel-heading -->
-	            <div class="panel-body">
+	            <div class="panel-body panel-body-overscroll">
 	                <div class="table-responsive col-lg-12">
 	                    <table class="table table-hover">
 	                        <thead>

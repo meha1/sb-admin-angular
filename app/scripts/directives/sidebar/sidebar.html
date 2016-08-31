@@ -11,8 +11,8 @@
                 <a ui-sref="dashboard.services"><i class="fa fa-suitcase fa-fw"></i> Services Management<span></span></a>
             </li>
 
-            <li ng-click="check(100 + service.id)" ng-show="ClientFact.selectedIndex[0] == 'serviceProviders'" ng-repeat="service in ClientFact.selected.services" ng-class="{active: activeSideBar == (100 + service.id)}">
-                <a ui-sref="dashboard.images">
+            <li ng-show="ClientFact.selectedIndex[0] == 'serviceProviders'" ng-repeat="service in ClientFact.selected.services" ng-class="{active: activeSideBar == (100 + service.id)}">
+                <a ng-click="setSelected(service.id);check(100 + service.id)" ui-sref="dashboard.images">
                     <i class="fa fa-shield fa-fw"></i>
                     {{service.name}} 
                     <!-- select the service and display the images page for this service -->
@@ -29,11 +29,11 @@
 
                 <ul class="nav nav-second-level" uib-collapse="collapseVar!=(100 + $index)">
                     <li ui-sref-active="active">
-                        <a ng-click="setSelected($index)" ui-sref="dashboard.images"><i class="fa fa-cube fa-fw"></i> Provisions</a>
+                        <a ng-click="setSelected(service)" ui-sref="dashboard.images"><i class="fa fa-cube fa-fw"></i> Provisions</a>
                     </li>
 
                     <li ui-sref-active="active">
-                        <a ng-click="setSelected($index)" ui-sref="dashboard.instances"><i class="fa fa-cloud fa-fw"></i> Instances</a>
+                        <a ng-click="setSelected(service)" ui-sref="dashboard.instances"><i class="fa fa-cloud fa-fw"></i> Instances</a>
                     </li>
                 </ul>
             </li>
