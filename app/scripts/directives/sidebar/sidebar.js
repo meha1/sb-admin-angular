@@ -7,6 +7,7 @@
  * # adminPosHeader
  */
 
+var _DEBUG_SIDE_BAR;
 angular.module('sbAdminApp')
   .directive('sidebar',['$location',function() {
     return {
@@ -15,7 +16,8 @@ angular.module('sbAdminApp')
       replace: true,
       scope: {
       },
-      controller:function($scope, $timeout, ProductsFact, ClientFact){
+      controller: function($scope, ProductsFact, ClientFact){
+        _DEBUG_SIDE_BAR = $scope;
         console.info("sidebar")
         $scope.ClientFact = ClientFact;
         $scope.products = ProductsFact.products;
@@ -36,12 +38,13 @@ angular.module('sbAdminApp')
             $scope.collapseVar = 0;
           else
             $scope.collapseVar = x;
-          // $timeout(function() {
-          //    //angular.element('#btn2').triggerHandler('click');
-          //     angular.element('#dontremove').triggerHandler('click'); 
-          // });
-          //$scope.$apply();
         };
+
+        // debugging uses:
+        $scope.isEqual = function(val1, val2){
+          var res = val1 == val2;
+          return res;
+        }
         
         $scope.multiCheck = function(y){
           

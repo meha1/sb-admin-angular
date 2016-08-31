@@ -76,10 +76,10 @@ angular
                   name:'ngTouch',
                   files:['bower_components/angular-touch/angular-touch.js']
                 })
-                // $ocLazyLoad.load({
-                //   name:'sbAdminApp',
-                //   files:['scripts/controllers/main.js']
-                // })
+                $ocLazyLoad.load({
+                   name:'sbAdminApp',
+                   files:['scripts/controllers/main.js']
+                })
             }
         }
     })

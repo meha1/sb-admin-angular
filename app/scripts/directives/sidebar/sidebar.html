@@ -14,7 +14,7 @@
             <li ng-click="check(100 + service.id)" ng-show="ClientFact.selectedIndex[0] == 'serviceProviders'" ng-repeat="service in ClientFact.selected.services" ng-class="{active: activeSideBar == (100 + service.id)}">
                 <a ui-sref="dashboard.images">
                     <i class="fa fa-shield fa-fw"></i>
-                    {{service.name}}
+                    {{service.name}} 
                     <!-- select the service and display the images page for this service -->
                 </a>
             </li>

@@ -30,6 +30,23 @@
 				      <input ng-model="imageDesc" type="text" class="form-control" id="image-desc" required="">
 				    </div>
 				  </div>
+				  <div class="form-group">
+				    <label class="control-label col-sm-2" for="image-max-num">Max num of instances</label>
+				    <div class="col-sm-10"> 
+				      <input ng-model="imageLimitations.num" type="number" min="0" class="form-control" id="image-max-num">
+				    </div>
+				  </div>
+				  <div >
+				    <label class="control-label col-sm-2" for="ip-range" style="padding-right:28px;">IP Range</label>
+				    <div class="col-sm-9 ip-limit-col">
+				    	<div class="form-group" ng-repeat="range in imageLimitations.ipRange"> 
+				      		<input ng-model="imageLimitations.ipRange[$index].val" type="text" class="form-control" id="ip-range" style="margin-left:4px;">
+				    	</div>
+				    </div>
+				    <div class="col-sm-1 ip-limit-add-col">
+				    	<button type="button" ng-click="addIpRangeLimitation()" class="add-ip-btn"><a href=""><i class="fa fa-plus add-ip-icon"></i></a></button>
+				    </div>
+				  </div>
 				  <div class="form-group"> 
 				    <label class="control-label col-sm-2" for="image-file">Image File</label>
 				    <div class="col-sm-10"> 
@@ -59,7 +76,7 @@
 						</div>
 					</div> -->
 					<div class="col-md-12 input-group center-div">
-						<button  type="button" class="btn btn-default btn-circle btn-lg btn-accept" ng-disabled="!myForm.$valid" ng-click="addProductImage(234, imageUploadFile)" disabled="disabled"><a href=""><i class="fa fa-check"></i></a></button>
+						<button  type="button" class="btn btn-default btn-circle btn-lg btn-accept" ng-disabled="!myForm.$valid" ng-click="addProductImage(imageName, imageDesc, 234, imageUploadFile)" disabled="disabled"><a href=""><i class="fa fa-check"></i></a></button>
 						<!-- <button  type="submit" class="btn btn-default btn-circle btn-lg btn-accept" ng-click="addProductImage(prod.products[prod.selected[0]],imageName, imageDesc)"><a href=""><i class="fa fa-check"></i></a></button> -->
 					</div>
 				</form>
@@ -94,12 +111,14 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]">
+	                            <!-- <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]"> -->
+	                            <tr ng-repeat="image in ClientFact.getSelected().images">
 	                                <td class="vertical-middle">{{image.name}}</td>
 	                                <td class="vertical-middle">{{image.desc}}</td>
 	                                <td class="text-center vertical-middle"><a ng-href="{{image.sig}}"><i class="fa fa-key fa-fw"></i></a></td>
 	                                <td class="text-center vertical-middle"><a ng-href="{{image.token}}"><i class="fa fa-lock fa-fw"></i></a></td>
-				      				<td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td>
+				      				<!-- <td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td> -->
+				      				<td><input type="file" ngf-select="" ng-model="dataUploadFile" name="file" required="" class="form-control" ng-change="uploadDataFile(image.id, dataUploadFile)"></td>
 	                            </tr>
 	                        </tbody>
 	                    </table>
