@@ -10,14 +10,38 @@ var app = angular.module('sbAdminApp')
 
 //angular.module('sbAdminApp')
 
-app.factory('LogFact', function($http, $interval){
+app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 	var ES_URL = "http://52.28.149.249:9200/"
 	var map = {};
 	map.logs = {};
 	map.fullLogs = [];
+
+	map.resolveType = {
+		0x10: 'Details',
+		0x20: 'Info',
+		0x30: 'Warn',
+		0x40: 'Attack',
+	}
 	map.updateLog = function(pass){
 		var that = this == undefined ? pass : this;
-		$http.get(ES_URL + "events*/_search")
+		//$http.get(ES_URL + "events*/_search&size=")
+		var searchQuery = 
+		{
+		  "query": {
+		    "match_all": {}
+		  },
+		  "size": 1000
+		  ,
+		  "sort": [
+		    {
+		      "timestamp": {
+		        "order": "desc"
+		      }
+		    }
+		  ]
+		}
+
+		$http.post(ES_URL + "events-*/_search", searchQuery)
 		.then(function successCallback(response) {
 		    // this callback will be called asynchronously
 		    // when the response is available
@@ -34,6 +58,14 @@ app.factory('LogFact', function($http, $interval){
 		    			that.logs[res[i].instance_id] = [];
 		    		}
 		    		res[i]._source.id = res[i]._id; // adding instance id into the data
+		    		if(res[i]._source.instance_id){
+		    			res[i]._source.instance = ClientFact.getInstanceById[res[i]._source.instance_id]
+		    			if(res[i]._source.instance){
+		    				res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+		    				console.info("Enriched:")
+		    				console.info(res[i]._source)
+		    			}
+		    		}
 		    		that.fullLogs.push(res[i]._source)
 		    		that.logs[res[i].instance_id].push(res[i]._source);
 		    	}
@@ -74,7 +106,7 @@ app.factory('ServiceFact', function(){
 	}
 })
 
-app.factory('ClientFact', function($http){
+app.factory('ClientFact', function($http, $q, $timeout){
 	var ES_URL = "http://52.28.149.249:9200/"
 
 	var map = {};
@@ -132,20 +164,25 @@ app.factory('ClientFact', function($http){
 				id: 102,
 				spId: 2,
 				name: "myStartup",
-				services: [93]
+				services: [11]
 			}
 		]
 	}
 
-	map.getFromES = function(type, clientId){
+	map.getFromES = function(type, clientId, sCallback, eCallback, that){
 		var client = this.getClientById[clientId]
-		var that = this;
-		$http.get(ES_URL + type + "/_search?q=user_id:" + clientId + "&size=1000")
+		if(this){
+			that = this;
+		}
+		$http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=100")
 		.then(function successCallback(response) {
 		    // this callback will be called asynchronously
 		    // when the response is available
 		    if (response.error){
 		    	console.info(response.error)
+		    	if(eCallback){
+		    		eCallback(response.error)
+		    	}
 		    }else{
 		    	var res = response.data.hits.hits;
 		    	var len = res.length;
@@ -154,33 +191,71 @@ app.factory('ClientFact', function($http){
 		    		res[i]._source.id = res[i]._id; // adding instance id into the data
 		    		client[type].push(res[i]._source);
 		    	}
+		    	if(sCallback){
+		    		sCallback();
+		    	}
 		    }
 		}, function errorCallback(response){
 			console.error("Got error from ES: ");
 			console.info(response);
+			if(eCallback){
+	    		eCallback(response.error)
+	    	}
 		})
 	}
 
-	map.getInstancesPerClient = function(clientId){
-		//var client = this.getClientById[clientId];
-		this.getFromES("instances", clientId)
+	var requests = [];
+	// map.getInstancesPerClient = function(clientId, successCallback, errorCallback){
+	// 	//var client = this.getClientById[clientId];
+	// 	this.getFromES("instances", clientId, successCallback, errorCallback)
 
-	}
+	// }
 
-	map.getImagesPerClient = function(clientId){
+	// map.getImagesPerClient = function(clientId, successCallback, errorCallback){
+	// 	//var client = this.getClientById[clientId];
+	// 	this.getFromES("images", clientId);
+	// }
+
+	map.getDataPerClient = function(type, clientId, successCallback, errorCallback, that){
 		//var client = this.getClientById[clientId];
-		this.getFromES("images", clientId);
+		if(this){
+			that = this;
+		}
+		that.getFromES(type, clientId, successCallback, errorCallback, that);
 	}
 
 	map.getAllClientsInfo = function(){
-		for (var clientId in this.getClientById){
-			if(this.getClientById[clientId].type != "serviceProviders"){
-				this.getInstancesPerClient(clientId);
-			}
-			this.getImagesPerClient(clientId)
+		requests = [];
+		var that=this
+		for( var clientId in this.getClientById){
+   			if(this.getClientById[clientId].type != "serviceProviders"){
+				var deferred = $q.defer();
+   				requests.push(deferred);
+   				$timeout(that.getDataPerClient, 600, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
+   			}
+   			var deferred = $q.defer();
+			requests.push(deferred.promise);
+			//this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
+			$timeout(that.getDataPerClient, 600, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
+
 		}
-		console.info("Clients Mapping updated with info:")
-		console.info(this.getClientById)
+		var that = this;
+		$q.all(requests).then(function(){
+			console.info("Clients Mapping updated with info:")
+			console.info(that.getClientById)
+			map.getDataByIdMapping('images', map.getImageById);
+			map.getDataByIdMapping('instances', map.getInstanceById);
+			console.info("This is map.getInstanceById: ")
+			console.info(map.getInstanceById)
+		});
+		// for (var clientId in this.getClientById){
+		// 	if(this.getClientById[clientId].type != "serviceProviders"){
+		// 		this.getDataPerClient("instances", clientId);
+		// 	}
+		// 	this.getDataPerClient("images", clientId)
+		// }
+		// console.info("Clients Mapping updated with info:")
+		// console.info(this.getClientById)
 	}
 
 	map.getClientById = {};
@@ -202,6 +277,8 @@ app.factory('ClientFact', function($http){
 	map.getClientByIdMapping();
 
 	map.getServiceById = {};
+	map.getImageById = {};
+	map.getInstanceById = {};
 
 	map.getServiceByIdMapping = function(){
 		var spLen = this.clients.serviceProviders.length
@@ -213,8 +290,47 @@ app.factory('ClientFact', function($http){
 		}
 	}
 
+	// map.getImageByIdMapping = function(){
+	// 	for(var clientId in this.getClientById){
+	// 		var images = this.getClientById[clientId].images;
+	// 		if(!images){
+	// 			return;
+	// 		}
+	// 		var imagesLen = images.length;
+	// 		for ( var i = 0 ; i < imagesLen ; i++){
+	// 			this.getImageById[images[i].id] = images[i] 
+	// 		}
+	// 	}
+	// }
+
+	// map.getInstanceByIdMapping = function(){
+	// 	for(var clientId in this.getClientById){
+	// 		var instances = this.getClientById[clientId].instances;
+	// 		if(!instances){
+	// 			return;
+	// 		}
+	// 		var instancesLen = instances.length;
+	// 		for ( var i = 0 ; i < instancesLen ; i++){
+	// 			this.getInstanceById[instances[i].id] = instances[i] 
+	// 		}
+	// 	}
+	// }
+
+	map.getDataByIdMapping = function(type, targetDict){
+		for(var clientId in this.getClientById){
+			var array = this.getClientById[clientId][type];
+			if(!array){
+				continue;
+			}
+			var arrayLen = array.length;
+			for ( var i = 0 ; i < arrayLen ; i++){
+				targetDict[array[i].id] = array[i]; 
+			}
+		}
+	}
+
 	map.getServiceByIdMapping();
-	
+
 	map.getSelected = function(){
 		// return this.clients[this.selected[0]][this.selected[1]];
 		return this.selected;
@@ -647,6 +763,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
             	data: imageData,
 	        }).then(function (resp) {
 	            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+	            ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
 	        }, function (resp) {
 	            console.log('Error status: ' + resp.status);
 	        }, function (evt) {
@@ -654,7 +771,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
 	        });
       	}
-      	$timeout(function(){ClientFact.getImagesPerClient(ClientFact.getSelected().id)}, 3000)
+//      	$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
 		iName = "";//$scope.imageName = "";
 		iDesc = ""//$scope.imageDesc = "";	
   	}
@@ -864,7 +981,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   		cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000);//, [count], [invokeApply], [Pass]);
 	}
 
-	LogFact.startLogPolling(5000);
+	LogFact.startLogPolling(10000);
 	$scope.$on('$destroy', function() {
       // Make sure that the interval is destroyed too
       if(angular.isDefined(cpuUtilInterval)){
