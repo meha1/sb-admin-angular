@@ -818,8 +818,10 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	// }
 
 
-  	$scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-	$scope.data = [300, 500, 100];
+  	 $scope.donut = {
+    	labels: ["Download Sales", "In-Store Sales", "Mail-Order Sales"],
+    	data: [300, 500, 100]
+    };
 
     $scope.cpuLoadAvg = 0;//65;
     $scope.cpuLoadAvgText = 0;
@@ -901,13 +903,26 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   		},time);
   	}
 
-  	$scope.setValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
+    $scope.setValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
   		$scope[targetVar] = startValue;
   		var valJump = targetValue / steps;
   		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
   	}
-  	//$scope.products = ["vRouter", "vSwitch"];
-  	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
+    
+    $scope.pieChart = {
+    	labels: ["vRouter", "vSwitch", "vFirewall"],
+    	data: [80, 70, 60],
+        sumOfInstances: 60+70+80
+    };
+    
+    
+//    $scope.setPieValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
+//  		$scope[targetVar] = startValue;
+//  		var valJump = targetValue / steps;
+//  		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
+//  	    $scope.products = ["vRouter", "vSwitch"];
+//  	    $scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
+//    }
   	$scope.setValue = function(target, value){
   		$scope[target] = value;
   	}
@@ -942,15 +957,15 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	var chart1 = {};
     chart1.type = "Timeline";
     chart1.data = [
-      [ 'ins #1', 'Normal', new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
-      [ 'ins #1', 'Error',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #1', 'Normal',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+      [ 'ins #1', 'Error',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
       [ 'ins #1', 'Normal', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-      [ 'ins #2', 'Normal', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #2', 'Error',  new Date(0,0,0,13,0,0),  new Date(0,0,0,13,30,0) ],
-      [ 'ins #2', 'Normal', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-      [ 'ins #3', 'Normal',	new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #3', 'Error',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #3', 'Normal', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+      [ 'ins #2', 'Normal',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #2', 'Error',    new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
+      [ 'ins #2', 'Normal',   new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+      [ 'ins #3', 'Normal',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #3', 'Error',        new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #3', 'Normal',       new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -994,4 +1009,24 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	_DEBUG = $scope;
 });
 var _DEBUG;
+
+//var _DEBUG;
+// app.directive("fileread", [function () {
+//     return {
+//         scope: {
+//             fileread: "="
+//         },
+//         link: function (scope, element, attributes) {
+//             element.bind("change", function (changeEvent) {
+//                 var reader = new FileReader();
+//                 reader.onload = function (loadEvent) {
+//                     scope.$apply(function () {
+//                         scope.fileread = loadEvent.target.result;
+//                     });
+//                 }
+//                 reader.readAsDataURL(changeEvent.target.files[0]);
+//             });
+//         }
+//     }
+// }]);
 
