@@ -752,8 +752,10 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	// }
 
 
-  	$scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-	$scope.data = [300, 500, 100];
+  	 $scope.donut = {
+    	labels: ["Download Sales", "In-Store Sales", "Mail-Order Sales"],
+    	data: [300, 500, 100]
+    };
 
     $scope.cpuLoadAvg = 0;//65;
     $scope.cpuLoadAvgText = 0;
@@ -835,13 +837,26 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   		},time);
   	}
 
-  	$scope.setValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
+    $scope.setValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
   		$scope[targetVar] = startValue;
   		var valJump = targetValue / steps;
   		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
   	}
-  	//$scope.products = ["vRouter", "vSwitch"];
-  	//$scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
+    
+    $scope.pieChart = {
+    	labels: ["vRouter", "vSwitch", "vFirewall"],
+    	data: [80, 70, 60],
+        sumOfInstances: 60+70+80
+    };
+    
+    
+//    $scope.setPieValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
+//  		$scope[targetVar] = startValue;
+//  		var valJump = targetValue / steps;
+//  		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
+//  	    $scope.products = ["vRouter", "vSwitch"];
+//  	    $scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
+//    }
   	$scope.setValue = function(target, value){
   		$scope[target] = value;
   	}
@@ -956,3 +971,4 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 //         }
 //     }
 // }]);
+

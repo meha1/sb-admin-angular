@@ -6,77 +6,89 @@
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
-    <div class="row">
-        <div class="col-lg-3">
+    <div class="col-lg-3">
+        <div class="panel panel-instances panel-min-size">
+            <div class="panel-heading">
+                instances
+            </div>
+            <div class=" row center-div">
+                <div class= "row num-of-instances">{{pieChart.sumOfInstances}}</div> 
+                <canvas id="doughnut" class="chart chart-doughnut chart-xs " chart-data="pieChart.data" chart-labels="pieChart.labels" legend="true"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="col-lg-3">
             <div class="panel panel-primary panel-min-size">
                 <div class="panel-heading">
                     Active instances
                 </div>
                 <div class="panel-body">
                     <div class="row panel-text center-div">
+                        <div class="data-pie">try</div>
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs" data="donut.data" labels="donut.labels" legend="true"></canvas>
                         <span ng-init="setValueBySteps('numOfInstances', 0, 17, 1000, 17)">{{numOfInstances}}</span>
+                        <span ng-init="setPieValueBySteps('products', 0, numOfInstances, 1000, numOfInstances)"></span>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="panel panel-info panel-min-size">
-                <div class="panel-heading">
-                    Verifications   
-                </div>
-                <div class="panel-body">
-                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                    <div class="row center-div panel-text">
-                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                        <!-- <span>153</span> -->
-                        <span ng-init="setValueBySteps('numOfVerifications', 0, 150, 1000, 150)">{{numOfVerifications}}</span>
-                    </div>
-                </div>
+        </div>-->
+    <div class="col-lg-3">
+        <div class="panel panel-info panel-min-size">
+            <div class="panel-heading">
+                Verifications
             </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="panel panel-error panel-min-size">
-                <div class="panel-heading">
-                    Alerts in 24H
-                </div>
-                <div class="panel-body">
-                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                    <div class="row center-div panel-text">
-                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
-                        <!-- <span>7</span> -->
-                        <span ng-init="setValueBySteps('numOfAlerts', 0, 7, 1000, 7)">{{numOfAlerts}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="panel panel-warning panel-min-size">
-                <div class="panel-heading">
-                    CPU Load
-                </div>
-                <div class="panel-body">
-                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                    <div class="row center-div panel-text">
-                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                        <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
-                            <span class="percent">{{percentText3}}</span>
-                        </span>
-                    </div>
+            <div class="panel-body">
+                <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                <div class="row center-div panel-text">
+                    <!-- <span>153</span> -->
+                    <span ng-init="setValueBySteps('numOfVerifications', 0, 150, 1000, 150)">{{numOfVerifications}}</span>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-8 col-sm-12" id="line-chart" ng-controller="ChartCtrl">
-            <div class="panel panel-default">
-                <div class="panel-heading">CPU Load </div>
-                <div class="panel-body">
-                    <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true"
-                    click="line.onClick" chart-series="line.series" height="165"></canvas>
+    <div class="col-lg-3">
+        <div class="panel panel-error panel-min-size">
+            <div class="panel-heading">
+                Alerts in 24H
+            </div>
+            <div class="panel-body">
+                <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+                    <!-- <span>7</span> -->
+                    <span ng-init="setValueBySteps('numOfAlerts', 0, 20, 1000, 2)">{{numOfAlerts}}</span>
                 </div>
             </div>
         </div>
-        <!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
+    </div>
+    <div class="col-lg-3">
+        <div class="panel panel-warning panel-min-size">
+            <div class="panel-heading">
+                CPU Load
+            </div>
+            <div class="panel-body">
+                <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                <div class="row center-div panel-text">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+                            <span class="percent">{{percentText3}}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8 col-sm-12" id="line-chart" ng-controller="ChartCtrl">
+        <div class="panel panel-default">
+            <div class="panel-heading">CPU Load </div>
+            <div class="panel-body">
+                <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true" click="line.onClick" chart-series="line.series" height="165"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
             <div class="panel panel-default">
                 <div class="panel-heading">Some info</div>
                 <div class="panel-body">
@@ -84,33 +96,33 @@
                 </div>
             </div>
         </div> -->
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-bell fa-fw"></i> Activity log
-                </div>
-                <!-- /.panel-heading -->
-                <notifications></notifications> 
-                <!-- /.panel-body -->
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bell fa-fw"></i> Activity log
             </div>
-            <!-- /.panel -->
+            <!-- /.panel-heading -->
+            <notifications></notifications>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
 
-            <!-- <chat></chat> -->
-             <!-- /.panel .chat-panel -->
-        </div>
+        <!-- <chat></chat> -->
+        <!-- /.panel .chat-panel -->
     </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Activity Map</div>
-                <div class="panel-body">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d25017226.9005833!2d-98.5471355262944!3d37.199325073030835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sil!4v1471293145493" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
-                </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Activity Map</div>
+            <div class="panel-body">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d25017226.9005833!2d-98.5471355262944!3d37.199325073030835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sil!4v1471293145493" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
-    
-    <!-- <div class="row">
+</div>
+
+<!-- <div class="row">
         <div class="col-lg-8">
             <div class="panel panel-default">
                 <div class="panel-heading">

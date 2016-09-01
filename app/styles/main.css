@@ -288,6 +288,16 @@ body{
   background-color:#6088C2; 
 }
 
+.panel-instances > .panel-heading{
+  background-color:#DEB887; 
+}
+
+.panel-instances {
+  background-color:#EEE4C4; 
+  border-color: #EEE4C4;
+  color: white;
+}
+
 .panel-info {
   background-color:#26CF43; 
   border-color: #00C322;
@@ -331,7 +341,6 @@ body{
 }
 
 .percent {
-  /*display: inline-block;*/
   position: absolute;
   line-height: 110px;
   z-index: 2;
@@ -345,6 +354,18 @@ body{
   margin-left: 0.1em;
   font-size: .9em;
 }
+
+.num-of-instances {
+  position: absolute;
+  line-height: 110px;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+    margin-top: 25px;
+  font-size: 22px;
+  color: black;
+}
+
 
 .vertical-middle{
   vertical-align: middle !important;
