@@ -95,10 +95,23 @@
 	                                <th class="text-center">Log</th>
 	                            </tr>
 	                        </thead>
-	                        <tbody>
+	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
 	                            <tr ng-repeat="instance in ClientFact.getSelected().instances">
 	                                <td>{{instance.pc_id}}</td>
+	                                <td>{{instance.ip_address}}</td>
+	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
+	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
+	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
+	                                <td class="text-center">{{instance.cpuLoad}}%</td>
+	                                <td>{{instance.start_time | date:'medium'}}</td>
+	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
+	                            </tr>
+	                        </tbody>
+	                        <tbody ng-show="ClientFact.getSelected().type == 'customers'">
+	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
+								 <tr ng-repeat="instance in getFullInstanceInfo(ClientFact.getSelected().instances)| filter: {'service_id' : ClientFact.getSelected().selectedService}">
+	                                <td>{{ClientFact.getInstanceById[instance].pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
 	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
@@ -146,7 +159,7 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRealtedInstances:ClientFact.getSelected().instances | filter: searchLog">
+	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog">
 	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <td>{{logRow.instance.pc_id}}</td>

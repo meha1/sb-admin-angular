@@ -10,7 +10,7 @@ var app = angular.module('sbAdminApp')
 
 //angular.module('sbAdminApp')
 
-app.filter('ClientRealtedInstances', function(){
+app.filter('ClientRelatedInstances', function(){
 	function filterFunc(items, clientInstances) {
     	var filtered = [];
 		if(!clientInstances){
@@ -832,6 +832,22 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
 	        });	
   		}
+  	}
+
+  	$scope.getFullInstanceInfo = function(instIdArr){
+  		var len = instIdArr.length;
+  		var res = []
+  		for (var i = 0 ; i < len ; i++){
+  			var instanceData = ClientFact.getInstanceById[instIdArr[i]]
+  			if(instanceData){
+  				// Adding service id to instance for filtering
+  				instanceData.service_id = ClientFact.getImageById[instanceData.image_id].service_id;
+  				if(instanceData.service_id){
+	  				res.push(instanceData);
+	  			}
+  			}
+  		}
+  		return res;
   	}
 
   	// $scope.setFile = function(file){
