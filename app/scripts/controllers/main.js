@@ -10,6 +10,29 @@ var app = angular.module('sbAdminApp')
 
 //angular.module('sbAdminApp')
 
+app.filter('ClientRelatedInstances', function(){
+	function filterFunc(items, clientInstances) {
+    	var filtered = [];
+		if(!clientInstances){
+			return filtered;	
+		}
+		var len = clientInstances.length;
+		var instanceIdMap = {};
+		for (var i = 0 ; i < len ; i++){
+			if(clientInstances[i] && clientInstances[i].id){
+				instanceIdMap[clientInstances[i].id] = true;
+			}
+		}
+    	angular.forEach(items, function(item) {
+      		if(instanceIdMap[item.instance_id]) {
+        		filtered.push(item);
+      		}
+    	});
+    	return filtered;
+  	};
+  	return filterFunc
+})
+
 app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     var ES_URL = "http://52.28.149.249:9200/"
     var map = {};
@@ -52,20 +75,21 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     that.fullLogs = [];
 
                     for (var i = 0; i < len; i++) {
-                        if (!that.logs[res[i].instance_id]) {
-                            that.logs[res[i].instance_id] = [];
+		    		var instanceId = res[i]._source.instance_id
+		    		if(!instanceId || instanceId == "" || instanceId[0] == '\0')
+		    			continue;
+		    		if(!that.logs[instanceId]){
+		    			that.logs[instanceId] = [];
                         }
-                        res[i]._source.id = res[i]._id; // adding instance id into the data
-                        if (res[i]._source.instance_id) {
-                            res[i]._source.instance = ClientFact.getInstanceById[res[i]._source.instance_id]
+		    		//res[i]._source.id = res[i]._id; // adding instance id into the data
+	    			res[i]._source.instance = ClientFact.getInstanceById[instanceId]
                             if (res[i]._source.instance) {
                                 res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
                                     //console.info("Enriched:")
                                     //console.info(res[i]._source)
                             }
-                        }
                         that.fullLogs.push(res[i]._source)
-                        that.logs[res[i].instance_id].push(res[i]._source);
+		    		that.logs[instanceId].push(res[i]._source);
                     }
                 }
                 //console.log(that.fullLogs)
@@ -161,7 +185,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
         if (this) {
             that = this;
         }
-        $http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=100")
+		$http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=300")
             .then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -210,30 +234,38 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
         }
         that.getFromES(type, clientId, successCallback, errorCallback, that);
     }
-
+	var wait = 0;
+	var waitGap = 350;
     map.getAllClientsInfo = function () {
+		//wait = 0
         requests = [];
         var that = this
+		//var wait = 0;
         for (var clientId in this.getClientById) {
             if (this.getClientById[clientId].type != "serviceProviders") {
+   				wait += waitGap;
                 var deferred = $q.defer();
                 requests.push(deferred);
-                $timeout(that.getDataPerClient, 600, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
+   				$timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
             }
+   			wait += waitGap;
             var deferred = $q.defer();
             requests.push(deferred.promise);
             //this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
-            $timeout(that.getDataPerClient, 600, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
+			$timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
 
         }
         var that = this;
         $q.all(requests).then(function () {
+			wait = 0;
             console.info("Clients Mapping updated with info:")
             console.info(that.getClientById)
             map.getDataByIdMapping('images', map.getImageById);
             map.getDataByIdMapping('instances', map.getInstanceById);
             console.info("This is map.getInstanceById: ")
             console.info(map.getInstanceById)
+			console.info("This is map.getImageById: ")
+			console.info(map.getImageById)
         });
         // for (var clientId in this.getClientById){
         // 	if(this.getClientById[clientId].type != "serviceProviders"){
@@ -331,11 +363,9 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
 
     map.addService = function (sName, sDesc) {
         //this.clients[this.selected[0]][this.selected[1]].services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
-        this.selected.services.push({
-            id: (new Date()).getTime(),
-            name: sName,
-            desc: sDesc
-        })
+		var id = sName.hashCode()
+		this.selected.services.push({id: id, name: sName, desc: sDesc})
+		this.getServiceByIdMapping()
     }
 
     map.subscribeToService = function (sId) {
@@ -712,7 +742,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     $scope.clientName = $scope.selectedClient.name; //$scope.customerName[0]; //"Verizon" //"AT&T"
     $scope.prod = ProductsFact;
     $scope.searchLog = {};
-    $scope.searchLog.id = "";
+  	$scope.searchLog.id;
     $scope.statusToClass = ProductsFact.statusToClass;
     ProductsFact.updateInstances();
     ProductsFact.mapImageIdToName();
@@ -779,7 +809,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 data: imageData,
             }).then(function (resp) {
                 console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-                ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
+	            //ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
+				$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
             }, function (resp) {
                 console.log('Error status: ' + resp.status);
             }, function (evt) {
@@ -787,9 +818,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
             });
         }
-        //      	$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
-        iName = ""; //$scope.imageName = "";
-        iDesc = "" //$scope.imageDesc = "";	
     }
 
     $scope.downloadDataFile = function (fileName, data, isAscii) {
@@ -830,6 +858,22 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             });
         }
     }
+
+  	$scope.getFullInstanceInfo = function(instIdArr){
+  		var len = instIdArr.length;
+  		var res = []
+  		for (var i = 0 ; i < len ; i++){
+  			var instanceData = ClientFact.getInstanceById[instIdArr[i]]
+  			if(instanceData){
+  				// Adding service id to instance for filtering
+  				instanceData.service_id = ClientFact.getImageById[instanceData.image_id].service_id;
+  				if(instanceData.service_id){
+	  				res.push(instanceData);
+	  			}
+  			}
+  		}
+  		return res;
+  	}
 
     // $scope.setFile = function(file){
     // 	$scope.uploadImageFile = file;
@@ -973,15 +1017,15 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var chart1 = {};
     chart1.type = "Timeline";
     chart1.data = [
-      ['ins #1', 'Normal', new Date(0, 0, 0, 12, 0, 0), new Date(0, 0, 0, 14, 0, 0)],
-      ['ins #1', 'Error', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
-      ['ins #1', 'Normal', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 19, 0, 0)],
-      ['ins #2', 'Normal', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
-      ['ins #2', 'Error', new Date(0, 0, 0, 13, 0, 0), new Date(0, 0, 0, 13, 30, 0)],
-      ['ins #2', 'Normal', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 0, 0)],
-      ['ins #3', 'Normal', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
-      ['ins #3', 'Error', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
-      ['ins #3', 'Normal', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 30, 0)]
+      [ 'ins #1', ' ', new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+      [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+      [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #2', '  ',  new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
+      [ 'ins #2', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+      [ 'ins #3', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #3', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -1027,26 +1071,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         LogFact.stopLogPolling();
 
     });
+
     _DEBUG = $scope;
 });
 var _DEBUG;
-
-//var _DEBUG;
-// app.directive("fileread", [function () {
-//     return {
-//         scope: {
-//             fileread: "="
-//         },
-//         link: function (scope, element, attributes) {
-//             element.bind("change", function (changeEvent) {
-//                 var reader = new FileReader();
-//                 reader.onload = function (loadEvent) {
-//                     scope.$apply(function () {
-//                         scope.fileread = loadEvent.target.result;
-//                     });
-//                 }
-//                 reader.readAsDataURL(changeEvent.target.files[0]);
-//             });
-//         }
-//     }
-// }]);
