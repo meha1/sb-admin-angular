@@ -110,9 +110,20 @@
 	                                <th class="text-center">Protect File</th>
 	                            </tr>
 	                        </thead>
-	                        <tbody>
+	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
 	                            <!-- <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]"> -->
 	                            <tr ng-repeat="image in ClientFact.getSelected().images | filter: {'service_id' : ClientFact.getSelected().selectedService}">
+	                                <td class="vertical-middle">{{image.name}}</td>
+	                                <td class="vertical-middle">{{image.desc}}</td>
+	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.sig', image.signature)"><i class="fa fa-key fa-fw"></i></a></td>
+	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.tkn', image.access_token, true)"><i class="fa fa-lock fa-fw"></i></a></td>
+				      				<!-- <td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td> -->
+				      				<td><input type="file" ngf-select="" ng-model="dataUploadFile" name="file" required="" class="form-control" ng-change="uploadDataFile(image.id, dataUploadFile)"></td>
+	                            </tr>
+	                        </tbody>
+	                        <tbody ng-show="ClientFact.getSelected().type == 'customers'">
+	                            <!-- <tr ng-repeat="image in prod.productImages[prod.products[prod.selected[0]]]"> -->
+	                            <tr ng-repeat="image in ClientFact.getClientById[ClientFact.getSelected().spId].images | filter: {'service_id' : ClientFact.getSelected().selectedService}">
 	                                <td class="vertical-middle">{{image.name}}</td>
 	                                <td class="vertical-middle">{{image.desc}}</td>
 	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.sig', image.signature)"><i class="fa fa-key fa-fw"></i></a></td>

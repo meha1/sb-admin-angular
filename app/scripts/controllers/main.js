@@ -365,13 +365,15 @@ app.factory('ClientFact', function($http, $q, $timeout){
 
 	map.addService = function(sName, sDesc){
 		//this.clients[this.selected[0]][this.selected[1]].services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
-		this.selected.services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
+		var id = sName.hashCode()
+		this.selected.services.push({id: id, name: sName, desc: sDesc})
+		this.getServiceByIdMapping()
 	}
 	
 	map.subscribeToService = function(sId){
 		//this.clients[this.selected[0]][this.selected[1]].services.push(sId);
 		if(this.selected.services.indexOf(sId) == -1){
-			this.selected.services.push(sId);	
+			this.selected.services.push(sId);
 		}
 	}
 
@@ -784,7 +786,8 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
             	data: imageData,
 	        }).then(function (resp) {
 	            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-	            ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
+	            //ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
+				$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
 	        }, function (resp) {
 	            console.log('Error status: ' + resp.status);
 	        }, function (evt) {
@@ -792,9 +795,6 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
 	        });
       	}
-//      	$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
-		iName = "";//$scope.imageName = "";
-		iDesc = ""//$scope.imageDesc = "";	
   	}
 
   	$scope.downloadDataFile = function(fileName, data, isAscii){
