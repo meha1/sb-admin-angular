@@ -28,8 +28,12 @@ angular.module('sbAdminApp')
         $scope.activeSideBar = -1;
 
 
-        $scope.setSelected = function(productIndex, imageIndex){
-          ProductsFact.setSelected(productIndex, imageIndex)
+        // $scope.setSelected = function(productIndex, imageIndex){
+        //   ProductsFact.setSelected(productIndex, imageIndex)
+        // }
+        $scope.setSelected = function(serviceId){
+          ClientFact.getSelected().selectedService = serviceId;
+          console.log("Selected service is: " + serviceId)
         }
         
         $scope.check = function(x){

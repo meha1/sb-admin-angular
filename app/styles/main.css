@@ -430,6 +430,11 @@ body{
 .ip-limit-add-col{
   width: 0%;
 }
+
+.panel-body-overscroll{
+  max-height: 500px;
+  overflow-y: scroll;
+}
 /*
 
 

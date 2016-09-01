@@ -38,7 +38,7 @@ app.factory('LogFact', function($http, $interval){
 		    		that.logs[res[i].instance_id].push(res[i]._source);
 		    	}
 		    }
-		    console.log(that.fullLogs)
+		    //console.log(that.fullLogs)
 		 }, function errorCallback(response) {
 	    // called asynchronously if an error occurs
 	    // or server returns response with an error status.
@@ -91,12 +91,12 @@ app.factory('ClientFact', function($http){
 						desc: "Cisco secure virtual router"
 					},
 					{
-						id: 2,
+						id: 92,
 						name: "vSwitch",
 						desc: "Cisco secure virtual switch"	
 					},
 					{
-						id: 3,
+						id: 93,
 						name: "vFirewall",
 						desc: "Cisco secure virtual firewall"
 					}
@@ -120,19 +120,19 @@ app.factory('ClientFact', function($http){
 				id: "014",
 				spId: 1,
 				name: "Cisco",
-				services : ["Orange",2]
+				services : ["Orange",92]
 			},
 			{
 				id: 101,
 				spId: 1,
 				name: "Verizon",
-				services : [1]
+				services : ["Orange"]
 			},
 			{
 				id: 102,
 				spId: 2,
 				name: "myStartup",
-				services: [3]
+				services: [93]
 			}
 		]
 	}
@@ -223,6 +223,7 @@ app.factory('ClientFact', function($http){
 	map.setSelected = function(type, index){
 		this.selectedIndex = [type, index];
 		this.selected = this.clients[this.selectedIndex[0]][this.selectedIndex[1]];
+		this.selected.selectedService = "";
 	}
 
 	map.addService = function(sName, sDesc){
@@ -574,11 +575,13 @@ app.factory('ProductsFact', function($http){
 	return map;
 });
 app.controller('MainCtrl', function($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload/*FileUploader*/) {
+	console.info("init MainCtrl!");
+
 	var CLOUD_WATCH_URL = "http://localhost:3000/cpuutilization"
 	//var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
-	var ADD_IMAGE_URL = "http://10.56.178.56:33556/secure_server/upload_image";
-	var ENCRYPT_DATA_URL = "http://10.56.178.56:33556/secure_server/upload_data";
-	var SIGN_FILE_URL = "";
+	var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
+	var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
+	var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
 	//var uploader = $scope.uploader = new FileUploader();
 
 	$scope.serviceSelect = -1;
@@ -590,47 +593,11 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 		$scope.imageLimitations.ipRange.push({});
 	}
 
-    // uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
-    //     console.info('onWhenAddingFileFailed', item, filter, options);
-    // };
-    // uploader.onAfterAddingFile = function(fileItem) {
-    //     console.info('onAfterAddingFile', fileItem);
-    // };
-    // uploader.onAfterAddingAll = function(addedFileItems) {
-    //     console.info('onAfterAddingAll', addedFileItems);
-    // };
-    // uploader.onBeforeUploadItem = function(item) {
-    //     console.info('onBeforeUploadItem', item);
-    // };
-    // uploader.onProgressItem = function(fileItem, progress) {
-    //     console.info('onProgressItem', fileItem, progress);
-    // };
-    // uploader.onProgressAll = function(progress) {
-    //     console.info('onProgressAll', progress);
-    // };
-    // uploader.onSuccessItem = function(fileItem, response, status, headers) {
-    //     console.info('onSuccessItem', fileItem, response, status, headers);
-    // };
-    // uploader.onErrorItem = function(fileItem, response, status, headers) {
-    //     console.info('onErrorItem', fileItem, response, status, headers);
-    // };
-    // uploader.onCancelItem = function(fileItem, response, status, headers) {
-    //     console.info('onCancelItem', fileItem, response, status, headers);
-    // };
-    // uploader.onCompleteItem = function(fileItem, response, status, headers) {
-    //     console.info('onCompleteItem', fileItem, response, status, headers);
-    // };
-    // uploader.onCompleteAll = function() {
-    //     console.info('onCompleteAll');
-    //     //$scope.uploader.clearQueue();
-    // };
-
-    $scope.test =  function(){
+    $scope.test =  function(value){
     	console.info("Passed!");
+    	console.info($scope[value]);
     }
 
-  	//$scope.serviceProviderNames = ["Cisco", "OwnBackup"];
-  	//$scope.customerNames = ["Verizon", "Cisco", "myCompany"];
   	$scope.LogFact = LogFact;
   	$scope.ClientFact = ClientFact;
   	$scope.clients = ClientFact.clients;
@@ -644,6 +611,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	ProductsFact.mapImageIdToName();
   	$scope.mapInstanceIdToName = ProductsFact.instanceIdToName;
   	$scope.mapImageIdToName = ProductsFact.imageIdToName;
+  	$scope.imageForm = {};
 
 	//$scope.imageFileUpload;
 
@@ -652,40 +620,9 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   		$scope.selectedClient = ClientFact.getSelected()
   		$scope.clientName = $scope.selectedClient.name//$scope.customerName[0]; //"Verizon" //"AT&T"	
   	}
-  // 	$scope.uploadPic = function (file) {
-  //   $scope.formUpload = true;
-  //   if (file != null) {
-  //     $scope.upload(file);
-  //   }
-  // };
-
-  // 	$scope.upload = function(file, resumable) {
-  //   $scope.errorMsg = null;
-  //   if ($scope.howToSend === 1) {
-  //     uploadUsingUpload(file, resumable);
-  //   } else if ($scope.howToSend == 2) {
-  //     uploadUsing$http(file);
-  //   } else {
-  //     uploadS3(file);
-  //   }
-  // };
 
   	$scope.addProductImage = function(iName, iDesc, serviceId, file){
-		//TODO: Send to server and add the result to the list
-		
-		//ProductsFact.addProductImage(serviceId, $scope.imageName, $scope.imageDesc);  
-		
-		//$scope.uploader = "";
-		//$scope.uploadImageFile.value = "";
-		//$scope.uploader = new FileUploader();
-		//console.info("Uploader: " + $scope.uploader);
-		//$scope.uploader.queue[0].url = ADD_IMAGE_URL;
-		//$scope.uploader.queue[0].formData = {client_id: ClientFact.getSelected().id, name: iName, desc: iDesc};
-		//$scope.uploader.queue[0].upload();
-		//$scope.uploader.queue[0].formData = [ClientFact.getSelected().id, iName, iDesc];
-		//$scope.uploader.queue[0].removeAfterUpload = true
-		//$scope.uploader.queue[0].value = "";
-		//$scope.uploader = new FileUploader();
+  		//TODO: CLEAR FORM
 		if (file) {
 			var imageData = {
         		file: file, 
@@ -717,27 +654,39 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
 	        });
       	}
-		$scope.imageName = "";
-		$scope.imageDesc = "";	
+      	$timeout(function(){ClientFact.getImagesPerClient(ClientFact.getSelected().id)}, 3000)
+		iName = "";//$scope.imageName = "";
+		iDesc = ""//$scope.imageDesc = "";	
   	}
 
-  	$scope.uploadDataFile = function(imageId, file){
+  	$scope.downloadDataFile = function(fileName, data, isAscii){
+  		if(isAscii){
+  			data = atob(data)
+  		}
+  		$scope.downloadFile(fileName, data, "text/plain");
+  	}
+
+  	$scope.downloadFile = function(fileName, data, contentType){
+		var blob = new Blob([data], { type:contentType});			
+		var downloadLink = angular.element('<a></a>');
+        downloadLink.attr('href',window.URL.createObjectURL(blob));
+        downloadLink.attr('download', fileName);
+		downloadLink[0].click();
+  	}
+
+  	$scope.uploadDataFile = function(imageId, file, type){
   		console.info(imageId);
   		console.info(file);
   		if(file){
   			Upload.upload({
             	url: ENCRYPT_DATA_URL,
             	data: {
-            		image_id: "AVbbWFIrniXKT54mhRyI",//imageId,
+            		image_id: imageId,
             		file: file 
             	},
 	        }).then(function (resp) {
 	            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-	            var blob = new Blob([resp.data], { type:"application/octet_stream"});			
-				var downloadLink = angular.element('<a></a>');
-                downloadLink.attr('href',window.URL.createObjectURL(blob));
-                downloadLink.attr('download', file.name + ".enc");
-				downloadLink[0].click();
+	            $scope.downloadFile(file.name + ".enc", resp.data, "application/octet_stream")
 	        }, function (resp) {
 	            console.log('Error status: ' + resp.status);
 	        }, function (evt) {
@@ -930,11 +879,6 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   		cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000);//, [count], [invokeApply], [Pass]);
 	}
 
-	// var logInterval;
- //  	if(!angular.isDefined(logInterval)){
-	// 	console.info("init log interval");
- //  		logInterval = $interval(LogFact.updateLog, 5000);//, [count], [invokeApply], [Pass]);
-	// }
 	LogFact.startLogPolling(5000);
 	$scope.$on('$destroy', function() {
       // Make sure that the interval is destroyed too
@@ -944,14 +888,11 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
       }
       LogFact.stopLogPolling();
 
-      // if(angular.isDefined(logInterval)){
-      // 	$interval.cancel(logInterval);
-      // 	logInterval = undefined;
-      // }
     });
-	//ProductsFact.isLoaded = true;
-	//_DEBUG = $scope;
+	_DEBUG = $scope;
 });
+var _DEBUG;
+
 //var _DEBUG;
 // app.directive("fileread", [function () {
 //     return {
