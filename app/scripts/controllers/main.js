@@ -54,20 +54,21 @@ app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 	    		that.fullLogs = [];
 		    	
 		    	for ( var i = 0 ; i < len ; i++){
-		    		if(!that.logs[res[i].instance_id]){
-		    			that.logs[res[i].instance_id] = [];
+		    		var instanceId = res[i]._source.instance_id
+		    		if(!instanceId || instanceId == "" || instanceId[0] == '\0')
+		    			continue;
+		    		if(!that.logs[instanceId]){
+		    			that.logs[instanceId] = [];
 		    		}
-		    		res[i]._source.id = res[i]._id; // adding instance id into the data
-		    		if(res[i]._source.instance_id){
-		    			res[i]._source.instance = ClientFact.getInstanceById[res[i]._source.instance_id]
-		    			if(res[i]._source.instance){
-		    				res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
-		    				//console.info("Enriched:")
-		    				//console.info(res[i]._source)
-		    			}
-		    		}
+		    		//res[i]._source.id = res[i]._id; // adding instance id into the data
+	    			res[i]._source.instance = ClientFact.getInstanceById[instanceId]
+	    			if(res[i]._source.instance){
+	    				res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+	    				//console.info("Enriched:")
+	    				//console.info(res[i]._source)
+	    			}
 		    		that.fullLogs.push(res[i]._source)
-		    		that.logs[res[i].instance_id].push(res[i]._source);
+		    		that.logs[instanceId].push(res[i]._source);
 		    	}
 		    }
 		    //console.log(that.fullLogs)
@@ -163,7 +164,7 @@ app.factory('ClientFact', function($http, $q, $timeout){
 		if(this){
 			that = this;
 		}
-		$http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=100")
+		$http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=300")
 		.then(function successCallback(response) {
 		    // this callback will be called asynchronously
 		    // when the response is available
@@ -212,30 +213,38 @@ app.factory('ClientFact', function($http, $q, $timeout){
 		}
 		that.getFromES(type, clientId, successCallback, errorCallback, that);
 	}
-
+	var wait = 0;
+	var waitGap = 350;
 	map.getAllClientsInfo = function(){
+		//wait = 0
 		requests = [];
 		var that=this
+		//var wait = 0;
 		for( var clientId in this.getClientById){
    			if(this.getClientById[clientId].type != "serviceProviders"){
+   				wait += waitGap;
 				var deferred = $q.defer();
    				requests.push(deferred);
-   				$timeout(that.getDataPerClient, 600, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
+   				$timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
    			}
+   			wait += waitGap;
    			var deferred = $q.defer();
 			requests.push(deferred.promise);
 			//this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
-			$timeout(that.getDataPerClient, 600, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
+			$timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
 
 		}
 		var that = this;
 		$q.all(requests).then(function(){
+			wait = 0;
 			console.info("Clients Mapping updated with info:")
 			console.info(that.getClientById)
 			map.getDataByIdMapping('images', map.getImageById);
 			map.getDataByIdMapping('instances', map.getInstanceById);
 			console.info("This is map.getInstanceById: ")
 			console.info(map.getInstanceById)
+			console.info("This is map.getImageById: ")
+			console.info(map.getImageById)
 		});
 		// for (var clientId in this.getClientById){
 		// 	if(this.getClientById[clientId].type != "serviceProviders"){
