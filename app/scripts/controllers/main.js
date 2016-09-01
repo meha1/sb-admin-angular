@@ -10,6 +10,29 @@ var app = angular.module('sbAdminApp')
 
 //angular.module('sbAdminApp')
 
+app.filter('ClientRealtedInstances', function(){
+	function filterFunc(items, clientInstances) {
+    	var filtered = [];
+		if(!clientInstances){
+			return filtered;	
+		}
+		var len = clientInstances.length;
+		var instanceIdMap = {};
+		for (var i = 0 ; i < len ; i++){
+			if(clientInstances[i] && clientInstances[i].id){
+				instanceIdMap[clientInstances[i].id] = true;
+			}
+		}
+    	angular.forEach(items, function(item) {
+      		if(instanceIdMap[item.instance_id]) {
+        		filtered.push(item);
+      		}
+    	});
+    	return filtered;
+  	};
+  	return filterFunc
+})
+
 app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 	var ES_URL = "http://52.28.149.249:9200/"
 	var map = {};
@@ -719,7 +742,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
   	$scope.clientName = $scope.selectedClient.name;//$scope.customerName[0]; //"Verizon" //"AT&T"
   	$scope.prod = ProductsFact;
 	$scope.searchLog = {};
-  	$scope.searchLog.id = "";
+  	$scope.searchLog.id;
   	$scope.statusToClass = ProductsFact.statusToClass;
   	ProductsFact.updateInstances();
   	ProductsFact.mapImageIdToName();
@@ -955,15 +978,15 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 	var chart1 = {};
     chart1.type = "Timeline";
     chart1.data = [
-      [ 'ins #1', 'Normal',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
-      [ 'ins #1', 'Error',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #1', 'Normal', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-      [ 'ins #2', 'Normal',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #2', 'Error',    new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
-      [ 'ins #2', 'Normal',   new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-      [ 'ins #3', 'Normal',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #3', 'Error',        new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #3', 'Normal',       new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+      [ 'ins #1', ' ', new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+      [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+      [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #2', '  ',  new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
+      [ 'ins #2', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+      [ 'ins #3', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+      [ 'ins #3', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -1004,27 +1027,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
       LogFact.stopLogPolling();
 
     });
+
 	_DEBUG = $scope;
 });
 var _DEBUG;
-
-//var _DEBUG;
-// app.directive("fileread", [function () {
-//     return {
-//         scope: {
-//             fileread: "="
-//         },
-//         link: function (scope, element, attributes) {
-//             element.bind("change", function (changeEvent) {
-//                 var reader = new FileReader();
-//                 reader.onload = function (loadEvent) {
-//                     scope.$apply(function () {
-//                         scope.fileread = loadEvent.target.result;
-//                     });
-//                 }
-//                 reader.readAsDataURL(changeEvent.target.files[0]);
-//             });
-//         }
-//     }
-// }]);
-

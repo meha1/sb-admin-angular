@@ -101,7 +101,7 @@
 	                                <td>{{instance.pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
-	                                <td>{{instance.image_id}}</td>
+	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
 	                                <td class="text-center">{{instance.cpuLoad}}%</td>
 	                                <td>{{instance.start_time | date:'medium'}}</td>
@@ -146,7 +146,8 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs">
+	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRealtedInstances:ClientFact.getSelected().instances | filter: searchLog">
+	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <td>{{logRow.instance.pc_id}}</td>
 									<td>{{logRow.instance.ip_address}}</td>
