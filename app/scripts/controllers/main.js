@@ -62,8 +62,8 @@ app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 		    			res[i]._source.instance = ClientFact.getInstanceById[res[i]._source.instance_id]
 		    			if(res[i]._source.instance){
 		    				res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
-		    				console.info("Enriched:")
-		    				console.info(res[i]._source)
+		    				//console.info("Enriched:")
+		    				//console.info(res[i]._source)
 		    			}
 		    		}
 		    		that.fullLogs.push(res[i]._source)
@@ -93,17 +93,6 @@ app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 	}
 	
 	return map;
-})
-
-app.factory('ServiceFact', function(){
-	var map = {};
-	map.services = {
-		serviceProviders:[
-			{
-				name: "Cisco"	
-			}
-		]
-	}
 })
 
 app.factory('ClientFact', function($http, $q, $timeout){
