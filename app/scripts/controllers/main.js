@@ -771,9 +771,17 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     $scope.setSelectedClient = function (type, index) {
         ClientFact.setSelected(type, index);
-        $scope.pieChart = {
+        
+          $scope.pieChart = {
             labels: $scope.getServiceNames(),
             data: [120, 70, 60],
+            sumOfInstances: 60 + 70 + 120
+        };
+        $scope.cpuChart = {
+            labels: ["0% - 20%","20% - 80%","80% - 100%"],
+            data: [50, 120, 10],
+            colors: ['#00CC00','#CC6600','#CC0000'],
+            series: ['Low', 'Medium', 'High' ],
             sumOfInstances: 60 + 70 + 120
         };
         //        $scope.pieChart.update();
