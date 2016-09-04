@@ -6,31 +6,72 @@
  * # MainCtrl
  * Controller of the sbAdminApp
  */
-var app = angular.module('sbAdminApp')
+
+var app = angular.module('sbAdminApp');
+
+//var app = angular.module('sbAdminApp', ['elasticsearch']);
+//
+//// Create the es service from the esFactory
+//app.service('esFactory', function (esFactory) {
+//  return esFactory({ host: '52.28.149.249:9200' });
+//});
+//
+//app.controller('ImageController', function ($scope, client, esFactory) {
+//    // search for documents
+//        esFactory.search({
+//        index: 'images/images/',
+//        size: 3000,
+//        body: {
+//        "query":
+//            {
+//                "match": {
+//                    title:"Product1"
+//                }   
+//            },
+//        }
+//
+//        })
+//      .then(function (resp) {
+//        $scope.clusterState = resp;
+//        $scope.error = null;
+//      })
+//      .catch(function (err) {
+//        $scope.clusterState = null;
+//        $scope.error = err;
+//        // if the err is a NoConnections error, then the client was not able to
+//        // connect to elasticsearch. In that case, create a more detailed error
+//        // message
+//        if (err instanceof esFactory.errors.NoConnections) {
+//          $scope.error = new Error('Unable to connect to elasticsearch. ' +
+//            'Make sure that it is running and listening at http://localhost:9200');
+//        }
+//      });
+//    });
+
 
 //angular.module('sbAdminApp')
 
-app.filter('ClientRelatedInstances', function(){
-	function filterFunc(items, clientInstances) {
-    	var filtered = [];
-		if(!clientInstances){
-			return filtered;	
-		}
-		var len = clientInstances.length;
-		var instanceIdMap = {};
-		for (var i = 0 ; i < len ; i++){
-			if(clientInstances[i] && clientInstances[i].id){
-				instanceIdMap[clientInstances[i].id] = true;
-			}
-		}
-    	angular.forEach(items, function(item) {
-      		if(instanceIdMap[item.instance_id]) {
-        		filtered.push(item);
-      		}
-    	});
-    	return filtered;
-  	};
-  	return filterFunc
+app.filter('ClientRelatedInstances', function () {
+    function filterFunc(items, clientInstances) {
+        var filtered = [];
+        if (!clientInstances) {
+            return filtered;
+        }
+        var len = clientInstances.length;
+        var instanceIdMap = {};
+        for (var i = 0; i < len; i++) {
+            if (clientInstances[i] && clientInstances[i].id) {
+                instanceIdMap[clientInstances[i].id] = true;
+            }
+        }
+        angular.forEach(items, function (item) {
+            if (instanceIdMap[item.instance_id]) {
+                filtered.push(item);
+            }
+        });
+        return filtered;
+    };
+    return filterFunc
 })
 
 app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
@@ -75,21 +116,21 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     that.fullLogs = [];
 
                     for (var i = 0; i < len; i++) {
-		    		var instanceId = res[i]._source.instance_id
-		    		if(!instanceId || instanceId == "" || instanceId[0] == '\0')
-		    			continue;
-		    		if(!that.logs[instanceId]){
-		    			that.logs[instanceId] = [];
+                        var instanceId = res[i]._source.instance_id
+                        if (!instanceId || instanceId == "" || instanceId[0] == '\0')
+                            continue;
+                        if (!that.logs[instanceId]) {
+                            that.logs[instanceId] = [];
                         }
-		    		//res[i]._source.id = res[i]._id; // adding instance id into the data
-	    			res[i]._source.instance = ClientFact.getInstanceById[instanceId]
-                            if (res[i]._source.instance) {
-                                res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
-                                    //console.info("Enriched:")
-                                    //console.info(res[i]._source)
-                            }
+                        //res[i]._source.id = res[i]._id; // adding instance id into the data
+                        res[i]._source.instance = ClientFact.getInstanceById[instanceId]
+                        if (res[i]._source.instance) {
+                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+                                //console.info("Enriched:")
+                                //console.info(res[i]._source)
+                        }
                         that.fullLogs.push(res[i]._source)
-		    		that.logs[instanceId].push(res[i]._source);
+                        that.logs[instanceId].push(res[i]._source);
                     }
                 }
                 //console.log(that.fullLogs)
@@ -185,7 +226,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
         if (this) {
             that = this;
         }
-		$http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=300")
+        $http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=300")
             .then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -234,38 +275,38 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
         }
         that.getFromES(type, clientId, successCallback, errorCallback, that);
     }
-	var wait = 0;
-	var waitGap = 350;
+    var wait = 0;
+    var waitGap = 350;
     map.getAllClientsInfo = function () {
-		//wait = 0
+        //wait = 0
         requests = [];
         var that = this
-		//var wait = 0;
+            //var wait = 0;
         for (var clientId in this.getClientById) {
-            if (this.getClientById[clientId].type != "serviceProviders") {
-   				wait += waitGap;
-                var deferred = $q.defer();
-                requests.push(deferred);
-   				$timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
-            }
-   			wait += waitGap;
+            //if (this.getClientById[clientId].type != "serviceProviders") {
+            wait += waitGap;
+            var deferred = $q.defer();
+            requests.push(deferred);
+            $timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
+            //}
+            wait += waitGap;
             var deferred = $q.defer();
             requests.push(deferred.promise);
             //this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
-			$timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
+            $timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
 
         }
         var that = this;
         $q.all(requests).then(function () {
-			wait = 0;
+            wait = 0;
             console.info("Clients Mapping updated with info:")
             console.info(that.getClientById)
             map.getDataByIdMapping('images', map.getImageById);
             map.getDataByIdMapping('instances', map.getInstanceById);
             console.info("This is map.getInstanceById: ")
             console.info(map.getInstanceById)
-			console.info("This is map.getImageById: ")
-			console.info(map.getImageById)
+            console.info("This is map.getImageById: ")
+            console.info(map.getImageById)
         });
         // for (var clientId in this.getClientById){
         // 	if(this.getClientById[clientId].type != "serviceProviders"){
@@ -353,19 +394,27 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
     map.getSelected = function () {
         // return this.clients[this.selected[0]][this.selected[1]];
         return this.selected;
-    }
+    };
+
+    map.getAllClients = function () {
+        return this.clients;
+    };
 
     map.setSelected = function (type, index) {
-        this.selectedIndex = [type, index];
-        this.selected = this.clients[this.selectedIndex[0]][this.selectedIndex[1]];
+        //        this.selectedIndex = [type, index];
+        this.selected = this.clients[type][index];
         this.selected.selectedService = "";
     }
 
     map.addService = function (sName, sDesc) {
         //this.clients[this.selected[0]][this.selected[1]].services.push({id: (new Date()).getTime(), name: sName, desc: sDesc})	
-		var id = sName.hashCode()
-		this.selected.services.push({id: id, name: sName, desc: sDesc})
-		this.getServiceByIdMapping()
+        var id = sName.hashCode()
+        this.selected.services.push({
+            id: id,
+            name: sName,
+            desc: sDesc
+        })
+        this.getServiceByIdMapping()
     }
 
     map.subscribeToService = function (sId) {
@@ -389,6 +438,8 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
 
     return map;
 })
+
+
 
 app.factory('ProductsFact', function ($http) {
     var ES_URL = "http://52.28.149.249:9200/"
@@ -735,14 +786,15 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         console.info($scope[value]);
     }
 
+    
     $scope.LogFact = LogFact;
     $scope.ClientFact = ClientFact;
-    $scope.clients = ClientFact.clients;
+    $scope.clients = ClientFact.getAllClients();
     $scope.selectedClient = ClientFact.getSelected();
     $scope.clientName = $scope.selectedClient.name; //$scope.customerName[0]; //"Verizon" //"AT&T"
     $scope.prod = ProductsFact;
     $scope.searchLog = {};
-  	$scope.searchLog.id;
+    $scope.searchLog.id;
     $scope.statusToClass = ProductsFact.statusToClass;
     ProductsFact.updateInstances();
     ProductsFact.mapImageIdToName();
@@ -751,6 +803,45 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     $scope.imageForm = {};
 
     //$scope.imageFileUpload;
+
+    $scope.populateInstances = function (serviceProviderId) {
+        var res = {}
+        for (var customer in $scope.clients['customers']) {
+            if ($scope.clients['customers'][customer].spId == serviceProviderId) {
+                var instIdArr = $scope.clients['customers'][customer].instances;
+                if (instIdArr) {
+                    $scope.getFullInstanceInfo(instIdArr);
+                    for (var service in $scope.services) {
+                        if (service in res) {
+                            res[service] += $scope.services[service];
+                        } else {
+                            res[service] = $scope.services[service];
+                        }
+                    }
+                }
+            }
+        }
+        console.log("RES INSTANCES: " + res);
+        $scope.services = res;
+    };
+
+
+    //        $scope.getServiceNames = function () {
+    //        var labels = [];
+    //        if (ClientFact.getSelected().type == "serviceProviders") {
+    //            var services = ClientFact.getSelected().services;
+    //            for (var i = 0, len = services.length; i < len; i++) {
+    //                labels.push(services[i].name);
+    //            }
+    //        } else {
+    //            var services = ClientFact.getSelected().services;
+    //            for (var i = 0, len = services.length; i < len; i++) {
+    //                labels.push(ClientFact.getServiceById[services[i]].name);
+    //            }
+    //        }
+    //        console.log("LABELS: " + labels);
+    //        return labels;
+    //    }
 
     $scope.getServiceNames = function () {
         var labels = [];
@@ -769,38 +860,84 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return labels;
     }
 
-    $scope.cpuValues = {'low':0, 'medium':0, 'high':0};
-    $scope.updateCpuValues = function(){
-        if($scope.cpuLoadAvg<=20){
+    $scope.cpuValues = {
+        'low': 0,
+        'medium': 0,
+        'high': 0
+    };
+
+    $scope.getCpuValues = function () {
+        var values = [];
+        for (var key in $scope.cpuValues) {
+            var value = $scope.cpuValues[key];
+        }
+        return values;
+    };
+
+    $scope.updateCpuValues = function () {
+        if ($scope.cpuLoadAvg <= 20) {
             $scope.cpuValues['low']++;
-        }
-        else if ($scope.cpuLoadAvg>=20){
+        } else if ($scope.cpuLoadAvg >= 20) {
             $scope.cpuValues['high']++
-        }
-        else{
+        } else {
             $scope.cpuValues['medium']++;
         }
-    }
-    
-    $scope.setSelectedClient = function (type, index) {
-        ClientFact.setSelected(type, index);
-        
-          $scope.pieChart = {
-            labels: $scope.getServiceNames(),
-            data: [120, 70, 60],
-            sumOfInstances: 120+70+60, 
+    };
+
+
+
+    $scope.buildPieChart = function (spId) {
+        var pie = {
+            labels: [],
+            data: [],
+            numOfInstances : 0
         };
+        
+        for (var service in $scope.services) {
+            var label = function (spId) {
+                for (var sp in $scope.clients['serviceProviders']) {
+                    if ($scope.clients['serviceProviders'][sp].id == spId) {
+                        for (var name in $scope.clients['serviceProviders'][sp].services) {
+                            if ($scope.clients['serviceProviders'][sp].services[name].id == service) {
+                                return $scope.clients['serviceProviders'][sp].services[name].name;
+                            }
+                        }
+                    }
+                }
+            }(spId);
+            pie.labels.push(label);
+            pie.data.push($scope.services[service]);
+            pie.numOfInstances += $scope.services[service];
+        }
+        return pie;
+    };
+
+    $scope.setSelectedClient = function (type, index) {
+
+        ClientFact.setSelected(type, index);
+        var servId = 0;
+        if (type == 'serviceProviders') {
+            servId = $scope.clients[type][index].id;
+            $scope.populateInstances(servId);
+        } else {
+            servId = $scope.clients[type][index].spId;
+        }
+
+        $scope.pieChart = $scope.buildPieChart(servId);
+        $scope.numOfInstances = $scope.pieChart.numOfInstances;
+
         $scope.cpuChart = {
-            labels: ["0% - 20%","20% - 80%","80% - 100%"],
-            data: [1,2,3],//$scope.cpuValues,
-            colors: ['#00CC00','#CC6600','#CC0000'],
+            labels: ["0% - 20%", "20% - 80%", "80% - 100%"],
+            data: /*$scope.getCpuValues(),*/ [3, 2, 1],
+            colors: ['#00CC00', '#CC6600', '#CC0000'],
         };
         //        $scope.pieChart.update();
-        $scope.selectedClient = ClientFact.getSelected()
-        $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"	
+        $scope.selectedClient = ClientFact.getSelected();
+        $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
     }
 
-    $scope.setSelectedClient('serviceProviders', 0);
+    
+
 
     $scope.addProductImage = function (iName, iDesc, serviceId, file) {
         //TODO: CLEAR FORM
@@ -828,8 +965,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 data: imageData,
             }).then(function (resp) {
                 console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-	            //ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
-				$timeout(function(){ClientFact.getDataPerClient("images", ClientFact.getSelected().id)}, 3000)
+                //ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
+                $timeout(function () {
+                    ClientFact.getDataPerClient("images", ClientFact.getSelected().id)
+                }, 3000)
             }, function (resp) {
                 console.log('Error status: ' + resp.status);
             }, function (evt) {
@@ -878,21 +1017,41 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         }
     }
 
-  	$scope.getFullInstanceInfo = function(instIdArr){
-  		var len = instIdArr.length;
-  		var res = []
-  		for (var i = 0 ; i < len ; i++){
-  			var instanceData = ClientFact.getInstanceById[instIdArr[i]]
-  			if(instanceData){
-  				// Adding service id to instance for filtering
-  				instanceData.service_id = ClientFact.getImageById[instanceData.image_id].service_id;
-  				if(instanceData.service_id){
-	  				res.push(instanceData);
-	  			}
-  			}
-  		}
-  		return res;
-  	}
+
+    $scope.getFullInstanceInfo = function (instIdArr) {
+        $scope.services = {};
+        if (instIdArr) {
+            var len = instIdArr.length;
+            var res = []
+            for (var i = 0; i < len; i++) {
+                //            var instanceData = ClientFact.getInstanceById[instIdArr[i]]
+
+                //  var instanceData = ClientFact.getInstanceById[instIdArr[i].id]
+
+                var instanceData = instIdArr[i]
+                if (instanceData) {
+                    // Adding service id to instance for filtering
+                    var img = ClientFact.getImageById[instanceData.image_id];
+                    if (img) {
+                        instanceData.service_id = img.service_id;
+                        if (instanceData.service_id) {
+                            if (instanceData.service_id in $scope.services) {
+                                $scope.services[instanceData.service_id]++;
+                            } else {
+                                $scope.services[instanceData.service_id] = 0;
+                            }
+
+                            res.push(instanceData);
+
+                        }
+                    }
+                }
+            }
+            console.log("SID: " + $scope.services);
+            return res;
+        }
+
+    }
 
     // $scope.setFile = function(file){
     // 	$scope.uploadImageFile = file;
@@ -966,7 +1125,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         })
     }
 
-    $scope.numOfInstances = $scope.pieChart.sumOfInstances;
+    
     $scope.numOfVerifications = 0;
     $scope.numOfAlerts = 0;
     $scope.timerStepsCallback = function (millis, steps, callback, finalCallback) {
@@ -1026,15 +1185,15 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var chart1 = {};
     chart1.type = "Timeline";
     chart1.data = [
-      [ 'ins #1', ' ', new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
-      [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-      [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #2', '  ',  new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
-      [ 'ins #2', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-      [ 'ins #3', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #3', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+      ['ins #1', ' ', new Date(0, 0, 0, 12, 0, 0), new Date(0, 0, 0, 14, 0, 0)],
+      ['ins #1', '  ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
+      ['ins #1', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 19, 0, 0)],
+      ['ins #2', ' ', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
+      ['ins #2', '  ', new Date(0, 0, 0, 13, 0, 0), new Date(0, 0, 0, 13, 30, 0)],
+      ['ins #2', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 0, 0)],
+      ['ins #3', ' ', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
+      ['ins #3', '  ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
+      ['ins #3', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 30, 0)]
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -1080,7 +1239,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         LogFact.stopLogPolling();
 
     });
-
+    $scope.setSelectedClient('serviceProviders', 0);
     _DEBUG = $scope;
 });
 var _DEBUG;
