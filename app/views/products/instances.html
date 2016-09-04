@@ -81,7 +81,7 @@
 	                Instances
 	            </h3>
 	            <!-- /.panel-heading -->
-	            <div class="panel-body">
+	            <div class="panel-body panel-body-overscroll">
 	                <div class="table-responsive col-lg-12">
 	                    <table class="table table-hover">
 	                        <thead>
@@ -95,13 +95,26 @@
 	                                <th class="text-center">Log</th>
 	                            </tr>
 	                        </thead>
-	                        <tbody>
-	                            <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]">
-	                                <!-- <td>{{instance.name}}</td> -->
+	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
+	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
+	                            <tr ng-repeat="instance in ClientFact.getSelected().instances">
 	                                <td>{{instance.pc_id}}</td>
-	                                <td>{{instance.ip}}</td>
+	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
-	                                <td>{{instance.image_id}}</td>
+	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
+	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
+	                                <td class="text-center">{{instance.cpuLoad}}%</td>
+	                                <td>{{instance.start_time | date:'medium'}}</td>
+	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
+	                            </tr>
+	                        </tbody>
+	                        <tbody ng-show="ClientFact.getSelected().type == 'customers'">
+	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
+								 <tr ng-repeat="instance in getFullInstanceInfo(ClientFact.getSelected().instances)| filter: {'service_id' : ClientFact.getSelected().selectedService}">
+	                                <td>{{ClientFact.getInstanceById[instance].pc_id}}</td>
+	                                <td>{{instance.ip_address}}</td>
+	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
+	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
 	                                <td class="text-center">{{instance.cpuLoad}}%</td>
 	                                <td>{{instance.start_time | date:'medium'}}</td>
@@ -131,22 +144,29 @@
 	                Log
 	            </h3>
 	            <!-- /.panel-heading -->
-	            <div class="panel-body">
+	            <div class="panel-body panel-body-overscroll">
 	                <div class="table-responsive col-lg-12">
 	                    <table class="table table-hover">
 	                        <thead>
 	                            <tr>
 	                                <th>Timestamp</th>
 	                                <th>Instance Name</th>
-	                                <th>Type</th>
+	                                <th>IP</th>
+	                                <th>Image Name</th>
+	                                <th>Log Level</th>
+	                                <th>Subtype</th>
 	                                <th>Message</th>
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog">
+	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog">
+	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
-	                                <td>{{mapInstanceIdToName[logRow.instanceId]}}</td>
-	                                <td>{{logRow.type}}</td>
+	                                <td>{{logRow.instance.pc_id}}</td>
+									<td>{{logRow.instance.ip_address}}</td>
+									<td>{{logRow.image.name}}</td>
+	                                <td>{{LogFact.resolveType[logRow.type]}}</td>
+	                                <td>{{logRow.subtype}}</td>
 	                                <td>{{logRow.txt}}</td>
 	                            </tr>
 	                            <!-- <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
