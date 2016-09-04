@@ -354,6 +354,16 @@ body {
 .panel-error > .panel-heading {
     background-color: #FF9872;
 }
+.panel-cpu {
+    background-color: #778899;
+    border-color: #778899;
+    color: white;
+}
+
+.panel-cpu > .panel-heading {
+    color: white;
+    background-color: #8899AA;
+}
 
 .easyChart {
     position: relative;

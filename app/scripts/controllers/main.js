@@ -769,20 +769,31 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return labels;
     }
 
+    $scope.cpuValues = {'low':0, 'medium':0, 'high':0};
+    $scope.updateCpuValues = function(){
+        if($scope.cpuLoadAvg<=20){
+            $scope.cpuValues['low']++;
+        }
+        else if ($scope.cpuLoadAvg>=20){
+            $scope.cpuValues['high']++
+        }
+        else{
+            $scope.cpuValues['medium']++;
+        }
+    }
+    
     $scope.setSelectedClient = function (type, index) {
         ClientFact.setSelected(type, index);
         
           $scope.pieChart = {
             labels: $scope.getServiceNames(),
             data: [120, 70, 60],
-            sumOfInstances: 60 + 70 + 120
+            sumOfInstances: 120+70+60, 
         };
         $scope.cpuChart = {
             labels: ["0% - 20%","20% - 80%","80% - 100%"],
-            data: [50, 120, 10],
+            data: [1,2,3],//$scope.cpuValues,
             colors: ['#00CC00','#CC6600','#CC0000'],
-            series: ['Low', 'Medium', 'High' ],
-            sumOfInstances: 60 + 70 + 120
         };
         //        $scope.pieChart.update();
         $scope.selectedClient = ClientFact.getSelected()
@@ -981,16 +992,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     }
 
-
-
-
-    //    $scope.setPieValueBySteps = function(targetVar, startValue, targetValue, millis, steps){
-    //  		$scope[targetVar] = startValue;
-    //  		var valJump = targetValue / steps;
-    //  		$scope.timerStepsCallback(millis, steps, function(){$scope[targetVar] += valJump}, function(){$scope[targetVar] = targetValue});
-    //  	    $scope.products = ["vRouter", "vSwitch"];
-    //  	    $scope.productImages = {"vRouter":["Version1", "Version 2", "Version 3"], "vSwitch":["Version 1", "Version 2", "Version 3", "Version 4"]};
-    //    }
     $scope.setValue = function (target, value) {
         $scope[target] = value;
     }
