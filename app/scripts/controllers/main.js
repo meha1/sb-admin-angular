@@ -973,8 +973,10 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 		    // this callback will be called asynchronously
 		    // when the response is available
 		    if (response.error){
-		    	console.info(response.error)
-		    }else{
+		    	console.error(response.error)
+		    }else if(response.data && response.data.error){
+		    	console.error(response.data.error)		    	
+		    }else if(response.data && response.data.data){
 		    	$scope.cpuLoadAvg = response.data.data.Average;
 		    	$scope.cpuLoadMax = response.data.data.Maximum;
 		    }
