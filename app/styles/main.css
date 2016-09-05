@@ -1,112 +1,89 @@
 /* Space out content a bit */
-
 body {
     padding-bottom: 20px;
 }
 
-
 /* Everything but the jumbotron gets side spacing for mobile first views */
-
 .header,
 .marketing,
 .footer {
-    padding-left: 15px;
-    padding-right: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
-
 
 /* Custom page header */
-
 .header {
-    border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
 }
-
-
 /* Make the masthead heading the same height as the navigation */
-
 .header h3 {
-    margin-top: 0;
-    margin-bottom: 0;
-    line-height: 40px;
-    padding-bottom: 19px;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+  padding-bottom: 19px;
 }
-
 
 /* Custom page footer */
-
 .footer {
-    padding-top: 19px;
-    color: #777;
-    border-top: 1px solid #e5e5e5;
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
 }
-
 
 /* Customize container */
-
 @media (min-width: 768px) {
-    .container {
-        max-width: 730px;
-    }
+  .container {
+    max-width: 730px;
+  }
 }
-
 .container-narrow > hr {
-    margin: 30px 0;
+  margin: 30px 0;
 }
-
 
 /* Main marketing message and sign up button */
-
 .jumbotron {
-    text-align: center;
-    border-bottom: 1px solid #e5e5e5;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
 }
-
 .jumbotron .btn {
-    font-size: 21px;
-    padding: 14px 24px;
+  font-size: 21px;
+  padding: 14px 24px;
 }
-
 
 /* Supporting marketing content */
-
 .marketing {
-    margin: 40px 0;
+  margin: 40px 0;
 }
-
 .marketing p + h4 {
-    margin-top: 28px;
+  margin-top: 28px;
 }
-
 
 /* Responsive: Portrait tablets and up */
-
 @media screen and (min-width: 768px) {
-    /* Remove the padding we set earlier */
-    .header,
-    .marketing,
-    .footer {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    /* Space out the masthead */
-    .header {
-        margin-bottom: 30px;
-    }
-    /* Remove the bottom border on the jumbotron for visual effect */
-    .jumbotron {
-        border-bottom: 0;
-    }
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
 }
 
 .nav>li.active>a {
-    text-decoration: none;
-    background-color: #eee;
+text-decoration: none;
+background-color: #eee;
 }
 
 
 /* Added by O.R */
-
-
 /*
 @font-face {
     font-family: 'CiscoSansExtraLight'; 
@@ -197,11 +174,10 @@ body{
 }
 */
 
-
 /* Added by O.R */
 
 @font-face {
-    font-family: 'CiscoSansExtraLight';
+    font-family: 'CiscoSansExtraLight'; 
     src: url('fonts/CiscoSansExtraLight.otf');
 }
 
@@ -210,280 +186,255 @@ body{
 }
 
 .cisco-logo {
-    height: 54px;
-    float: right;
-    margin: 7px;
-    margin-top: -60px;
+  height: 54px;
+  float: right;
+  margin: 7px;
+  margin-top: -60px;
 }
 
-.navbar-static-top {
-    height: 68px;
+.navbar-static-top { 
+  height: 68px;
 }
 
 .navbar-brand {
-    font-size: 23px;
-    padding-top: 23px;
-    color: white !important;
+  font-size: 23px;
+  padding-top: 23px;
+  color: white !important;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px){
     .sidebar {
-        margin-top: 0px;
-    }
+      margin-top: 0px;
+  }
 }
 
-body {
-    font-family: 'CiscoSansExtraLight' !important;
-    color: black;
-    background-color: white;
+body{
+  font-family: 'CiscoSansExtraLight' !important;
+  color: black;
+  background-color: white;
 }
-
-.sidebar-nav {
-    background-color: white;
+.sidebar-nav{
+  background-color: white;
 }
 
 #page-wrapper {
-    background-color: #fafcfe;
-    border-left: 0px;
+  background-color: #fafcfe;
+  border-left: 0px;
 }
 
 .nav>li>a {
-    padding-left: 20px;
-    padding-right: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .sidebar ul li {
-    border-bottom: 0px;
+  border-bottom: 0px;
 }
 
 .center-div {
-    float: none!important;
-    margin-right: auto!important;
-    margin-left: auto!important;
-    text-align: center!important;
+  float: none!important;
+  margin-right: auto!important;
+  margin-left: auto!important;
+  text-align: center!important;
 }
 
 .client-name {
-    float: left;
-    margin-left: 52px;
-    margin-top: -30px;
-    font-size: 17px;
+  float: left;
+  margin-left: 52px;
+  margin-top: -30px;
+  font-size: 17px;
 }
 
 .client-logo {
-    height: 44px;
-    padding-top: 4px;
+  height: 44px;
+  padding-top: 4px;
 }
 
-.client-circle {
-    height: 40px;
-    width: 40px;
-    background-color: white;
-    border-radius: 30px;
-    border: 1.5px solid #ddd;
+.client-circle{
+  height: 40px; 
+  width: 40px; 
+  background-color: white; 
+  border-radius: 30px; 
+  border:1.5px solid #ddd;
 }
 
-.client-panel {
-    margin-top: 13px;
-    color: #f1f1f1;
-    margin-left: -51px;
+.client-panel{
+  margin-top:13px;
+  color: #f1f1f1;
+  margin-left: -51px;
 }
 
 .panel-header {
-    padding-left: 15px;
-    text-transform: uppercase;
-    font-size: 21px;
-    opacity: .7;
+  padding-left: 15px;
+  text-transform: uppercase;
+  font-size: 21px;
+  opacity: .7;
 }
 
 .panel-heading {
-    color: white;
-    border-bottom: 0px;
-    text-transform: uppercase;
-    text-align: center;
+  color: white; 
+  border-bottom: 0px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .panel-primary {
-    background-color: #3067B9;
-    border-color: #0A4AA8;
-    color: white;
+  background-color:#3067B9; 
+  border-color: #0A4AA8;
+  color: white;
 }
 
-.panel-primary > .panel-heading {
-    background-color: #6088C2;
+.panel-primary > .panel-heading{
+  background-color:#6088C2; 
 }
 
-.panel-instances > .panel-heading {
-    background-color: #DEB887;
+.panel-instances > .panel-heading{
+  background-color:#DEB887; 
 }
 
 .panel-instances {
-    background-color: #EEE4C4;
-    border-color: #EEE4C4;
-    color: white;
+  background-color:#EEE4C4; 
+  border-color: #EEE4C4;
+  color: white;
 }
 
 .panel-info {
-    background-color: #26CF43;
-    border-color: #00C322;
-    color: white;
+  background-color:#26CF43; 
+  border-color: #00C322;
+  color: white;
 }
 
-.panel-info > .panel-heading {
-    color: white;
-    background-color: #5FD574;
+.panel-info > .panel-heading{
+  color: white;
+  background-color:#5FD574; 
 }
 
 .panel-warning {
-    background-color: #FFCB2F;
-    border-color: #FFBF00;
-    color: white;
+  background-color:#FFCB2F; 
+  border-color: #FFBF00;
+  color: white;
 }
 
-.panel-warning > .panel-heading {
-    color: white;
-    background-color: #FFDC72;
+.panel-warning > .panel-heading{
+  color: white;
+  background-color:#FFDC72; 
 }
 
 .panel-error {
-    background-color: #FF672F;
-    border-color: #FF4500;
-    color: white;
+  background-color:#FF672F; 
+  border-color: #FF4500;
+  color: white;
 }
 
-.panel-error > .panel-heading {
-    background-color: #FF9872;
-}
-.panel-cpu {
-    background-color: #778899;
-    border-color: #778899;
-    color: white;
-}
-
-.panel-cpu > .panel-heading {
-    color: white;
-    background-color: #8899AA;
+.panel-error > .panel-heading{
+  background-color:#FF9872; 
 }
 
 .easyChart {
-    position: relative;
-    /*display: inline-block;*/
-    width: 110px;
-    height: 110px;
-    /* margin-top: 50px; */
-    /* margin-bottom: 50px; */
-    text-align: center;
+  position: relative;
+  /*display: inline-block;*/
+  width: 110px;
+  height: 110px;
+  /* margin-top: 50px; */
+  /* margin-bottom: 50px; */
+  text-align: center;
 }
 
 .percent {
-    position: absolute;
-    line-height: 110px;
-    z-index: 2;
-    width: 100%;
-    /*margin-left: 40px;*/
-    font-size: 22px;
+  position: absolute;
+  line-height: 110px;
+  z-index: 2;
+  width: 100%;
+  /*margin-left: 40px;*/
+  font-size: 22px;
 }
 
 .percent:after {
-    content: '%';
-    margin-left: 0.1em;
-    font-size: .9em;
-}
-
-.pie-chart {
-    min-width: 0px!important;
-    min-height: 0px!important;
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: auto;
-    height: 50%!important;
-    width: auto!important;
+  content: '%';
+  margin-left: 0.1em;
+  font-size: .9em;
 }
 
 .num-of-instances {
-    position: absolute;
-    line-height: 50px;
-    z-index: 2;
-    width: 1px;
-    font-size: 22px;
-    padding-left: 0.5em;
-    color: white;
+  position: absolute;
+  line-height: 110px;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+    margin-top: 25px;
+  font-size: 22px;
+  color: black;
 }
 
-.vertical-middle {
-    vertical-align: middle !important;
+
+.vertical-middle{
+  vertical-align: middle !important;
 }
 
 .panel-default {
     border-color: #dfe8f1;
 }
 
-.btn-accept {
-    border-color: #337ab7;
+.btn-accept{
+  border-color: #337ab7;
 }
 
-.panel-text {
-    font-size: 83px;
+.panel-text{
+  font-size: 83px;
 }
 
-.panel-min-size {
-    height: 188px;
+.panel-min-size{
+  height: 188px;
 }
 
-.navbar-top-links {
-    margin-top: -43px;
-    margin-right: 20px;
+.navbar-top-links{
+  margin-top: -43px;
+  margin-right: 20px;
 }
 
-.dropdown-label {
-    color: black;
-    font-weight: bold;
-    font-size: 15px;
+.dropdown-label{
+  color: black;
+  font-weight: bold;
+  font-size: 15px;
 }
 
-.nav>li>a:focus,
-.nav>li>a:hover {
-    background-color: rgba(238, 238, 238, 0);
+.nav>li>a:focus, .nav>li>a:hover{
+  background-color: rgba(238, 238, 238, 0);
 }
 
-.nav .open>a,
-.nav .open>a:focus,
-.nav .open>a:hover {
-    background-color: rgba(238, 238, 238, 0);
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+  background-color: rgba(238, 238, 238, 0);
 }
 
 .navbar-header {
-    width: 80%;
+  width: 80%;
 }
 
-.add-ip-btn {
-    border-radius: 30px;
-    border: 1px solid #337ab7;
-    margin-top: 3px;
-    padding-top: 0px;
-    /*vertical-align: middle;*/
-    background-color: white;
+.add-ip-btn{
+  border-radius: 30px;
+  border: 1px solid #337ab7;
+  margin-top: 3px;
+  padding-top: 0px;
+  /*vertical-align: middle;*/
+  background-color: white;
 }
 
-.add-ip-icon {
-    vertical-align: sub;
+.add-ip-icon{
+  vertical-align: sub;
 }
 
-.ip-limit-col {
-    width: 79%;
+.ip-limit-col{
+  width: 79%;
 }
 
-.ip-limit-add-col {
-    width: 0%;
+.ip-limit-add-col{
+  width: 0%;
 }
 
-.panel-body-overscroll {
-    max-height: 500px;
-    overflow-y: scroll;
+.panel-body-overscroll{
+  max-height: 500px;
+  overflow-y: scroll;
 }
-
-
 /*
 
 

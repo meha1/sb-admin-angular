@@ -140,6 +140,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         } else if ((res[i]._source.type == 0x30) || (res[i]._source.type == 0x40)) {
                             that.numOfAlerts++;
                         }
+		    	that.pollingIsDone(that)
                     }
                 }
                 //console.log(that.fullLogs)
@@ -164,8 +165,28 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
         }
     }
 
-    return map;
+	var pollingRegister = {};
+	map.registerToPollingNotification = function(name, func){
+		if( typeof name === "string" &&
+		    name.length > 0 && 
+		    typeof func === "function")
+		pollingRegister[name] = func;
+	}
+
+	map.unRegisterFromPollingNotification = function(name, func){
+		if(pollingRegister[name]){
+			delete pollingRegister[name]
+		}
+	}	
+
+	map.pollingIsDone = function(context){
+		angular.forEach(pollingRegister, function(value, key){
+			value();
 })
+	}
+
+	return map;
+});
 
 app.factory('ClientFact', function ($http, $q, $timeout) {
     var ES_URL = "http://52.28.149.249:9200/"
@@ -779,7 +800,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    //var uploader = $scope.uploader = new FileUploader();
 
     $scope.serviceSelect = -1;
 
@@ -1085,6 +1105,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     $scope.percentText3 = 0;
     $scope.percent4 = 80;
     $scope.percentText4 = 0;
+
     //$scope.options = { animate:false, barColor:'#E67E22', scaleColor:false, lineWidth:3, lineCap:'butt' }
     $scope.options = {
         barColor: "rgba(255,255,255,0.8)",
@@ -1199,10 +1220,31 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return res;
     }
 
+    var updateInstanceTimeline = function(){
+		chart1.data = []
+		var len = LogFact.fullLogs.length;
+		var logRow;
+		var startTime;
+		var instanceName;
+		for(var i = 0 ; i < len ; i++){
+			logRow = LogFact.fullLogs[i];
+			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].name){
+				continue;
+			}
+			instanceName = ClientFact.getInstanceById[logRow.instance_id].name;
+			startTime = logRow.timestamp * 1000;
+			type = logRow.typeof > 0x30 ? '  ' : ' ';
+			chart1.data.push([instanceName, type, startTime, startTime + 1000])
+		}
+	}
+
+	LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+
     var chart1 = {};
+	$scope.chart1 = chart1;
     chart1.type = "Timeline";
     chart1.data = [
-      ['ins #1', ' ', new Date(0, 0, 0, 12, 0, 0), new Date(0, 0, 0, 14, 0, 0)],
+      [ 'ins #1', ' ', 1473033465821,  1473073465821 ]/*,
       ['ins #1', '  ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
       ['ins #1', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 19, 0, 0)],
       ['ins #2', ' ', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
@@ -1210,7 +1252,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
       ['ins #2', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 0, 0)],
       ['ins #3', ' ', new Date(0, 0, 0, 12, 30, 0), new Date(0, 0, 0, 14, 0, 0)],
       ['ins #3', '  ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 16, 0, 0)],
-      ['ins #3', ' ', new Date(0, 0, 0, 16, 30, 0), new Date(0, 0, 0, 18, 30, 0)]
+      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]*/
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -1254,7 +1296,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             cpuUtilInterval = undefined;
         }
         LogFact.stopLogPolling();
-
+      LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
     });
 
     $scope.updateInstances = function () {
