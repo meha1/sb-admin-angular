@@ -101,91 +101,91 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     }
 		    }
 		  ]
-		}
+        }
 
-		$http.post(ES_URL + "events-*/_search", searchQuery)
-		.then(function successCallback(response) {
-		    // this callback will be called asynchronously
-		    // when the response is available
-		    if (response.error){
-		    	console.info(response.error)
-		    }else{
-		    	var res = response.data.hits.hits;
-		    	var len = res.length;
-	    		that.logs = {};
-	    		that.fullLogs = [];
-		    	
+        $http.post(ES_URL + "events-*/_search", searchQuery)
+            .then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                if (response.error) {
+                    console.info(response.error)
+                } else {
+                    var res = response.data.hits.hits;
+                    var len = res.length;
+                    that.logs = {};
+                    that.fullLogs = [];
+
                     that.numOfVerifications = 0;
                     that.numOfAlerts = 0
 
-		    	for ( var i = 0 ; i < len ; i++){
-		    		var instanceId = res[i]._source.instance_id
-		    		if(!instanceId || instanceId == "" || instanceId[0] == '\0')
-		    			continue;
-		    		if(!that.logs[instanceId]){
-		    			that.logs[instanceId] = [];
-		    		}
-		    		//res[i]._source.id = res[i]._id; // adding instance id into the data
-	    			res[i]._source.instance = ClientFact.getInstanceById[instanceId]
-	    			if(res[i]._source.instance){
-	    				res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
-	    				//console.info("Enriched:")
-	    				//console.info(res[i]._source)
-	    			}
-		    		that.fullLogs.push(res[i]._source)
-		    		that.logs[instanceId].push(res[i]._source);
+                    for (var i = 0; i < len; i++) {
+                        var instanceId = res[i]._source.instance_id
+                        if (!instanceId || instanceId == "" || instanceId[0] == '\0')
+                            continue;
+                        if (!that.logs[instanceId]) {
+                            that.logs[instanceId] = [];
+                        }
+                        //res[i]._source.id = res[i]._id; // adding instance id into the data
+                        res[i]._source.instance = ClientFact.getInstanceById[instanceId]
+                        if (res[i]._source.instance) {
+                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+                                //console.info("Enriched:")
+                                //console.info(res[i]._source)
+                        }
+                        that.fullLogs.push(res[i]._source)
+                        that.logs[instanceId].push(res[i]._source);
 
                         if ((res[i]._source.type == 0x10) || (res[i]._source.type == 0x20)) {
                             that.numOfVerifications++;
                         } else if ((res[i]._source.type == 0x30) || (res[i]._source.type == 0x40)) {
                             that.numOfAlerts++;
                         }
-		    	}
-		    	that.pollingIsDone(that)
-		    }
-		    //console.log(that.fullLogs)
-		 }, function errorCallback(response) {
-	    // called asynchronously if an error occurs
-	    // or server returns response with an error status.
-		});
-	}
-	
-	var logInterval;
-	
-	map.startLogPolling = function(millis){
-		map.updateLog();
-		this.stopLogPolling();
-		logInterval = $interval(this.updateLog, millis, 0, true, this);
-	}
+                    }
+                    that.pollingIsDone(that)
+                }
+                //console.log(that.fullLogs)
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+    }
 
-	map.stopLogPolling = function(){
-		if(angular.isDefined(logInterval)){
-      		$interval.cancel(logInterval);
-      		logInterval = undefined;
-      	}
-	}
+    var logInterval;
 
-	var pollingRegister = {};
-	map.registerToPollingNotification = function(name, func){
-		if( typeof name === "string" &&
-		    name.length > 0 && 
-		    typeof func === "function")
-		pollingRegister[name] = func;
-	}
+    map.startLogPolling = function (millis) {
+        map.updateLog();
+        this.stopLogPolling();
+        logInterval = $interval(this.updateLog, millis, 0, true, this);
+    }
 
-	map.unRegisterFromPollingNotification = function(name, func){
-		if(pollingRegister[name]){
-			delete pollingRegister[name]
-		}
-	}	
+    map.stopLogPolling = function () {
+        if (angular.isDefined(logInterval)) {
+            $interval.cancel(logInterval);
+            logInterval = undefined;
+        }
+    }
 
-	map.pollingIsDone = function(context){
-		angular.forEach(pollingRegister, function(value, key){
-			value();
-		})
-	}
+    var pollingRegister = {};
+    map.registerToPollingNotification = function (name, func) {
+        if (typeof name === "string" &&
+            name.length > 0 &&
+            typeof func === "function")
+            pollingRegister[name] = func;
+    }
 
-	return map;
+    map.unRegisterFromPollingNotification = function (name, func) {
+        if (pollingRegister[name]) {
+            delete pollingRegister[name]
+        }
+    }
+
+    map.pollingIsDone = function (context) {
+        angular.forEach(pollingRegister, function (value, key) {
+            value();
+        })
+    }
+
+    return map;
 });
 
 app.factory('ClientFact', function ($http, $q, $timeout) {
@@ -795,11 +795,11 @@ app.factory('ProductsFact', function ($http) {
 app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
-	var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
-	//var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
-	var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
-	var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
-	var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
+    var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
+        //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
+    var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
+    var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
+    var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
 
     $scope.serviceSelect = -1;
 
@@ -835,7 +835,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     $scope.populateInstances = function (serviceProviderId) {
         var res = {}
-        
+
         for (var customer in $scope.clients['customers']) {
             if ($scope.clients['customers'][customer].spId == serviceProviderId) {
                 if (ClientFact.getSelected().type == 'customers' &&
@@ -894,15 +894,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return labels;
     }
 
-    $scope.cpuValues = {
-        'low': 0,
-        'medium': 0,
-        'high': 0
-    };
 
-    $scope.numOfCpuSamples = 100;
+    // Since every sample happens once in 10 seconds and we want 1 hour, we need 360 samples.
+    $scope.numOfCpuSamples = 360;  
     $scope.cpuSamples = [];
-
 
     $scope.getCpuValues = function () {
         var values = [];
@@ -913,16 +908,35 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     };
 
     $scope.updateCpuValues = function () {
-        if ($scope.cpuLoadAvg <= 20) {
-            $scope.cpuValues['low']++;
-        } else if ($scope.cpuLoadAvg >= 80) {
-            $scope.cpuValues['high']++
-        } else {
-            $scope.cpuValues['medium']++;
+        var lowerThreshold = 20;
+        var upperThreshold = 80;
+        $scope.cpuValues = {
+            'low': 0,
+            'medium': 0,
+            'high': 0
+        };
+        $scope.cpuSamples.push($scope.cpuLoadMax);
+        if ($scope.cpuSamples.length > $scope.numOfCpuSamples) {
+            $scope.cpuSamples.shift();
+        }
+        for (var i = 0; i < $scope.cpuSamples.length; i++) {
+            if ($scope.cpuSamples[i] <= lowerThreshold) {
+                $scope.cpuValues['low']++;
+            } else if ($scope.cpuSamples[i] >= upperThreshold) {
+                $scope.cpuValues['high']++
+            } else {
+                $scope.cpuValues['medium']++;
+            }
         }
     };
 
-
+    $scope.buildCpuChart = function () {
+        return {
+            labels: ['low', 'medium', 'high'],
+            data: [$scope.cpuValues['low'], $scope.cpuValues['medium'], $scope.cpuValues['high']],
+            colors: ['#00CC00', '#CC6600', '#CC0000'],
+        };
+    };
 
     $scope.buildPieChart = function (spId) {
         var pie = {
@@ -930,8 +944,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             data: [0],
             numOfInstances: 0
         };
-
-
 
         for (var service in $scope.services) {
             var label = function (spId) {
@@ -968,11 +980,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         $scope.numOfAlerts = LogFact.numOfAlerts;
         // setValueBySteps('numOfInstances', 0, $scope.numOfInstances, 1000, $scope.numOfInstances/2);
 
-        $scope.cpuChart = {
-            labels: ["0% - 20%", "20% - 80%", "80% - 100%"],
-            data: /*$scope.getCpuValues(),*/ [3, 2, 1],
-            colors: ['#00CC00', '#CC6600', '#CC0000'],
-        };
+        $scope.cpuChart = $scope.buildCpuChart();
         //        $scope.pieChart.update();
         $scope.selectedClient = ClientFact.getSelected();
         $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
@@ -1203,6 +1211,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             } else {
                 $scope.cpuLoadAvg = response.data.data.Average;
                 $scope.cpuLoadMax = response.data.data.Maximum;
+                $scope.updateCpuValues();
             }
         }, function errorCallback(response) {
             // called asynchronously if an error occurs
@@ -1217,29 +1226,29 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return res;
     }
 
-    var updateInstanceTimeline = function(){
-		chart1.data = []
-		var len = LogFact.fullLogs.length;
-		var logRow;
-		var startTime;
-		var instanceName;
-		var type;
-		for(var i = 0 ; i < len ; i++){
-			logRow = LogFact.fullLogs[i];
-			if(!ClientFact.getInstanceById[logRow.instance_id]/* || !ClientFact.getInstanceById[logRow.instance_id].pc_id*/){
-				continue;
-			}
-			instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
-			startTime = logRow.timestamp * 1000;
-			type = logRow.type > 0x30 ? ' ' : '  ';
-			chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime + 1000)])
-		}
-	}
+    var updateInstanceTimeline = function () {
+        chart1.data = []
+        var len = LogFact.fullLogs.length;
+        var logRow;
+        var startTime;
+        var instanceName;
+        var type;
+        for (var i = 0; i < len; i++) {
+            logRow = LogFact.fullLogs[i];
+            if (!ClientFact.getInstanceById[logRow.instance_id] /* || !ClientFact.getInstanceById[logRow.instance_id].pc_id*/ ) {
+                continue;
+            }
+            instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+            startTime = logRow.timestamp * 1000;
+            type = logRow.type > 0x30 ? ' ' : '  ';
+            chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime + 1000)])
+        }
+    }
 
-	LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+    LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
 
-	var chart1 = {};
-	$scope.chart1 = chart1;
+    var chart1 = {};
+    $scope.chart1 = chart1;
     chart1.type = "Timeline";
     chart1.data = [
       /*[ 'ins #1', ' ', 1473033465821,  1473073465821 ],
@@ -1276,29 +1285,28 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     };
 
     $scope.chart = chart1;
-	
-	var cpuUtilInterval;
-  	if(!angular.isDefined(cpuUtilInterval)){
-  		$scope.updateCPUUtilization()
-  		//LogFact.updateLog();
-		console.info("init cpu interval");
-  		//logInterval = $interval(LogFact.updateLog, 5000);//, [count], [invokeApply], [Pass]);
-  		cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000);//, [count], [invokeApply], [Pass]);
-	}
 
-	LogFact.startLogPolling(10000);
-	$scope.$on('$destroy', function() {
-      // Make sure that the interval is destroyed too
-      if(angular.isDefined(cpuUtilInterval)){
-      	$interval.cancel(cpuUtilInterval);
-      	cpuUtilInterval = undefined;
-      }
-      LogFact.stopLogPolling();
-      LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
+    var cpuUtilInterval;
+    if (!angular.isDefined(cpuUtilInterval)) {
+        $scope.updateCPUUtilization()
+            //LogFact.updateLog();
+        console.info("init cpu interval");
+        //logInterval = $interval(LogFact.updateLog, 5000);//, [count], [invokeApply], [Pass]);
+        cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000); //, [count], [invokeApply], [Pass]);
+    }
+
+    LogFact.startLogPolling(10000);
+    $scope.$on('$destroy', function () {
+        // Make sure that the interval is destroyed too
+        if (angular.isDefined(cpuUtilInterval)) {
+            $interval.cancel(cpuUtilInterval);
+            cpuUtilInterval = undefined;
+        }
+        LogFact.stopLogPolling();
+        LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
     });
 
     $scope.updateInstances = function () {
-
         $scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
     };
 
