@@ -247,7 +247,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
         if (this) {
             that = this;
         }
-        $http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=300")
+        $http.get(ES_URL + type + "/_search?q=user_id:'" + clientId + "'&size=700")
             .then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -1235,15 +1235,16 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 		var logRow;
 		var startTime;
 		var instanceName;
+		var type;
 		for(var i = 0 ; i < len ; i++){
 			logRow = LogFact.fullLogs[i];
-			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].name){
+			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id){
 				continue;
 			}
-			instanceName = ClientFact.getInstanceById[logRow.instance_id].name;
+			instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
 			startTime = logRow.timestamp * 1000;
-			type = logRow.typeof > 0x30 ? '  ' : ' ';
-			chart1.data.push([instanceName, type, startTime, startTime + 1000])
+			type = logRow.type > 0x30 ? '  ' : ' ';
+			chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime + 1000)])
 		}
 	}
 
@@ -1253,7 +1254,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 	$scope.chart1 = chart1;
     chart1.type = "Timeline";
     chart1.data = [
-      [ 'ins #1', ' ', 1473033465821,  1473073465821 ]/*,
+      /*[ 'ins #1', ' ', 1473033465821,  1473073465821 ],
       [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
       [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
       [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
