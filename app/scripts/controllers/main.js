@@ -1238,12 +1238,12 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 		var type;
 		for(var i = 0 ; i < len ; i++){
 			logRow = LogFact.fullLogs[i];
-			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id){
+			if(!ClientFact.getInstanceById[logRow.instance_id]/* || !ClientFact.getInstanceById[logRow.instance_id].pc_id*/){
 				continue;
 			}
 			instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
 			startTime = logRow.timestamp * 1000;
-			type = logRow.type > 0x30 ? '  ' : ' ';
+			type = logRow.type > 0x30 ? ' ' : '  ';
 			chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime + 1000)])
 		}
 	}
