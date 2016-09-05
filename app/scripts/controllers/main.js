@@ -86,6 +86,32 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
         0x30: 'Warn',
         0x40: 'Attack',
     }
+
+    map.resolveSubType = {
+    	0 	: 'Generic',
+		1 	: 'Initialization',
+		2 	: 'Shutdown',
+		3	: 'AWS instance',
+		4	: 'CPU ID',
+		5	: 'MAC address',
+		64  : 'File open',
+		65	: 'File close',
+		66	: 'File read',
+		67	: 'Secure file open',
+		68	: 'Secure file close',
+		69	: 'Secure file read',
+		128	: 'ASLR',
+		129	: 'Canary',
+		130	: 'NX',
+		131	: 'Position independent executable (PIE)',
+		132	: 'RELRO',
+		192	: 'Debugger',
+		193	: 'Executable memory',
+		194	: 'Injected shared object',
+		195	: 'Unauthorized process',
+		196	: 'Signature Check'
+    }
+
     map.updateLog = function (pass) {
         var that = this == undefined ? pass : this;
         //$http.get(ES_URL + "events*/_search&size=")

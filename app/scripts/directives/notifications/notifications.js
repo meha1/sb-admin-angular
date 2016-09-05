@@ -12,6 +12,7 @@ angular.module('sbAdminApp')
         templateUrl:'scripts/directives/notifications/notifications.html',
         restrict: 'E',
         replace: true,
+        controller:'MainCtrl'
     	}
 	});
 

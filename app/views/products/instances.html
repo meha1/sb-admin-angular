@@ -139,7 +139,7 @@
 		            </h3>
 		            <!-- /.panel-heading -->
 		            <div class="panel-body panel-body-overscroll">
-						<div google-chart chart="chart"></div>
+						<div google-chart chart="chart" style="height:500px"></div>
 					</div>
 				</div>
 		  	</div>
@@ -174,7 +174,7 @@
 									<td>{{logRow.instance.ip_address}}</td>
 									<td>{{logRow.image.name}}</td>
 	                                <td>{{LogFact.resolveType[logRow.type]}}</td>
-	                                <td>{{logRow.subtype}}</td>
+	                                <td>{{LogFact.resolveSubType[logRow.subtype]}}</td>
 	                                <td>{{logRow.txt}}</td>
 	                            </tr>
 	                            <!-- <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
