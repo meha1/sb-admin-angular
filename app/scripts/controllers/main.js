@@ -93,6 +93,7 @@ app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
 		    		that.fullLogs.push(res[i]._source)
 		    		that.logs[instanceId].push(res[i]._source);
 		    	}
+		    	that.pollingIsDone(that)
 		    }
 		    //console.log(that.fullLogs)
 		 }, function errorCallback(response) {
@@ -115,6 +116,28 @@ app.factory('LogFact', function($http, $interval, $timeout, ClientFact){
       		logInterval = undefined;
       	}
 	}
+
+	var pollingRegister = {};
+	map.registerToPollingNotification = function(name, func){
+		if( typeof name === "string" &&
+		    name.length > 0 && 
+		    typeof func === "function")
+		pollingRegister[name] = func;
+	}
+
+	map.unRegisterFromPollingNotification = function(name, func){
+		if(pollingRegister[name]){
+			delete pollingRegister[name]
+		}
+	}	
+
+	map.pollingIsDone = function(context){
+		angular.forEach(pollingRegister, function(value, key){
+			value();
+		})
+	}
+
+
 	
 	return map;
 })
@@ -716,7 +739,7 @@ app.factory('ProductsFact', function($http){
 app.controller('MainCtrl', function($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload/*FileUploader*/) {
 	console.info("init MainCtrl!");
 
-	var CLOUD_WATCH_URL = "http://localhost:3000/cpuutilization"
+	var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
 	//var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
 	var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
 	var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
@@ -993,10 +1016,31 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
 		return res;
 	}
 
+	var updateInstanceTimeline = function(){
+		chart1.data = []
+		var len = LogFact.fullLogs.length;
+		var logRow;
+		var startTime;
+		var instanceName;
+		for(var i = 0 ; i < len ; i++){
+			logRow = LogFact.fullLogs[i];
+			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].name){
+				continue;
+			}
+			instanceName = ClientFact.getInstanceById[logRow.instance_id].name;
+			startTime = logRow.timestamp * 1000;
+			type = logRow.typeof > 0x30 ? '  ' : ' ';
+			chart1.data.push([instanceName, type, startTime, startTime + 1000])
+		}
+	}
+
+	LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+
 	var chart1 = {};
+	$scope.chart1 = chart1;
     chart1.type = "Timeline";
     chart1.data = [
-      [ 'ins #1', ' ', new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+      [ 'ins #1', ' ', 1473033465821,  1473073465821 ]/*,
       [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
       [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
       [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
@@ -1004,7 +1048,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
       [ 'ins #2', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
       [ 'ins #3', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
       [ 'ins #3', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]*/
       ];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
@@ -1043,6 +1087,7 @@ app.controller('MainCtrl', function($scope, $timeout, $http, $interval, Products
       	cpuUtilInterval = undefined;
       }
       LogFact.stopLogPolling();
+      LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
 
     });
 
