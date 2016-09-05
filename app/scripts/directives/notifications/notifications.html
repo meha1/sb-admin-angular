@@ -1,6 +1,11 @@
 <div class="panel-body">
     <div class="list-group">
-        <a href="#" class="list-group-item">
+        <a href="#" class="list-group-item" ng-repeat="logRow in LogFact.fullLogs | filter:{'type' : 64}  | limitTo : 10">
+            <i class="fa fa-warning fa-fw"></i> {{logRow.txt}}
+            <span class="pull-right text-muted small"><em>{{LogFact.resolveSubType[logRow.subtype]}}</em>
+            </span>
+        </a>
+        <!-- <a href="#" class="list-group-item">
             <i class="fa fa-comment fa-fw"></i> New Comment
             <span class="pull-right text-muted small"><em>4 minutes ago</em>
             </span>
@@ -39,7 +44,7 @@
             <i class="fa fa-shopping-cart fa-fw"></i> New Order Placed
             <span class="pull-right text-muted small"><em>9:49 AM</em>
             </span>
-        </a>
+        </a> -->
         <!-- <a href="#" class="list-group-item">
             <i class="fa fa-money fa-fw"></i> Payment Received
             <span class="pull-right text-muted small"><em>Yesterday</em>

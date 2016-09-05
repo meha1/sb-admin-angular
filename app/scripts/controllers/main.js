@@ -86,6 +86,32 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
         0x30: 'Warn',
         0x40: 'Attack',
     }
+
+    map.resolveSubType = {
+    	0 	: 'Generic',
+		1 	: 'Initialization',
+		2 	: 'Shutdown',
+		3	: 'AWS instance',
+		4	: 'CPU ID',
+		5	: 'MAC address',
+		64  : 'File open',
+		65	: 'File close',
+		66	: 'File read',
+		67	: 'Secure file open',
+		68	: 'Secure file close',
+		69	: 'Secure file read',
+		128	: 'ASLR',
+		129	: 'Canary',
+		130	: 'NX',
+		131	: 'Position independent executable (PIE)',
+		132	: 'RELRO',
+		192	: 'Debugger',
+		193	: 'Executable memory',
+		194	: 'Injected shared object',
+		195	: 'Unauthorized process',
+		196	: 'Signature Check'
+    }
+
     map.updateLog = function (pass) {
         var that = this == undefined ? pass : this;
         //$http.get(ES_URL + "events*/_search&size=")
@@ -1235,13 +1261,14 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var type;
         for (var i = 0; i < len; i++) {
             logRow = LogFact.fullLogs[i];
-            if (!ClientFact.getInstanceById[logRow.instance_id] /* || !ClientFact.getInstanceById[logRow.instance_id].pc_id*/ ) {
+			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id){
                 continue;
             }
-            instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+			//instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+			instanceName = logRow.instance_id;
             startTime = logRow.timestamp * 1000;
             type = logRow.type > 0x30 ? ' ' : '  ';
-            chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime + 1000)])
+			chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
         }
     }
 
@@ -1250,7 +1277,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var chart1 = {};
     $scope.chart1 = chart1;
     chart1.type = "Timeline";
-    chart1.data = [
+    chart1.data = [[' ',' ',new Date(0,0,0,14,30,0),new Date(0,0,0,14,30,0)]
       /*[ 'ins #1', ' ', 1473033465821,  1473073465821 ],
       [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
       [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
@@ -1263,26 +1290,26 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
   	];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
-        colors: ["#FF0000", "#00FF00"],
-        displayExactValues: true,
+        colors: ["#00FF00", "#FF0000"],
+        // displayExactValues: true,
         width: "100%",
-        height: "100%",
-        is3D: true,
-        chartArea: {
-            left: 10,
-            top: 10,
-            bottom: 0,
-            height: "100%"
-        },
-        avoidOverlappingGridLines: false
+        height: "500px",
+        // is3D: true,
+        // chartArea: {
+        //     left: 10,
+        //     top: 10,
+        //     bottom: 0,
+        //     height: "100%"
+        // },
+        // avoidOverlappingGridLines: false
     };
 
-    chart1.formatters = {
-        number: [{
-            columnNum: 1,
-            pattern: "$ #,##0.00"
-      }]
-    };
+    // chart1.formatters = {
+    //     number: [{
+    //         columnNum: 1,
+    //         pattern: "$ #,##0.00"
+    //   }]
+    // };
 
     $scope.chart = chart1;
 

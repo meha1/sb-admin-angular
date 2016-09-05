@@ -93,9 +93,11 @@
 <div class="row">
     <div class="col-lg-8 col-sm-12" id="line-chart" ng-controller="ChartCtrl">
         <div class="panel panel-default">
-            <div class="panel-heading">CPU Load </div>
+            <div class="panel-heading">Event Timeline </div>
             <div class="panel-body">
-                <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true" click="line.onClick" chart-series="line.series" height="165"></canvas>
+                <!-- <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true" click="line.onClick" chart-series="line.series" height="165"></canvas> -->
+                <div google-chart chart="chart" style="height:500px"></div>
+
             </div>
         </div>
     </div>
