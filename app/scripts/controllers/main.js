@@ -115,6 +115,9 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     that.logs = {};
                     that.fullLogs = [];
 
+                    that.numOfVerifications = 0;
+                    that.numOfAlerts = 0
+
                     for (var i = 0; i < len; i++) {
                         var instanceId = res[i]._source.instance_id
                         if (!instanceId || instanceId == "" || instanceId[0] == '\0')
@@ -131,6 +134,12 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         }
                         that.fullLogs.push(res[i]._source)
                         that.logs[instanceId].push(res[i]._source);
+
+                        if ((res[i]._source.type == 0x10) || (res[i]._source.type == 0x20)) {
+                            that.numOfVerifications++;
+                        } else if ((res[i]._source.type == 0x30) || (res[i]._source.type == 0x40)) {
+                            that.numOfAlerts++;
+                        }
                     }
                 }
                 //console.log(that.fullLogs)
@@ -765,7 +774,7 @@ app.factory('ProductsFact', function ($http) {
 app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
-    var CLOUD_WATCH_URL = "http://localhost:3000/cpuutilization"
+    var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
         //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
@@ -806,7 +815,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     $scope.populateInstances = function (serviceProviderId) {
         var res = {}
-        
+
         for (var customer in $scope.clients['customers']) {
             if ($scope.clients['customers'][customer].spId == serviceProviderId) {
                 if (ClientFact.getSelected().type == 'customers' &&
@@ -826,7 +835,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 }
             }
         }
-        console.log("RES INSTANCES: " + res);
         $scope.services = res;
     };
 
@@ -861,7 +869,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 labels.push(ClientFact.getServiceById[services[i]].name);
             }
         }
-        console.log("LABELS: " + labels);
         return labels;
     }
 
@@ -871,18 +878,23 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         'high': 0
     };
 
+    $scope.numOfCpuSamples = 100;
+    $scope.cpuSamples = [];
+
+
     $scope.getCpuValues = function () {
         var values = [];
         for (var key in $scope.cpuValues) {
-            var value = $scope.cpuValues[key];
+            values.push($scope.cpuValues[key]);
         }
         return values;
     };
 
     $scope.updateCpuValues = function () {
+
         if ($scope.cpuLoadAvg <= 20) {
             $scope.cpuValues['low']++;
-        } else if ($scope.cpuLoadAvg >= 20) {
+        } else if ($scope.cpuLoadAvg >= 80) {
             $scope.cpuValues['high']++
         } else {
             $scope.cpuValues['medium']++;
@@ -915,10 +927,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             pie.labels.push(label);
             pie.data.push($scope.services[service]);
             pie.numOfInstances += $scope.services[service];
+            
         }
         return pie;
     };
 
+    
+    
     $scope.setSelectedClient = function (type, index) {
 
         ClientFact.setSelected(type, index);
@@ -931,8 +946,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         $scope.populateInstances(servId);
         $scope.pieChart = $scope.buildPieChart(servId);
         $scope.numOfInstances = $scope.pieChart.numOfInstances;
-
-        console.log("NOI: " + $scope.numOfInstances);
+        $scope.numOfVerifications = LogFact.numOfVerifications;
+        $scope.numOfAlerts = LogFact.numOfAlerts;
+        // setValueBySteps('numOfInstances', 0, $scope.numOfInstances, 1000, $scope.numOfInstances/2);
 
         $scope.cpuChart = {
             labels: ["0% - 20%", "20% - 80%", "80% - 100%"],
@@ -1060,31 +1076,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         }
 
     }
-
-
-
-    $scope.getMenuInstanceInfo = function (instIdArr) {
-        var len = instIdArr.length;
-        var res = []
-        for (var i = 0; i < len; i++) {
-            var instanceData = ClientFact.getInstanceById[instIdArr[i]]
-            if (instanceData) {
-                // Adding service id to instance for filtering
-                instanceData.service_id = ClientFact.getImageById[instanceData.image_id].service_id;
-                if (instanceData.service_id) {
-                    res.push(instanceData);
-                }
-            }
-        }
-        return res;
-    }
-
-    // $scope.setFile = function(file){
-    // 	$scope.uploadImageFile = file;
-    // }
-
-
-
 
     $scope.cpuLoadAvg = 0; //65;
     $scope.cpuLoadAvgText = 0;
