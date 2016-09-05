@@ -298,6 +298,17 @@ body{
   color: white;
 }
 
+.panel-cpu {
+    background-color: #778899;
+    border-color: #778899;
+    color: white;
+}
+
+.panel-cpu > .panel-heading {
+    color: white;
+    background-color: #8899AA;
+}
+
 .panel-info {
   background-color:#26CF43; 
   border-color: #00C322;
@@ -355,6 +366,27 @@ body{
   font-size: .9em;
 }
 
+.pie-chart {
+    min-width: 0px!important;
+    min-height: 0px!important;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 50%!important;
+    width: auto!important;
+}
+
+.num-of-instances {
+    position: absolute;
+    line-height: 50px;
+    z-index: 2;
+    width: 1px;
+    font-size: 22px;
+    padding-left: 0.5em;
+    color: white;
+}
+/*
 .num-of-instances {
   position: absolute;
   line-height: 110px;
@@ -365,6 +397,7 @@ body{
   font-size: 22px;
   color: black;
 }
+*/
 
 
 .vertical-middle{
