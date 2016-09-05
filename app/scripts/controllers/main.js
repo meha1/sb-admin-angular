@@ -401,7 +401,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
     };
 
     map.setSelected = function (type, index) {
-        //        this.selectedIndex = [type, index];
+        this.selectedIndex = [type, index];
         this.selected = this.clients[type][index];
         this.selected.selectedService = "";
     }
@@ -786,7 +786,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         console.info($scope[value]);
     }
 
-    
+
     $scope.LogFact = LogFact;
     $scope.ClientFact = ClientFact;
     $scope.clients = ClientFact.getAllClients();
@@ -806,8 +806,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     $scope.populateInstances = function (serviceProviderId) {
         var res = {}
+        
         for (var customer in $scope.clients['customers']) {
             if ($scope.clients['customers'][customer].spId == serviceProviderId) {
+                if (ClientFact.getSelected().type == 'customers' &&
+                    $scope.clients['customers'][customer].id != ClientFact.getSelected().id) {
+                    continue;
+                }
                 var instIdArr = $scope.clients['customers'][customer].instances;
                 if (instIdArr) {
                     $scope.getFullInstanceInfo(instIdArr);
@@ -888,11 +893,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     $scope.buildPieChart = function (spId) {
         var pie = {
-            labels: [],
-            data: [],
-            numOfInstances : 0
+            labels: [''],
+            data: [0],
+            numOfInstances: 0
         };
-        
+
+
+
         for (var service in $scope.services) {
             var label = function (spId) {
                 for (var sp in $scope.clients['serviceProviders']) {
@@ -918,13 +925,14 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var servId = 0;
         if (type == 'serviceProviders') {
             servId = $scope.clients[type][index].id;
-            $scope.populateInstances(servId);
         } else {
             servId = $scope.clients[type][index].spId;
         }
-
+        $scope.populateInstances(servId);
         $scope.pieChart = $scope.buildPieChart(servId);
         $scope.numOfInstances = $scope.pieChart.numOfInstances;
+
+        console.log("NOI: " + $scope.numOfInstances);
 
         $scope.cpuChart = {
             labels: ["0% - 20%", "20% - 80%", "80% - 100%"],
@@ -935,8 +943,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         $scope.selectedClient = ClientFact.getSelected();
         $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
     }
+    $scope.numOfInstances = 0;
 
-    
 
 
     $scope.addProductImage = function (iName, iDesc, serviceId, file) {
@@ -1053,6 +1061,24 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
     }
 
+
+
+    $scope.getMenuInstanceInfo = function (instIdArr) {
+        var len = instIdArr.length;
+        var res = []
+        for (var i = 0; i < len; i++) {
+            var instanceData = ClientFact.getInstanceById[instIdArr[i]]
+            if (instanceData) {
+                // Adding service id to instance for filtering
+                instanceData.service_id = ClientFact.getImageById[instanceData.image_id].service_id;
+                if (instanceData.service_id) {
+                    res.push(instanceData);
+                }
+            }
+        }
+        return res;
+    }
+
     // $scope.setFile = function(file){
     // 	$scope.uploadImageFile = file;
     // }
@@ -1125,7 +1151,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         })
     }
 
-    
+
     $scope.numOfVerifications = 0;
     $scope.numOfAlerts = 0;
     $scope.timerStepsCallback = function (millis, steps, callback, finalCallback) {
@@ -1239,7 +1265,15 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         LogFact.stopLogPolling();
 
     });
-    $scope.setSelectedClient('serviceProviders', 0);
+
+    $scope.updateInstances = function () {
+
+        $scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
+    };
+
+    $interval($scope.updateInstances, 3000);
+    //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
+
     _DEBUG = $scope;
 });
 var _DEBUG;
