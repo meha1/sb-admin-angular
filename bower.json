@@ -22,7 +22,8 @@
     "angular-file-upload" : "*",
     "angular-google-chart": "*",
     "ng-file-upload": "*",
-    "bootstrap": "*"
+    "bootstrap": "*",
+    "elasticsearch": "*"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",

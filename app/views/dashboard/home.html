@@ -6,19 +6,44 @@
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
-    <div class="col-lg-3">
-        <div class="panel panel-instances panel-min-size">
-            <div class="panel-heading">
-                instances
-            </div>
-            <div class=" row center-div">
-                <div class= "row num-of-instances">{{pieChart.sumOfInstances}}</div> 
-                <canvas id="doughnut" class="chart chart-doughnut chart-xs " chart-data="pieChart.data" chart-labels="pieChart.labels" legend="true"></canvas>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="panel panel-primary panel-min-size">
+                <div class="panel-heading">
+                    instances
+                </div>
+                <div class="num-of-instances"> Total</div>
+                <br/>
+                <div class="num-of-instances">
+                    <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 3000, numOfInstances/2)">{{numOfInstances}}</span>
+                </div>
+                <div class="row center-div">
+                    <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-labels="pieChart.labels" legend="true">
+                    </canvas>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!--<div class="col-lg-3">
+        <div class="col-lg-3">
+            <div class="panel panel-cpu panel-min-size">
+                <div class="panel-heading">
+                    CPU Load
+                </div>
+                <div class="panel-body">
+                    <div class="row center-div">
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-colors="cpuChart.colors"  chart-options="cpuChart.options" chart-legend="true">
+                        </canvas>
+                    </div>
+                </div>
+                <!--
+                <div class="row center-div panel-text">
+                    <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+                            <span class="percent">{{percentText3}}</span>
+                    </span>
+                </div>
+-->
+            </div>
+        </div>
+        <!--<div class="col-lg-3">
             <div class="panel panel-primary panel-min-size">
                 <div class="panel-heading">
                     Active instances
@@ -33,50 +58,36 @@
                 </div>
             </div>
         </div>-->
-    <div class="col-lg-3">
-        <div class="panel panel-info panel-min-size">
-            <div class="panel-heading">
-                Verifications
-            </div>
-            <div class="panel-body">
-                <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                <div class="row center-div panel-text">
-                    <!-- <span>153</span> -->
-                    <span ng-init="setValueBySteps('numOfVerifications', 0, 150, 1000, 150)">{{numOfVerifications}}</span>
+        <div class="col-lg-3">
+            <div class="panel panel-info panel-min-size">
+                <div class="panel-heading">
+                    Verifications
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                        <!-- <span>153</span> -->
+                        <span ng-init="setValueBySteps('numOfVerifications', 0, 150, 1000, 150)">{{numOfVerifications}}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="panel panel-error panel-min-size">
-            <div class="panel-heading">
-                Alerts in 24H
-            </div>
-            <div class="panel-body">
-                <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                <div class="row center-div panel-text">
-                    <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
-                    <!-- <span>7</span> -->
-                    <span ng-init="setValueBySteps('numOfAlerts', 0, 20, 1000, 2)">{{numOfAlerts}}</span>
+        <div class="col-lg-3">
+            <div class="panel panel-error panel-min-size">
+                <div class="panel-heading">
+                    Alerts in 24H
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="panel panel-warning panel-min-size">
-            <div class="panel-heading">
-                CPU Load
-            </div>
-            <div class="panel-body">
-                <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                <div class="row center-div panel-text">
+                <div class="panel-body">
                     <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-                    <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
-                            <span class="percent">{{percentText3}}</span>
-                    </span>
+                    <div class="row center-div panel-text">
+                        <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+                        <!-- <span>7</span> -->
+                        <span ng-init="setValueBySteps('numOfAlerts', 0, 20, 1000, 20)">{{numOfAlerts}}</span>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 <div class="row">
