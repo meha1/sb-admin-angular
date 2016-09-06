@@ -1153,12 +1153,29 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         }
     }
 
+    $scope.isInstanceActive = function (instanceData) {
+        // Filter dead instances. They have 'end_time' that is in the past
+        if ('end_time' in instanceData) {
+            var now = moment();
+            var dateFormat = "DD-MM-YY HH:mm";
+            try {
+                var instanceEndTime = moment(instanceData['end_time'], dateFormat);
+            }
+            catch (err) {
+                return false;
+            }
+            if (instanceEndTime < now) {
+                return false;
+            }
+        }
+        return true;
+    };
 
     $scope.getFullInstanceInfo = function (instIdArr) {
         $scope.services = {};
         if (instIdArr) {
             var len = instIdArr.length;
-            var res = []
+            var res = [];
             for (var i = 0; i < len; i++) {
                 //            var instanceData = ClientFact.getInstanceById[instIdArr[i]]
 
@@ -1166,6 +1183,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 
                 var instanceData = instIdArr[i]
                 if (instanceData) {
+                    if (!$scope.isInstanceActive(instanceData)) {
+                        continue;
+                    }
+
                     // Adding service id to instance for filtering
                     var img = ClientFact.getImageById[instanceData.image_id];
                     if (img) {
