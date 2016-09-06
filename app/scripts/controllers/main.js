@@ -51,7 +51,7 @@ var app = angular.module('sbAdminApp');
 
 //angular.module('sbAdminApp')
 
-app.filter('ClientRelatedInstances', function () {
+app.filter('ClientRelatedInstances', function (ClientFact) {
     function filterFunc(items, clientInstances) {
         var filtered = [];
         if (!clientInstances) {
@@ -59,14 +59,16 @@ app.filter('ClientRelatedInstances', function () {
         }
         var len = clientInstances.length;
         var instanceIdMap = {};
+        // marking all instances that belong to the user
         for (var i = 0; i < len; i++) {
             if (clientInstances[i] && clientInstances[i].id) {
                 instanceIdMap[clientInstances[i].id] = true;
             }
         }
         angular.forEach(items, function (item) {
-            if (instanceIdMap[item.instance_id]) {
-                filtered.push(item);
+            if (instanceIdMap[item.instance_id] && ClientFact.getInstanceById[item.instance_id]) {
+            	item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
+            	filtered.push(item);
             }
         });
         return filtered;
@@ -337,52 +339,86 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
 
     map.getDataPerClient = function (type, clientId, successCallback, errorCallback, that) {
         //var client = this.getClientById[clientId];
-        if (this) {
+        if (!that) {
             that = this;
         }
         that.getFromES(type, clientId, successCallback, errorCallback, that);
     }
-    var wait = 0;
-    var waitGap = 350;
-    map.getAllClientsInfo = function () {
-        //wait = 0
-        requests = [];
-        var that = this
-            //var wait = 0;
-        for (var clientId in this.getClientById) {
-            //if (this.getClientById[clientId].type != "serviceProviders") {
-            wait += waitGap;
-            var deferred = $q.defer();
-            requests.push(deferred);
-            $timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
-            //}
-            wait += waitGap;
-            var deferred = $q.defer();
-            requests.push(deferred.promise);
-            //this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
-            $timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
+    // var wait = 0;
+    // var waitGap = 350;
+    // map.getAllClientsInfo = function () {
+    //     //wait = 0
+    //     requests = [];
+    //     var that = this
+    //         //var wait = 0;
+    //     for (var clientId in this.getClientById) {
+    //         //if (this.getClientById[clientId].type != "serviceProviders") {
+    //         wait += waitGap;
+    //         var deferred = $q.defer();
+    //         requests.push(deferred);
+    //         $timeout(that.getDataPerClient, wait, true, "instances", clientId.toString(), deferred.resolve, deferred.reject, that);
+    //         //}
+    //         wait += waitGap;
+    //         var deferred = $q.defer();
+    //         requests.push(deferred.promise);
+    //         //this.getDataPerClient("images", clientId, deferred.resolve, deferred.reject);
+    //         $timeout(that.getDataPerClient, wait, true, "images", clientId.toString(), deferred.resolve, deferred.reject, that);
 
-        }
-        var that = this;
-        $q.all(requests).then(function () {
-            wait = 0;
-            console.info("Clients Mapping updated with info:")
-            console.info(that.getClientById)
+    //     }
+    //     var that = this;
+    //     $q.all(requests).then(function () {
+    //         wait = 0;
+    //         console.info("Clients Mapping updated with info:")
+    //         console.info(that.getClientById)
+    //         map.getDataByIdMapping('images', map.getImageById);
+    //         map.getDataByIdMapping('instances', map.getInstanceById);
+    //         console.info("This is map.getInstanceById: ")
+    //         console.info(map.getInstanceById)
+    //         console.info("This is map.getImageById: ")
+    //         console.info(map.getImageById)
+    //     });
+    // }
+
+    var position;
+    var requestsPoll = [];
+
+    var doneAsyncRequest = function(param){
+    	if(position < requestsPoll.length){
+    		requestsPoll[position][0](requestsPoll[position][1],requestsPoll[position][2], requestsPoll[position][3], requestsPoll[position][4], requestsPoll[position][5]);
+    		position++;
+    	}else{
+    		var len = map.clients.customers.length;
+    		for (var i = 0 ; i < len ; i++){
+    			var spId = map.clients.customers[i].spId;
+    			if(!map.getClientById[spId].instances){
+    				map.getClientById[spId].instances = [];
+    			}
+    			if(!map.clients.customers[i].instances){
+    				continue;
+    			}else{
+    				map.getClientById[spId].instances = map.getClientById[spId].instances.concat(map.clients.customers[i].instances)
+    			}
+    		}
+    		console.info("Clients Mapping updated with info:")
+            console.info(map.getClientById)
             map.getDataByIdMapping('images', map.getImageById);
             map.getDataByIdMapping('instances', map.getInstanceById);
             console.info("This is map.getInstanceById: ")
             console.info(map.getInstanceById)
             console.info("This is map.getImageById: ")
             console.info(map.getImageById)
-        });
-        // for (var clientId in this.getClientById){
-        // 	if(this.getClientById[clientId].type != "serviceProviders"){
-        // 		this.getDataPerClient("instances", clientId);
-        // 	}
-        // 	this.getDataPerClient("images", clientId)
-        // }
-        // console.info("Clients Mapping updated with info:")
-        // console.info(this.getClientById)
+            map.isDoneInitialLoad = true;
+    	}
+    }
+    map.isDoneInitialLoad;
+    map.getAllClientsInfo = function () {
+        var that = this
+        position = 0;
+        for (var clientId in this.getClientById){
+        	requestsPoll.push([that.getDataPerClient, "instances", clientId.toString(), doneAsyncRequest, doneAsyncRequest, that]);
+        	requestsPoll.push([that.getDataPerClient, "images", clientId.toString(), doneAsyncRequest, doneAsyncRequest, that]);
+    	}
+    	doneAsyncRequest();
     }
 
     map.getClientById = {};
@@ -474,7 +510,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
     	}
         this.selectedIndex = [type, index];
         this.selected = this.clients[type][index];
-        this.selected.selectedService = "";
+        this.selected.selectedService = null;
     }
 
     map.addService = function (sName, sDesc) {
@@ -833,7 +869,7 @@ app.factory('ProductsFact', function ($http) {
 
     return map;
 });
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, ProductsFact, ClientFact, LogFact, Upload /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, ProductsFact, ClientFact, LogFact, Upload /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -896,7 +932,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                 }
             }
         }
-        console.log("RES INSTANCES: " + res);
+        //console.log("RES INSTANCES: " + res);
         $scope.services = res;
     };
 
@@ -1033,6 +1069,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         //        $scope.pieChart.update();
         $scope.selectedClient = ClientFact.getSelected();
         $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
+        updateInstanceTimeline();
     }
     $scope.numOfInstances = 0;
 
@@ -1146,7 +1183,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
                     }
                 }
             }
-            console.log("SID: " + $scope.services);
+            //console.log("SID: " + $scope.services);
             return res;
         }
 
@@ -1274,17 +1311,25 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var res = Math.round(num * mul) / mul;
         return res;
     }
-
+    $scope.filteredLogs = [];
     var updateInstanceTimeline = function () {
-        chart1.data = []
-        var len = LogFact.fullLogs.length;
+    	// TODO: Filter by user and service -> empty selected service == all servcies
+        chart1.data = [];
+        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
+        //var len = LogFact.fullLogs.length;
+        var len = $scope.filteredLogs.length
         var logRow;
         var startTime;
         var instanceName;
         var type;
+        var startTimestamp = ((new Date().getTime())/1000) - (12*3600)
         for (var i = 0; i < len; i++) {
-            logRow = LogFact.fullLogs[i];
-            if (!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id) {
+            //logRow = LogFact.fullLogs[i];
+            logRow = $scope.filteredLogs[i];
+            // checking if row has all related data in instances list and that it belongs to the current user
+            if (!ClientFact.getInstanceById[logRow.instance_id] || 
+            	!ClientFact.getInstanceById[logRow.instance_id].pc_id ||
+            	logRow.timestamp < startTimestamp) {
                 continue;
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
@@ -1293,7 +1338,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             type = logRow.type > 0x30 ? ' ' : '  ';
             chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
         }
-        if(chart1.data.length > 0){
+        // if instance data was loaded
+        if(ClientFact.isDoneInitialLoad){
     		//$timeout(function(){$scope.showTimelineChart = true;}, 100);
     		$scope.showTimelineChart = true;
         }
@@ -1304,17 +1350,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var chart1 = {};
     $scope.chart1 = chart1;
     chart1.type = "Timeline";
-    chart1.data = [[' ', ' ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 14, 30, 0)]
-      /*[ 'ins #1', ' ', 1473033465821,  1473073465821 ],
-      [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-      [ 'ins #2', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #2', '  ',  new Date(0,0,0,13,0,0), new Date(0,0,0,13,30,0) ],
-      [ 'ins #2', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-      [ 'ins #3', ' ', new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-      [ 'ins #3', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-      [ 'ins #3', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]*/
-  	];
+    chart1.data = [/*['ins1', ' ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 14, 30, 0)]*/];
     //chart1.data.push(['Services',20000]);
     chart1.options = {
         colors: ["#00FF00", "#FF0000"],
@@ -1367,7 +1403,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         $scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
     };
 
-    var updateInstanceInterval = $interval($scope.updateInstances, 3000);
+    var updateInstanceInterval = $interval($scope.updateInstances, 7000);
     //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
 
     _DEBUG = $scope;
