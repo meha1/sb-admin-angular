@@ -227,6 +227,8 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
     var ES_URL = "http://52.28.149.249:9200/"
 
     var map = {};
+    map.selectedIndex = [];
+
     map.clients = {
         serviceProviders: [
             {
@@ -466,6 +468,10 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
     };
 
     map.setSelected = function (type, index) {
+    	// checking if the selected user is the same user
+    	if(this.selectedIndex[0] == type && this.selectedIndex[1] == index){
+    		return;
+    	}
         this.selectedIndex = [type, index];
         this.selected = this.clients[type][index];
         this.selected.selectedService = "";
@@ -1287,10 +1293,14 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             type = logRow.type > 0x30 ? ' ' : '  ';
             chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
         }
+        if(chart1.data.length > 0){
+    		//$timeout(function(){$scope.showTimelineChart = true;}, 100);
+    		$scope.showTimelineChart = true;
+        }
     }
 
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
-
+    $scope.showTimelineChart = false;
     var chart1 = {};
     $scope.chart1 = chart1;
     chart1.type = "Timeline";
@@ -1346,6 +1356,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
             $interval.cancel(cpuUtilInterval);
             cpuUtilInterval = undefined;
         }
+        if (angular.isDefined(updateInstanceInterval)){
+        	$interval.cancel(updateInstanceInterval);
+        }
         LogFact.stopLogPolling();
         LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
     });
@@ -1354,7 +1367,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         $scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
     };
 
-    $interval($scope.updateInstances, 3000);
+    var updateInstanceInterval = $interval($scope.updateInstances, 3000);
     //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
 
     _DEBUG = $scope;
