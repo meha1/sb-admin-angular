@@ -88,47 +88,56 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     }
 
     map.resolveSubType = {
-    	0 	: 'Generic',
-		1 	: 'Initialization',
-		2 	: 'Shutdown',
-		3	: 'AWS instance',
-		4	: 'CPU ID',
-		5	: 'MAC address',
-		64  : 'File open',
-		65	: 'File close',
-		66	: 'File read',
-		67	: 'Secure file open',
-		68	: 'Secure file close',
-		69	: 'Secure file read',
-		128	: 'ASLR',
-		129	: 'Canary',
-		130	: 'NX',
-		131	: 'Position independent executable (PIE)',
-		132	: 'RELRO',
-		192	: 'Debugger',
-		193	: 'Executable memory',
-		194	: 'Injected shared object',
-		195	: 'Unauthorized process',
-		196	: 'Signature Check'
+        0: 'Generic',
+        1: 'Initialization',
+        2: 'Shutdown',
+        3: 'AWS instance',
+        4: 'CPU ID',
+        5: 'MAC address',
+        64: 'File open',
+        65: 'File close',
+        66: 'File read',
+        67: 'Secure file open',
+        68: 'Secure file close',
+        69: 'Secure file read',
+        128: 'ASLR',
+        129: 'Canary',
+        130: 'NX',
+        131: 'Position independent executable (PIE)',
+        132: 'RELRO',
+        192: 'Debugger',
+        193: 'Executable memory',
+        194: 'Injected shared object',
+        195: 'Unauthorized process',
+        196: 'Signature Check'
     }
 
     map.updateLog = function (pass) {
         var that = this == undefined ? pass : this;
         //$http.get(ES_URL + "events*/_search&size=")
+        var now = Date.now()/1000;
+        // 24hr in milliseconds
+        var fromDate = now - (3600 * 24);
         var searchQuery = {
             "query": {
                 "match_all": {}
             },
-            "size": 1000,
-            "sort": [
-                {
+            "size": 10000,
+            "sort": [{
                     "timestamp": {
                         "order": "desc"
                     }
-		    }
-		  ]
+                }
+		              	  ],
+            "filter": {
+                "range": {
+                    "timestamp": {
+                        "gt": fromDate ,
+                        "lt": now + (3600*24) //To be safe with the latest timezone 
+                    }
+                }
+            }
         }
-
         $http.post(ES_URL + "events-*/_search", searchQuery)
             .then(function successCallback(response) {
                 // this callback will be called asynchronously
@@ -922,7 +931,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
 
 
     // Since every sample happens once in 10 seconds and we want 1 hour, we need 360 samples.
-    $scope.numOfCpuSamples = 360;  
+    $scope.numOfCpuSamples = 360;
     $scope.cpuSamples = [];
 
     $scope.getCpuValues = function () {
@@ -933,13 +942,18 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         return values;
     };
 
+    $scope.cpuValues = {
+        'low': 1,
+        'medium': 1,
+        'high': 1
+    };
     $scope.updateCpuValues = function () {
         var lowerThreshold = 20;
         var upperThreshold = 80;
         $scope.cpuValues = {
-            'low': 0,
-            'medium': 0,
-            'high': 0
+            'low': 1,
+            'medium': 1,
+            'high': 1
         };
         $scope.cpuSamples.push($scope.cpuLoadMax);
         if ($scope.cpuSamples.length > $scope.numOfCpuSamples) {
@@ -968,7 +982,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var pie = {
             labels: [''],
             data: [0],
-            numOfInstances: 0
+            numOfInstances: 0,
+            options: {
+                tooltipFontSize: 20
+            }
         };
 
         for (var service in $scope.services) {
@@ -991,7 +1008,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     };
 
     $scope.setSelectedClient = function (type, index) {
-
+        
         ClientFact.setSelected(type, index);
         var servId = 0;
         if (type == 'serviceProviders') {
@@ -1261,14 +1278,14 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var type;
         for (var i = 0; i < len; i++) {
             logRow = LogFact.fullLogs[i];
-			if(!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id){
+            if (!ClientFact.getInstanceById[logRow.instance_id] || !ClientFact.getInstanceById[logRow.instance_id].pc_id) {
                 continue;
             }
-			//instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
-			instanceName = logRow.instance_id;
+            //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+            instanceName = logRow.instance_id;
             startTime = logRow.timestamp * 1000;
             type = logRow.type > 0x30 ? ' ' : '  ';
-			chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
+            chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
         }
     }
 
@@ -1277,7 +1294,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     var chart1 = {};
     $scope.chart1 = chart1;
     chart1.type = "Timeline";
-    chart1.data = [[' ',' ',new Date(0,0,0,14,30,0),new Date(0,0,0,14,30,0)]
+    chart1.data = [[' ', ' ', new Date(0, 0, 0, 14, 30, 0), new Date(0, 0, 0, 14, 30, 0)]
       /*[ 'ins #1', ' ', 1473033465821,  1473073465821 ],
       [ 'ins #1', '  ',  new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
       [ 'ins #1', ' ', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
