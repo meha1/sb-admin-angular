@@ -51,6 +51,19 @@ var app = angular.module('sbAdminApp');
 
 //angular.module('sbAdminApp')
 
+app.factory('NotifyingService', function($rootScope) {
+    return {
+        subscribe: function(scope, callback) {
+            var handler = $rootScope.$on('notifying-service-event', callback);
+            scope.$on('$destroy', handler);
+        },
+
+        notify: function() {
+            $rootScope.$emit('notifying-service-event');
+        }
+    };
+});
+
 app.filter('ClientRelatedInstances', function (ClientFact) {
     function filterFunc(items, clientInstances) {
         var filtered = [];
@@ -225,7 +238,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     return map;
 });
 
-app.factory('ClientFact', function ($http, $q, $timeout) {
+app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
     var ES_URL = "http://52.28.149.249:9200/"
 
     var map = {};
@@ -408,6 +421,7 @@ app.factory('ClientFact', function ($http, $q, $timeout) {
             console.info("This is map.getImageById: ")
             console.info(map.getImageById)
             map.isDoneInitialLoad = true;
+            NotifyingService.notify();
         }
     }
     map.isDoneInitialLoad;
@@ -869,7 +883,7 @@ app.factory('ProductsFact', function ($http) {
 
     return map;
 });
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, ProductsFact, ClientFact, LogFact, Upload /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -877,6 +891,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
+    var LAST_X_HOURS = 24;
 
     $scope.serviceSelect = -1;
 
@@ -1343,6 +1358,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     }
     $scope.filteredLogs = [];
     var updateInstanceTimeline = function () {
+        // if instance data wasn't loaded
+    	if(!ClientFact.isDoneInitialLoad){
+    		return;
+    	}
         // TODO: Filter by user and service -> empty selected service == all servcies
         chart1.data = [];
         $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
@@ -1352,7 +1371,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var startTime;
         var instanceName;
         var type;
-        var startTimestamp = ((new Date().getTime()) / 1000) - (12 * 3600)
+        var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
         for (var i = 0; i < len; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
@@ -1368,14 +1387,17 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             type = logRow.type > 0x30 ? ' ' : '  ';
             chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
         }
-        // if instance data was loaded
-        if (ClientFact.isDoneInitialLoad) {
-            //$timeout(function(){$scope.showTimelineChart = true;}, 100);
             $scope.showTimelineChart = true;
         }
-    }
 
+    var updateInstanceInterval;
+    NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+    	LogFact.startLogPolling(10000);
+    	$scope.updateInstances();
+    	updateInstanceInterval = $interval($scope.updateInstances, 5000);
+    });
+
     $scope.showTimelineChart = false;
     var chart1 = {};
     $scope.chart1 = chart1;
@@ -1387,6 +1409,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // displayExactValues: true,
         width: "100%",
         height: "500px",
+        enableInteractivity: true,
+        select : function(){
+    		console("hello from chart1.options.select");
+    	},
         // is3D: true,
         // chartArea: {
         //     left: 10,
@@ -1396,7 +1422,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // },
         // avoidOverlappingGridLines: false
     };
-
+    chart1.select = function(){
+    	console("hello from chart1.select");
+    }
     // chart1.formatters = {
     //     number: [{
     //         columnNum: 1,
@@ -1415,7 +1443,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         cpuUtilInterval = $interval($scope.updateCPUUtilization, 10000); //, [count], [invokeApply], [Pass]);
     }
 
-    LogFact.startLogPolling(10000);
     $scope.$on('$destroy', function () {
         // Make sure that the interval is destroyed too
         if (angular.isDefined(cpuUtilInterval)) {
@@ -1433,7 +1460,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         $scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
     };
 
-    var updateInstanceInterval = $interval($scope.updateInstances, 7000);
     //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
 
     _DEBUG = $scope;

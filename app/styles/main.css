@@ -403,14 +403,20 @@ body{
 }
 
 .num-of-instances {
+    min-width: 0px!important;
+    min-height: 0px!important;
     position: absolute;
     line-height: 50px;
-    z-index: 2;
-    width: 1px;
-    font-size: 22px;
-    padding-left: 0.5em;
+    z-index: 9999;
+    font-size: 15px;
     color: white;
-}
+    right: 90px;
+    bottom: 70px;
+    margin:auto;
+    height: 22%!important;
+    width: auto!important;
+
+    }
 /*
 .num-of-instances {
   position: absolute;

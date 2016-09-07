@@ -12,23 +12,19 @@
                 <div class="panel-heading">
                     instances
                 </div>
-<!--
-                <div class="num-of-instances"> Total</div>
-                <br/>
--->
-<!--
-                <div class="num-of-instances">
-                    <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span>
+                <div class="pie-container">
+                    <div class="row center-div">
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-labels="pieChart.labels" legend="true">
+                          </canvas>
+                          <div class="num-of-instances">
+                                <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span>
+                            </div>
+                        
+                    </div>
+                    <div id="pieLegend" class="instance-legend">
+                        <!--                    <div ng-init="value">{{pieChart.legend}}</div>-->
+                    </div>
                 </div>
--->             <div class="pie-container">
-                <div class="row center-div">
-                    <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-labels="pieChart.labels" legend="true">
-                    </canvas>
-                </div>
-                <div id="pieLegend" class="instance-legend">
-<!--                    <div ng-init="value">{{pieChart.legend}}</div>-->
-                </div>
-            </div>
             </div>
         </div>
         <div class="col-lg-3">
@@ -42,9 +38,12 @@
                         </canvas>
                     </div>
                     <div class="cpu-legend">
-                        <div><div class="cpu-high"> &#9632</div> High</div>
-                        <div><div class="cpu-med"> &#9632 </div> Med</div>
-                        <div><div class="cpu-low"> &#9632 </div> Low</div>
+                        <div>
+                            <div class="cpu-high"> &#9632</div> High</div>
+                        <div>
+                            <div class="cpu-med"> &#9632 </div> Med</div>
+                        <div>
+                            <div class="cpu-low"> &#9632 </div> Low</div>
                     </div>
                 </div>
 
@@ -112,12 +111,13 @@
             <div class="panel-heading">Event Timeline </div>
             <div class="panel-body center-div">
                 <!-- <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true" click="line.onClick" chart-series="line.series" height="165"></canvas> -->
-                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif""> 
-                <div ng-show="chart1.data.length > 0" google-chart chart="chart" style="height:500px;"></div>
-            </div>
+                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif" "> 
+                <div ng-show="chart1.data.length> 0" google-chart chart="chart" style="height:500px;"></div>
+            <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3>
         </div>
     </div>
-    <!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
+</div>
+<!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
             <div class="panel panel-default">
                 <div class="panel-heading">Some info</div>
                 <div class="panel-body">
@@ -125,20 +125,20 @@
                 </div>
             </div>
         </div> -->
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bell fa-fw"></i> Alert log
-            </div>
-            <!-- /.panel-heading -->
-            <notifications></notifications>
-            <!-- /.panel-body -->
+<div class="col-lg-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="fa fa-bell fa-fw"></i> Alert log
         </div>
-        <!-- /.panel -->
-
-        <!-- <chat></chat> -->
-        <!-- /.panel .chat-panel -->
+        <!-- /.panel-heading -->
+        <notifications></notifications>
+        <!-- /.panel-body -->
     </div>
+    <!-- /.panel -->
+
+    <!-- <chat></chat> -->
+    <!-- /.panel .chat-panel -->
+</div>
 </div>
 <div class="row">
     <div class="col-lg-12">
