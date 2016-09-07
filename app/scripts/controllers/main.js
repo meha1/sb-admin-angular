@@ -877,6 +877,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
+    var LAST_X_HOURS = 24;
 
     $scope.serviceSelect = -1;
 
@@ -1343,7 +1344,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var startTime;
         var instanceName;
         var type;
-        var startTimestamp = ((new Date().getTime())/1000) - (12*3600)
+        var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
         for (var i = 0; i < len; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
@@ -1378,6 +1379,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // displayExactValues: true,
         width: "100%",
         height: "500px",
+        enableInteractivity: true,
+        select : function(){
+    		console("hello from chart1.options.select");
+    	},
         // is3D: true,
         // chartArea: {
         //     left: 10,
@@ -1387,7 +1392,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // },
         // avoidOverlappingGridLines: false
     };
-
+    chart1.select = function(){
+    	console("hello from chart1.select");
+    }
     // chart1.formatters = {
     //     number: [{
     //         columnNum: 1,
