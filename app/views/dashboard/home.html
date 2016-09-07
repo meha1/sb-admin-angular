@@ -8,7 +8,7 @@
     <!-- /.row -->
     <div class="row">
         <div class="col-lg-3">
-            <div class="panel panel-primary panel-min-size">
+            <div class="panel panel-warning panel-min-size">
                 <div class="panel-heading">
                     instances
                 </div>
@@ -21,28 +21,39 @@
                     <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-labels="pieChart.labels" legend="true">
                     </canvas>
                 </div>
+                <div class="instance-legend">
+                    <span ng-repeat="&#9679"></span>
+                </div>
             </div>
         </div>
         <div class="col-lg-3">
-            <div class="panel panel-cpu panel-min-size">
+            <div class="panel panel-primary panel-min-size">
                 <div class="panel-heading">
                     CPU Load
                 </div>
-                <div class="panel-body">
+                <div class="pie-container">
                     <div class="row center-div">
-                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-colors="cpuChart.colors"  chart-options="cpuChart.options" chart-legend="true">
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-colors="cpuChart.colors" chart-options="cpuChart.options" chart-legend="true">
                         </canvas>
                     </div>
+                    <div class="cpu-legend">
+                        <div><div class="cpu-high"> &#9632</div> High #<span ng-init="value">{{cpuChart.data[2]-1}}</span></div>
+                        <div><div class="cpu-med"> &#9632 </div> Med  #<span ng-init="value">{{cpuChart.data[1]-1}}</span></div>
+                        <div><div class="cpu-low"> &#9632 </div> Low  #<span ng-init="value">{{cpuChart.data[0]-1}}</span></div>
+                    </div>
                 </div>
-                <!--
+
+            </div>
+            <!--
                 <div class="row center-div panel-text">
                     <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
                             <span class="percent">{{percentText3}}</span>
                     </span>
                 </div>
 -->
-            </div>
         </div>
+
+
         <!--<div class="col-lg-3">
             <div class="panel panel-primary panel-min-size">
                 <div class="panel-heading">

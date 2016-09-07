@@ -115,8 +115,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     map.updateLog = function (pass) {
         var that = this == undefined ? pass : this;
         //$http.get(ES_URL + "events*/_search&size=")
-        var now = Date.now()/1000;
-        // 24hr in milliseconds
+        var now = Date.now() / 1000;
+        // 24hr in seconds
         var fromDate = now - (3600 * 24);
         var searchQuery = {
             "query": {
@@ -131,9 +131,9 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
 		              	  ],
             "filter": {
                 "range": {
-                    "timestamp": {
-                        "gt": fromDate ,
-                        "lt": now + (3600*24) //To be safe with the latest timezone 
+                    "timestamp": { // timestamp is a long unix time
+                        "gt": fromDate,
+                        "lt": now + (3600 * 24) //To be safe with the latest timezone 
                     }
                 }
             }
@@ -970,11 +970,32 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         }
     };
 
+    
     $scope.buildCpuChart = function () {
         return {
             labels: ['low', 'medium', 'high'],
             data: [$scope.cpuValues['low'], $scope.cpuValues['medium'], $scope.cpuValues['high']],
             colors: ['#00CC00', '#CC6600', '#CC0000'],
+            options: {
+                animation: {
+                    animateRotate: true
+                },
+                tooltipEvents: [],
+    showTooltips: true,
+    tooltipCaretSize: 10,
+    onAnimationComplete: function () {
+        this.showTooltip(this.segments, true);
+    },
+                legend: {
+                    labels: {
+                        generateLabels: function (Chart) {
+                            var legendTemplate = "<ul >ariel</ul>";
+                            return legendTemplate;
+
+                        }
+                    }
+                }
+            }
         };
     };
 
@@ -982,10 +1003,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         var pie = {
             labels: [''],
             data: [0],
-            numOfInstances: 0,
-            options: {
-                tooltipFontSize: 20
-            }
+            numOfInstances: 0
         };
 
         for (var service in $scope.services) {
@@ -1008,7 +1026,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
     };
 
     $scope.setSelectedClient = function (type, index) {
-        
+
         ClientFact.setSelected(type, index);
         var servId = 0;
         if (type == 'serviceProviders') {
@@ -1164,9 +1182,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, Product
         scaleColor: false,
         //  onStep:function(a){this.$el.find("span").text(~~a)}
     }
-    $scope.options2 = JSON.parse(JSON.stringify($scope.options))
-    $scope.options3 = JSON.parse(JSON.stringify($scope.options))
-    $scope.options4 = JSON.parse(JSON.stringify($scope.options))
+    $scope.options2 = JSON.parse(JSON.stringify($scope.options));
+    $scope.options3 = JSON.parse(JSON.stringify($scope.options));
+    $scope.options4 = JSON.parse(JSON.stringify($scope.options));
     $scope.options.onStep = function () {
         $scope.$apply(function () {
             var parsed = parseInt($scope.cpuLoadAvgText)
