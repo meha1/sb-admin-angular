@@ -80,7 +80,7 @@ app.filter('ClientRelatedInstances', function (ClientFact) {
         }
         angular.forEach(items, function (item) {
             if (instanceIdMap[item.instance_id] && ClientFact.getInstanceById[item.instance_id]) {
-                item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
+                //item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
                 filtered.push(item);
             }
         });
@@ -178,7 +178,9 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         //res[i]._source.id = res[i]._id; // adding instance id into the data
                         res[i]._source.instance = ClientFact.getInstanceById[instanceId]
                         if (res[i]._source.instance) {
-                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id];
+                            res[i]._source.service_id = res[i]._source.image.service_id; 
+                            res[i]._source.id = res[i]._id;
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
                         }
@@ -883,7 +885,7 @@ app.factory('ProductsFact', function ($http) {
 
     return map;
 });
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -891,7 +893,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 6;
+    var LAST_X_HOURS = 24;
 
     $scope.serviceSelect = -1;
 
@@ -1339,8 +1341,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             if (response.error) {
                 console.info(response.error)
             } else {
-                //                $scope.cpuLoadAvg = response.data.data.Average;
-                //                $scope.cpuLoadMax = response.data.data.Maximum;
+                $scope.cpuLoadAvg = response.data.data[0].Average;
+                $scope.cpuLoadMax = response.data.data[0].Maximum;
                 $scope.cpuLoadData = response.data.data;
                 $scope.updateCpuValues();
             }
@@ -1422,7 +1424,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             				"Text: " +
             			"</div>" + 
             			"<div class='col-md-9 tooltip-text'>" +
-            				LogFact.resolveType[logRow.txt] +
+            				logRow.txt +
             			"</div>" +
             		"</div>" + 
         		"</div>"
@@ -1439,9 +1441,35 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
     	LogFact.startLogPolling(10000);
+    	//LogFact.stopLogPolling();
     	$scope.updateInstances();
     	updateInstanceInterval = $interval($scope.updateInstances, 5000);
     });
+
+    $scope.scrollToAnchor = function(index){
+    	console.info("Selected index is: " + index)
+    	console.info($scope.filteredLogs[index])
+    	var serviceId = $scope.filteredLogs[index].image.service_id;
+    	ClientFact.getSelected().selectedService = serviceId;
+    	//TODO: set selcted service
+    	if($state.current.name != 'dashboard.instances'){
+    		$state.go('dashboard.instances');
+    	}
+    	$timeout($scope.scrollToLogAnchor, 100, false, $scope.filteredLogs[index].id);
+    }
+
+    $scope.scrollToLogAnchor = function(index){
+    	var newHash = 'logAnchor' + index;
+		if ($location.hash() !== newHash) {
+			// set the $location.hash to `newHash` and
+			// $anchorScroll will automatically scroll to it
+			$location.hash('logAnchor' + index);
+		} else {
+			// call $anchorScroll() explicitly,
+			// since $location.hash hasn't changed
+			$anchorScroll();
+		}
+    }
 
     $scope.showTimelineChart = false;
     var chart1 = {};

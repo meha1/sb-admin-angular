@@ -139,7 +139,8 @@
 		            </h3>
 		            <!-- /.panel-heading -->
 		            <div class="panel-body panel-body-overscroll">
-						<div google-chart chart="chart" style="height:500px"></div>
+						<!-- <div google-chart chart="chart" style="height:500px"></div> -->
+						<div id="timelineDash" style="height:500px"></div>
 					</div>
 				</div>
 		  	</div>
@@ -167,8 +168,8 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}">
-	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
+	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{$index}}"> -->
+	                            <tr ng-repeat="logRow in filteredLogs | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <td>{{logRow.instance.pc_id}}</td>
 									<td>{{logRow.instance.ip_address}}</td>

@@ -102,7 +102,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <div class="row">
@@ -113,11 +112,25 @@
                 <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif""> 
                 <!-- <div ng-show="chart1.data.length > 0" google-chart chart="chart" style="height:500px;"></div> -->
                 <!-- <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3> -->
-                <h3 ng-show="showTimelineChart && timelineRowsNum == 0">No events...</h3>
+                <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3>
  
                 <div id="timelineDash" style="height:500px;"></div>
             </div>
         </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-bell fa-fw"></i> Alert log
+            </div>
+            <!-- /.panel-heading -->
+            <notifications></notifications>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+
+        <!-- <chat></chat> -->
+        <!-- /.panel .chat-panel -->
     </div>
 </div>
 <!-- <div class="col-lg-3 col-sm-6" id="doughnut-chart" ng-controller="ChartCtrl">
@@ -128,21 +141,6 @@
                 </div>
             </div>
         </div> -->
-<div class="col-lg-4">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <i class="fa fa-bell fa-fw"></i> Alert log
-        </div>
-        <!-- /.panel-heading -->
-        <notifications></notifications>
-        <!-- /.panel-body -->
-    </div>
-    <!-- /.panel -->
-
-    <!-- <chat></chat> -->
-    <!-- /.panel .chat-panel -->
-</div>
-</div>
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -174,52 +172,5 @@
             <chat></chat>
         </div>
     </div> -->
-</div>
-
 <script type="text/javascript">
-    var chart;
-    var dataTable;
-    var timelineRowsNum = 0;
-    var timelineOptions;
-    if(!isGoogleChartsLoaded){
-        google.charts.load("current", {packages:["timeline"]});    
-    
-        google.charts.setOnLoadCallback(preDrawTimelineChart);   
-        var container = document.getElementById('timelineDash');
-
-        function selectEventHandler(){
-            var selection = chart.getSelection();
-            console.info("Selection:");
-            var row = dataTable.Lf[selection[0].row].c;
-            console.info(row);
-        }
-
-        function preDrawTimelineChart(){
-            isGoogleChartsLoaded = true;
-            chart = new google.visualization.Timeline(container);
-            google.visualization.events.addListener(chart, 'select', selectEventHandler);
-            timelineOptions = {
-                enableInteractivity : true,
-                colors: ["#00FF00", "#FF0000"],
-                tooltip : {
-                    isHtml: true
-                },
-            }
-        }
-
-        function drawTimelineChart(scope, rows, filters) {
-            timelineRowsNum = rows.length;
-            dataTable = new google.visualization.DataTable();
-            dataTable.addColumn({ type: 'string', id: 'InstanceID' });
-            dataTable.addColumn({ type: 'string', id: 'EventType' });
-            dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': {'html': true}});
-            dataTable.addColumn({ type: 'date', id: 'Start' });
-            dataTable.addColumn({ type: 'date', id: 'End' });
-            dataTable.addRows(rows);
-
-            //try{
-                chart.draw(dataTable, timelineOptions);
-            //}catch(e){}
-        }
-    }
 </script>
