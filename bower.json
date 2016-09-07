@@ -7,6 +7,7 @@
     "es5-shim": "~3.1.0",
     "angular-resource": "1.2.16",
     "angular-cookies": "1.2.16",
+    "angular-chart": "*",
     "angular-sanitize": "1.2.16",
     "angular-animate": "1.2.16",
     "angular-touch": "1.2.16",
@@ -19,18 +20,19 @@
     "angular-toggle-switch": "*",
     "metisMenu": "*",
     "easy-pie-chart": "*",
-    "angular-file-upload" : "*",
+    "angular-file-upload": "*",
     "angular-google-chart": "*",
     "ng-file-upload": "*",
     "bootstrap": "*",
-    "elasticsearch": "*"
+    "elasticsearch": "*",
+    "moment": "^2.14.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
     "angular-scenario": "1.2.16"
   },
   "resolutions": {
-    "bootstrap": "^3.1.1"
+    "bootstrap": "^3.3.7"
   },
   "appPath": "app"
 }

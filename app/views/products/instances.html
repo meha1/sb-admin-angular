@@ -111,7 +111,7 @@
 	                        <tbody ng-show="ClientFact.getSelected().type == 'customers'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
 								 <tr ng-repeat="instance in getFullInstanceInfo(ClientFact.getSelected().instances)| filter: {'service_id' : ClientFact.getSelected().selectedService}">
-	                                <td>{{ClientFact.getInstanceById[instance].pc_id}}</td>
+	                                <td>{{ClientFact.getInstanceById[instance.id].pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
 	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
@@ -167,7 +167,7 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog">
+	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}">
 	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <td>{{logRow.instance.pc_id}}</td>
