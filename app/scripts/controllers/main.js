@@ -891,7 +891,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 24;
+    var LAST_X_HOURS = 6;
 
     $scope.serviceSelect = -1;
 
@@ -1357,6 +1357,12 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         return res;
     }
     $scope.filteredLogs = [];
+
+    $scope.reloadTimeline = function() {
+    	updateInstanceTimeline();
+    	console.info("Loaded main view!")
+	};
+
     var updateInstanceTimeline = function () {
         // if instance data wasn't loaded
     	if(!ClientFact.isDoneInitialLoad){
@@ -1385,12 +1391,51 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             instanceName = logRow.instance_id;
             startTime = logRow.timestamp * 1000;
             type = logRow.type > 0x30 ? ' ' : '  ';
-            chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
+            var tooltip = 
+            	"<div>" +
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Time: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				$filter('date')(logRow.timestamp,'medium') +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Type: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				LogFact.resolveType[logRow.type] +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Subtype: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				LogFact.resolveSubType[logRow.subtype] +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Text: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				LogFact.resolveType[logRow.txt] +
+            			"</div>" +
+            		"</div>" + 
+        		"</div>"
+            chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(startTime)])
         }
-            $scope.showTimelineChart = true;
-        }
+		$scope.showTimelineChart = true;
+		if(chart1.data.length > 0){
+			drawTimelineChart($scope, chart1.data)
+		}
+    }
 
     var updateInstanceInterval;
+
     NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
     	LogFact.startLogPolling(10000);

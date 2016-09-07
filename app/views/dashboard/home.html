@@ -109,11 +109,14 @@
     <div class="col-lg-8 col-sm-12" id="line-chart" ng-controller="ChartCtrl">
         <div class="panel panel-default">
             <div class="panel-heading">Event Timeline </div>
-            <div class="panel-body center-div">
-                <!-- <canvas id="line" class="chart chart-line chart-xl" chart-data="line.data" chart-labels="line.labels" legend="true" click="line.onClick" chart-series="line.series" height="165"></canvas> -->
-                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif" "> 
-                <div ng-show="chart1.data.length> 0" google-chart chart="chart" style="height:500px;"></div>
-            <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3>
+            <div ng-init="reloadTimeline()" class="panel-body center-div">
+                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif""> 
+                <!-- <div ng-show="chart1.data.length > 0" google-chart chart="chart" style="height:500px;"></div> -->
+                <!-- <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3> -->
+                <h3 ng-show="showTimelineChart && timelineRowsNum == 0">No events...</h3>
+ 
+                <div id="timelineDash" style="height:500px;"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -172,3 +175,51 @@
         </div>
     </div> -->
 </div>
+
+<script type="text/javascript">
+    var chart;
+    var dataTable;
+    var timelineRowsNum = 0;
+    var timelineOptions;
+    if(!isGoogleChartsLoaded){
+        google.charts.load("current", {packages:["timeline"]});    
+    
+        google.charts.setOnLoadCallback(preDrawTimelineChart);   
+        var container = document.getElementById('timelineDash');
+
+        function selectEventHandler(){
+            var selection = chart.getSelection();
+            console.info("Selection:");
+            var row = dataTable.Lf[selection[0].row].c;
+            console.info(row);
+        }
+
+        function preDrawTimelineChart(){
+            isGoogleChartsLoaded = true;
+            chart = new google.visualization.Timeline(container);
+            google.visualization.events.addListener(chart, 'select', selectEventHandler);
+            timelineOptions = {
+                enableInteractivity : true,
+                colors: ["#00FF00", "#FF0000"],
+                tooltip : {
+                    isHtml: true
+                },
+            }
+        }
+
+        function drawTimelineChart(scope, rows, filters) {
+            timelineRowsNum = rows.length;
+            dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'InstanceID' });
+            dataTable.addColumn({ type: 'string', id: 'EventType' });
+            dataTable.addColumn({ type: 'string', role: 'tooltip', 'p': {'html': true}});
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+            dataTable.addRows(rows);
+
+            //try{
+                chart.draw(dataTable, timelineOptions);
+            //}catch(e){}
+        }
+    }
+</script>

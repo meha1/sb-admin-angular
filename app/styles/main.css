@@ -499,6 +499,21 @@ body{
   max-height: 500px;
   overflow-y: scroll;
 }
+
+.tooltip-label{
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.tooltip-text{
+  font-family: sans-serif;
+  font-size: 14px;
+  margin-top: 4px;
+  
+  /*font-weight: 900;*/
+}
 /*
 
 
