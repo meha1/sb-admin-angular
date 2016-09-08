@@ -13,7 +13,7 @@
     "angular-touch": "1.2.16",
     "angular-route": "1.2.16",
     "font-awesome": "4.3.0",
-    "angular-bootstrap": "*",
+    "angular-bootstrap": "^2.1.3",
     "oclazyload": "~0.5.2",
     "angular-loading-bar": "~0.7.0",
     "angular-ui-router": "~0.2.13",

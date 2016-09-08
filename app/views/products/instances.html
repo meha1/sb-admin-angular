@@ -97,7 +97,7 @@
 	                        </thead>
 	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
-	                            <tr ng-repeat="instance in ClientFact.getSelected().instances">
+	                            <tr ng-click="openInstanceModal(instance)" ng-repeat="instance in ClientFact.getSelected().instances" ng-click="openInstanceModal(instance)">
 	                                <td>{{instance.pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
@@ -105,12 +105,12 @@
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
 	                                <td class="text-center">{{instance.cpuLoad}}%</td>
 	                                <td>{{instance.start_time | date:'medium'}}</td>
-	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
+	                                <td ng-click="$event.stopPropagation()" class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
 	                            </tr>
 	                        </tbody>
 	                        <tbody ng-show="ClientFact.getSelected().type == 'customers'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
-								 <tr ng-repeat="instance in getFullInstanceInfo(ClientFact.getSelected().instances)| filter: {'service_id' : ClientFact.getSelected().selectedService}">
+								 <tr ng-repeat="instance in getFullInstanceInfo(ClientFact.getSelected().instances)| filter: {'service_id' : ClientFact.getSelected().selectedService}" ng-click="openInstanceModal(instance)">
 	                                <td>{{ClientFact.getInstanceById[instance.id].pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
@@ -118,7 +118,7 @@
 	                                <td class="text-center"><i class="fa" ng-class="statusToClass[instance.status]"></i></td>
 	                                <td class="text-center">{{instance.cpuLoad}}%</td>
 	                                <td>{{instance.start_time | date:'medium'}}</td>
-	                                <td class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
+	                                <td ng-click="$event.stopPropagation()" class="text-center"><a ng-href="" ng-click="searchLog.instance_id = instance.id"><i class="fa fa-filter"></i></a></td>
 	                            </tr>
 	                        </tbody>
 	                    </table>
@@ -139,7 +139,8 @@
 		            </h3>
 		            <!-- /.panel-heading -->
 		            <div class="panel-body panel-body-overscroll">
-						<div google-chart chart="chart" style="height:500px"></div>
+						<!-- <div google-chart chart="chart" style="height:500px"></div> -->
+						<div id="timelineDash" style="height:500px"></div>
 					</div>
 				</div>
 		  	</div>
@@ -152,7 +153,7 @@
 	                Log
 	            </h3>
 	            <!-- /.panel-heading -->
-	            <div class="panel-body panel-body-overscroll">
+	            <div id="logAnchor" class="panel-body panel-body-overscroll">
 	                <div class="table-responsive col-lg-12">
 	                    <table class="table table-hover">
 	                        <thead>
@@ -167,8 +168,8 @@
 	                            </tr>
 	                        </thead>
 	                        <tbody>
-	                            <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}">
-	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | filter:searchLog"> -->
+	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{$index}}"> -->
+	                            <tr ng-repeat="logRow in filteredLogs | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <td>{{logRow.instance.pc_id}}</td>
 									<td>{{logRow.instance.ip_address}}</td>
@@ -195,3 +196,103 @@
 	<!-- /.row -->
 	</div>
 </div>
+<script type="text/ng-template" id="additionalInfo.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Instance Info</h3>
+    </div>
+    <div class="modal-body">
+    	<div class="panel panel-default my-panel">
+            <h3 class="panel-header">
+                General Info
+            </h3>
+            <!-- /.panel-heading -->
+            <div class="panel-body panel-body-overscroll">
+                <div class="col-lg-12">
+			        <form class="form-horizontal">
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">Instance ID: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.id}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">IP Address: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.ip_address}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">Start time: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.start_time}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">End time: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.end_time}}</p>
+					    </div>
+  					  </div>
+  					</form>
+				</div>
+			</div><!-- Panel body -->
+		</div><!-- Panel -->
+		<div class="panel panel-default my-panel">
+            <h3 class="panel-header">
+                Instance Posture
+            </h3>
+            <!-- /.panel-heading -->
+            <div class="panel-body panel-body-overscroll">
+                <div class="col-lg-12">
+                	<form class="form-horizontal">
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">PC ID:</label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.pc_id}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">MAC Address</label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance['MAC ADDRESS']}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">ASLR: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.ASLR}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">Canary: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.CANARY}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">NX: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.NX}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">PIE: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.PIE}}</p>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-3 control-label sans-serif">RELRO: </label>
+					    <div class="col-sm-9">
+					      <p class="form-control-static">{{instance.RELRO}}</p>
+					    </div>
+					  </div>
+				  	</form>
+				</div>
+			</div><!-- /.panel-body -->
+		</div><!-- /.panel -->
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-outline btn-primary" type="button" ng-click="ok()">Close</button>
+    </div>
+</script>

@@ -84,7 +84,7 @@ app.filter('ClientRelatedInstances', function (ClientFact) {
         }
         angular.forEach(items, function (item) {
             if (instanceIdMap[item.instance_id] && ClientFact.getInstanceById[item.instance_id]) {
-                item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
+                //item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
                 filtered.push(item);
             }
         });
@@ -181,7 +181,9 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         //res[i]._source.id = res[i]._id; // adding instance id into the data
                         res[i]._source.instance = ClientFact.getInstanceById[instanceId]
                         if (res[i]._source.instance) {
-                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id]
+                            res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id];
+                            res[i]._source.service_id = res[i]._source.image.service_id; 
+                            res[i]._source.id = res[i]._id;
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
                         }
@@ -251,7 +253,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
         serviceProviders: [
             {
                 id: 1,
-                name: "Cisco",
+                name: "Cisco SP",
                 services: [
                     {
                         //id: 1,
@@ -886,7 +888,7 @@ app.factory('ProductsFact', function ($http) {
 
     return map;
 });
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -894,7 +896,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 24;
+    var LAST_X_HOURS = 1;
 
     $scope.serviceSelect = -1;
 
@@ -1342,8 +1344,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             if (response.error) {
                 console.info(response.error)
             } else {
-                //                $scope.cpuLoadAvg = response.data.data.Average;
-                //                $scope.cpuLoadMax = response.data.data.Maximum;
+                $scope.cpuLoadAvg = response.data.data[0].Average;
+                $scope.cpuLoadMax = response.data.data[0].Maximum;
                 $scope.cpuLoadData = response.data.data;
                 $scope.updateCpuValues();
             }
@@ -1360,6 +1362,12 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         return res;
     }
     $scope.filteredLogs = [];
+
+    $scope.reloadTimeline = function() {
+    	updateInstanceTimeline();
+    	console.info("Loaded main view!")
+	};
+
     var updateInstanceTimeline = function () {
         // if instance data wasn't loaded
         if(!ClientFact.isDoneInitialLoad){
@@ -1372,6 +1380,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var len = $scope.filteredLogs.length
         var logRow;
         var startTime;
+        var endTime;
         var instanceName;
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
@@ -1386,20 +1395,93 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
             instanceName = logRow.instance_id;
-            startTime = logRow.timestamp * 1000;
             type = logRow.type > 0x30 ? ' ' : '  ';
-            chart1.data.push([instanceName, type, new Date(startTime), new Date(startTime)])
+            startTime = logRow.timestamp * 1000;
+            endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
+            var tooltip = 
+            	"<div>" +
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Time: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				$filter('date')(logRow.timestamp,'medium') +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Type: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				LogFact.resolveType[logRow.type] +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Subtype: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				LogFact.resolveSubType[logRow.subtype] +
+            			"</div>" +
+            		"</div>" + 
+            		"<div class='row'>" +
+            			"<div class='col-md-3 tooltip-label'>" +
+            				"Text: " +
+            			"</div>" + 
+            			"<div class='col-md-9 tooltip-text'>" +
+            				logRow.txt +
+            			"</div>" +
+            		"</div>" + 
+        		"</div>"
+            chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
             $scope.showTimelineChart = true;
+		if(chart1.data.length > 0){
+			drawTimelineChart($scope, chart1.data)
         }
+    }
 
     var updateInstanceInterval;
+
     NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
         LogFact.startLogPolling(10000);
+    	//LogFact.stopLogPolling();
         $scope.updateInstances();
         updateInstanceInterval = $interval($scope.updateInstances, 5000);
     });
+
+    $scope.scrollToAnchor = function(index, isFullRow){
+    	//console.info("Selected index is: " + index)
+    	var record = isFullRow ? index : $scope.filteredLogs[index];
+    	if(index){
+    		//console.info(record)
+    		// filter by service
+    		var serviceId = record.image.service_id;
+    		ClientFact.getSelected().selectedService = serviceId;
+	    	// filter the log by instance id
+	    	$scope.searchLog.instance_id = record.instance_id;
+    	}
+    	//TODO: set selcted service
+    	if($state.current.name != 'dashboard.instances'){
+    		$state.go('dashboard.instances');
+    	}
+    	var target = record ? record.id : '';
+    	$timeout($scope.scrollToLogAnchor, 100, false, target);
+    }
+
+    $scope.scrollToLogAnchor = function(index){
+    	var newHash = 'logAnchor' + index;
+		if ($location.hash() !== newHash) {
+			// set the $location.hash to `newHash` and
+			// $anchorScroll will automatically scroll to it
+			$location.hash('logAnchor' + index);
+		} else {
+			// call $anchorScroll() explicitly,
+			// since $location.hash hasn't changed
+			$anchorScroll();
+		}
+    }
 
     $scope.showTimelineChart = false;
     var chart1 = {};
@@ -1465,6 +1547,28 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 
     //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
 
+    $scope.openInstanceModal = function (instance) {
+        //var additionalInfo = $scope.devices[index].additionalInfo;
+        var modalInstance = $uibModal.open({
+            animation: true,
+            templateUrl: 'additionalInfo.html',
+            controller: 'ModalInstanceCtrl',
+            size: 300,
+            resolve: {
+                instance: function () {
+                  return instance;
+                }
+            }
+        });
+    };
+
     _DEBUG = $scope;
 });
+
+app.controller('ModalInstanceCtrl', ["$scope", "$uibModalInstance", "instance", function ($scope, $uibModalInstance, instance) {
+    $scope.instance = instance; //content;
+    $scope.ok = function () {
+        $uibModalInstance.close();
+    };
+}]);
 var _DEBUG;
