@@ -885,7 +885,7 @@ app.factory('ProductsFact', function ($http) {
 
     return map;
 });
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -1535,6 +1535,28 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 
     //$scope.setSelectedClient(ClientFact.selectedIndex[0], ClientFact.selectedIndex[1]);
 
+    $scope.openInstanceModal = function (instance) {
+        //var additionalInfo = $scope.devices[index].additionalInfo;
+        var modalInstance = $uibModal.open({
+            animation: true,
+            templateUrl: 'additionalInfo.html',
+            controller: 'ModalInstanceCtrl',
+            size: 300,
+            resolve: {
+                instance: function () {
+                  return instance;
+                }
+            }
+        });
+    };
+
     _DEBUG = $scope;
 });
+
+app.controller('ModalInstanceCtrl', ["$scope", "$uibModalInstance", "instance", function ($scope, $uibModalInstance, instance) {
+    $scope.instance = instance; //content;
+    $scope.ok = function () {
+        $uibModalInstance.close();
+    };
+}]);
 var _DEBUG;
