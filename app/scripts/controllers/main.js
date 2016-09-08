@@ -1394,7 +1394,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             instanceName = logRow.instance_id;
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
-            endTime = startTime + (logRow.type > 0x30 ? 10 : 0);
+            endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
             var tooltip = 
             	"<div>" +
             		"<div class='row'>" +
