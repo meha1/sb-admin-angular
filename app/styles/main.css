@@ -299,14 +299,14 @@ body{
 }
 
 .panel-cpu {
-    background-color: #990000;
-    border-color: #990000;
+    background-color: #993333;
+    border-color: #993333;
     color: white;
 }
 
 .panel-cpu > .panel-heading {
     color: white;
-    background-color: #B30000;
+    background-color: #C65353;
 }
 .pie-container{
     margin-top: 1.5em;

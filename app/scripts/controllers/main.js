@@ -8,6 +8,10 @@
  */
 
 var app = angular.module('sbAdminApp');
+var productionIp = "52.28.149.249";
+var stagingIp = "52.59.6.66";
+//var ES_URL = "http://" + stagingIp + ":9200/";
+var ES_URL = "http://" + productionIp + ":9200/";
 
 //var app = angular.module('sbAdminApp', ['elasticsearch']);
 //
@@ -90,7 +94,6 @@ app.filter('ClientRelatedInstances', function (ClientFact) {
 })
 
 app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
-    var ES_URL = "http://52.28.149.249:9200/"
     var map = {};
     map.logs = {};
     map.fullLogs = [];
@@ -143,7 +146,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         "order": "desc"
                     }
                 }
-		              	  ],
+                          ],
             "filter": {
                 "range": {
                     "timestamp": { // timestamp is a long unix time
@@ -239,7 +242,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
 });
 
 app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
-    var ES_URL = "http://52.28.149.249:9200/"
+    
 
     var map = {};
     map.selectedIndex = [];
@@ -255,19 +258,19 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                         id: "Orange",
                         name: "vRouter",
                         desc: "Cisco secure virtual router"
-					},
+                    },
                     {
                         id: 92,
                         name: "vSwitch",
                         desc: "Cisco secure virtual switch"
-					},
+                    },
                     {
                         id: 93,
                         name: "vFirewall",
                         desc: "Cisco secure virtual firewall"
-					}
-				]
-			},
+                    }
+                ]
+            },
             {
                 id: 2,
                 name: "OwnBackup",
@@ -276,10 +279,10 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                         id: 11,
                         name: "SecureBackup",
                         desc: "Encrypted backup service"
-					}
-				]
-			}
-		],
+                    }
+                ]
+            }
+        ],
         customers: [
             {
                 //id: 100,
@@ -287,20 +290,20 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 spId: 1,
                 name: "Cisco",
                 services: ["Orange", 92]
-			},
+            },
             {
                 id: 101,
                 spId: 1,
                 name: "Verizon",
                 services: ["Orange"]
-			},
+            },
             {
                 id: 102,
                 spId: 2,
                 name: "myStartup",
                 services: [11]
-			}
-		]
+            }
+        ]
     }
 
     map.getFromES = function (type, clientId, sCallback, eCallback, that) {
@@ -563,7 +566,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 
 
 app.factory('ProductsFact', function ($http) {
-    var ES_URL = "http://52.28.149.249:9200/"
+    
     var map = {};
     map.updateInstances = function () {
         var that = this;
@@ -613,20 +616,20 @@ app.factory('ProductsFact', function ($http) {
                     "desc": "This is the vRouter first version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}, {
+            }, {
                     "id": "2",
                     "name": "Version 2",
                     "desc": "This is the vRouter second version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}, {
+            }, {
                     "id": "3",
                     "name": "Version 3",
                     "desc": "This is the vRouter third version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}
-		],
+            }
+        ],
             "vSwitch": [
                 {
                     "id": "4",
@@ -634,27 +637,27 @@ app.factory('ProductsFact', function ($http) {
                     "desc": "This is the vSwitch first version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			},
+            },
                 {
                     "id": "5",
                     "name": "Version 2",
                     "desc": "This is the vSwitch second version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}, {
+            }, {
                     "id": "6",
                     "name": "Version 3",
                     "desc": "This is the vSwitch third version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}, {
+            }, {
                     "id": "7",
                     "name": "Version 4",
                     "desc": "This is the vSwitch fourth version",
                     "sig": "/bower_components/ifds.sig",
                     "token": "/bower_components/ifds.tkn"
-			}
-		]
+            }
+        ]
         }
 
     map.productInstances = {
@@ -667,7 +670,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 12,
                 "upTime": "1471151607435",
                 "status": 1
-			}, {
+            }, {
                 "id": "2",
                 "name": "R-F04B",
                 "ip": "146.23.84.51",
@@ -675,7 +678,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 17,
                 "upTime": "1471164607345",
                 "status": 1
-			}, {
+            }, {
                 "id": "3",
                 "name": "R-F03A",
                 "ip": "146.23.82.223",
@@ -683,7 +686,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 23,
                 "upTime": "1471141607555",
                 "status": 2
-			}, {
+            }, {
                 "id": "4",
                 "name": "R-F02F",
                 "ip": "146.23.83.100",
@@ -691,7 +694,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 14,
                 "upTime": "1471161107123",
                 "status": 0
-			}, {
+            }, {
                 "id": "5",
                 "name": "R-F11C",
                 "ip": "146.23.83.97",
@@ -699,8 +702,8 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 8,
                 "upTime": "1471151207999",
                 "status": 1
-			}
-		],
+            }
+        ],
         "vSwitch": [
             {
                 "id": "6",
@@ -710,7 +713,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 11,
                 "upTime": "1471130579111",
                 "status": 1
-			}, {
+            }, {
                 "id": "7",
                 "name": "S-F32C",
                 "ip": "146.23.81.244",
@@ -718,7 +721,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 45,
                 "upTime": "1471160123222",
                 "status": 1
-			}, {
+            }, {
                 "id": "8",
                 "name": "S-F21A",
                 "ip": "146.23.85.32",
@@ -726,7 +729,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 64,
                 "upTime": "1471121540333",
                 "status": 0
-			}, {
+            }, {
                 "id": "9",
                 "name": "S-F06E",
                 "ip": "146.23.84.121",
@@ -734,7 +737,7 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 5,
                 "upTime": "1471157003444",
                 "status": 1
-			}, {
+            }, {
                 "id": "10",
                 "name": "S-F07Z",
                 "ip": "146.23.82.81",
@@ -742,8 +745,8 @@ app.factory('ProductsFact', function ($http) {
                 "cpuLoad": 10,
                 "upTime": "1471142612555",
                 "status": 2
-			}
-		]
+            }
+        ]
     }
 
     map.log = {
@@ -754,44 +757,44 @@ app.factory('ProductsFact', function ($http) {
                 "timestamp": "1471161607123",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "2",
                 "timestamp": "1471161607531",
                 "type": "log",
                 "message": "Ping!"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "2",
                 "timestamp": "1471161607631",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "1",
                 "timestamp": "1471161607435",
                 "type": "log",
                 "message": "Signature verification finished successfully"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "3",
                 "timestamp": "1471161607377",
                 "type": "error",
                 "message": "Verification failed - wrong signature"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "3",
                 "timestamp": "1471161607878",
                 "type": "log",
                 "message": "New config upload requested"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "1",
                 "timestamp": "1471161607999",
                 "type": "log",
                 "message": "New config upload requested"
-			}
-		],
+            }
+        ],
         "vSwitch": [
             {
                 "id": "123",
@@ -799,44 +802,44 @@ app.factory('ProductsFact', function ($http) {
                 "timestamp": "1471161607121",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "5",
                 "timestamp": "1471161607222",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "5",
                 "timestamp": "1471161607333",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "7",
                 "timestamp": "1471161607666",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "7",
                 "timestamp": "1471161607872",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "6",
                 "timestamp": "1471161607949",
                 "type": "log",
                 "message": "New config load completed"
-			}, {
+            }, {
                 "id": "123",
                 "instanceId": "4",
                 "timestamp": "1471161607303",
                 "type": "log",
                 "message": "New config load completed"
-			}
-		]
+            }
+        ]
     }
 
     map.statusToClass = ["fa-arrow-circle-down", " fa-check", "fa-times"]
@@ -1039,7 +1042,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.buildPieChart = function (spId) {
         var pie = {
             labels: [],
-            colors : ['#3366FF', '#33CCFF', '#33FFCC', '#6633FF', '#CC33FF'],
+            colors : ['#E7D6FF', '#C8A3FF','#FFFFFF', '#A970FF','#8B3DFF'],
             data: [],
             legend: [],
             numOfInstances: 0
@@ -1359,9 +1362,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.filteredLogs = [];
     var updateInstanceTimeline = function () {
         // if instance data wasn't loaded
-    	if(!ClientFact.isDoneInitialLoad){
-    		return;
-    	}
+        if(!ClientFact.isDoneInitialLoad){
+            return;
+        }
         // TODO: Filter by user and service -> empty selected service == all servcies
         chart1.data = [];
         $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
@@ -1393,9 +1396,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var updateInstanceInterval;
     NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
     LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
-    	LogFact.startLogPolling(10000);
-    	$scope.updateInstances();
-    	updateInstanceInterval = $interval($scope.updateInstances, 5000);
+        LogFact.startLogPolling(10000);
+        $scope.updateInstances();
+        updateInstanceInterval = $interval($scope.updateInstances, 5000);
     });
 
     $scope.showTimelineChart = false;
@@ -1411,8 +1414,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         height: "500px",
         enableInteractivity: true,
         select : function(){
-    		console("hello from chart1.options.select");
-    	},
+            console("hello from chart1.options.select");
+        },
         // is3D: true,
         // chartArea: {
         //     left: 10,
@@ -1423,7 +1426,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // avoidOverlappingGridLines: false
     };
     chart1.select = function(){
-    	console("hello from chart1.select");
+        console("hello from chart1.select");
     }
     // chart1.formatters = {
     //     number: [{

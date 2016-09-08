@@ -22,7 +22,7 @@
                         
                     </div>
                     <div id="pieLegend" class="instance-legend">
-                        <!--                    <div ng-init="value">{{pieChart.legend}}</div>-->
+                      
                     </div>
                 </div>
             </div>
@@ -81,8 +81,8 @@
                 <div class="panel-body">
                     <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
                     <div class="row center-div panel-text">
-                        <!-- <span>153</span> -->
-                        <span ng-init="setValueBySteps('numOfVerifications', 0, numOfVerifications, 1000, numOfVerifications)">{{numOfVerifications}}</span>
+                        <!-- <span>153</span> -->{{numOfVerifications}}
+                        <!--<span ng-init="setValueBySteps('numOfVerifications', 0, numOfVerifications, 1000, numOfVerifications)">{{numOfVerifications}}</span>-->
                     </div>
                 </div>
             </div>
@@ -97,7 +97,8 @@
                     <div class="row center-div panel-text">
                         <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
                         <!-- <span>7</span> -->
-                        <span ng-init="setValueBySteps('numOfAlerts', 0, numOfAlerts, 1000, numOfAlerts)">{{numOfAlerts}}</span>
+                        {{numOfAlerts}}
+                        <!--<span ng-init="setValueBySteps('numOfAlerts', 0, numOfAlerts, 1000, numOfAlerts)">{{numOfAlerts}}</span>-->
                     </div>
                 </div>
             </div>
