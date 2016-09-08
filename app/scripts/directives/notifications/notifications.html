@@ -1,7 +1,7 @@
 <div class="panel-body">
     <div class="list-group">
         <!-- <a href="#" class="list-group-item" ng-repeat="logRow in LogFact.fullLogs | filter:{'type' : 64}  | limitTo : 10"> -->
-        <a href="#" class="list-group-item" ng-repeat="logRow in filteredLogs | filter:{'type' : 64}  | limitTo : 10">
+        <a href="#" class="list-group-item" ng-repeat="logRow in filteredLogs | filter:{'type' : 64}  | limitTo : 10" ng-click="scrollToAnchor(logRow, true)">
             <i class="fa fa-warning fa-fw"></i> {{logRow.txt}}
             <span class="pull-right text-muted small"><em>{{LogFact.resolveSubType[logRow.subtype]}}</em>
             </span>
@@ -53,5 +53,5 @@
         </a> -->
     </div>
     <!-- /.list-group -->
-    <a href="#" class="btn btn-default btn-block">View All Alerts</a>
+    <a ng-click="scrollToAnchor()" class="btn btn-default btn-block">View All Alerts</a>
 </div>

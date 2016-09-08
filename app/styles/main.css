@@ -514,6 +514,27 @@ body{
   
   /*font-weight: 900;*/
 }
+
+.sans-serif{
+  font-family: sans-serif !important;
+}
+
+tr {
+width: 100%;
+display: inline-table;
+table-layout: fixed;
+}
+
+table{
+ height:490px;              
+ display: -moz-groupbox;    
+}
+tbody{
+  overflow-y: scroll;      
+  height: 370px;            
+  width: 98%;
+  position: absolute;
+}
 /*
 
 

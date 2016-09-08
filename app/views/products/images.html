@@ -8,7 +8,7 @@
 		</div>
 		<!-- /.col-lg-12 -->
 	</div>
-	<div class="row">
+	<div ng-show="ClientFact.getSelected().type == 'serviceProviders'" class="row">
 	    <div class="col-lg-12">
 			<div class="panel panel-default my-panel">
 	            <h3 class="panel-header">
@@ -95,7 +95,7 @@
 	    <div class="col-lg-12">
 	        <div class="panel panel-default my-panel">
 	            <h3 class="panel-header">
-	                Loaded provisons
+	                Registered provisions
 	            </h3>
 	            <!-- /.panel-heading -->
 	            <div class="panel-body panel-body-overscroll">
@@ -105,8 +105,8 @@
 	                            <tr>
 	                                <th>Name</th>
 	                                <th>Description</th>
-	                                <th class="text-center">Signature</th>
-	                                <th class="text-center">Token</th>
+	                                <th class="text-center">Get Signature</th>
+	                                <th class="text-center">Get Token</th>
 	                                <th class="text-center">Protect File</th>
 	                            </tr>
 	                        </thead>

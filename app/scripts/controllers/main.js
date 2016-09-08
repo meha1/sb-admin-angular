@@ -250,7 +250,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
         serviceProviders: [
             {
                 id: 1,
-                name: "Cisco",
+                name: "Cisco SP",
                 services: [
                     {
                         //id: 1,
@@ -893,7 +893,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 24;
+    var LAST_X_HOURS = 1;
 
     $scope.serviceSelect = -1;
 
@@ -1377,6 +1377,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var len = $scope.filteredLogs.length
         var logRow;
         var startTime;
+        var endTime;
         var instanceName;
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
@@ -1391,8 +1392,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
             instanceName = logRow.instance_id;
-            startTime = logRow.timestamp * 1000;
             type = logRow.type > 0x30 ? ' ' : '  ';
+            startTime = logRow.timestamp * 1000;
+            endTime = startTime + (logRow.type > 0x30 ? 10 : 0);
             var tooltip = 
             	"<div>" +
             		"<div class='row'>" +
@@ -1428,7 +1430,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             			"</div>" +
             		"</div>" + 
         		"</div>"
-            chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(startTime)])
+            chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
 		$scope.showTimelineChart = true;
 		if(chart1.data.length > 0){
@@ -1446,16 +1448,23 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     	updateInstanceInterval = $interval($scope.updateInstances, 5000);
     });
 
-    $scope.scrollToAnchor = function(index){
-    	console.info("Selected index is: " + index)
-    	console.info($scope.filteredLogs[index])
-    	var serviceId = $scope.filteredLogs[index].image.service_id;
-    	ClientFact.getSelected().selectedService = serviceId;
+    $scope.scrollToAnchor = function(index, isFullRow){
+    	//console.info("Selected index is: " + index)
+    	var record = isFullRow ? index : $scope.filteredLogs[index];
+    	if(index){
+    		//console.info(record)
+    		// filter by service
+    		var serviceId = record.image.service_id;
+    		ClientFact.getSelected().selectedService = serviceId;
+	    	// filter the log by instance id
+	    	$scope.searchLog.instance_id = record.instance_id;
+    	}
     	//TODO: set selcted service
     	if($state.current.name != 'dashboard.instances'){
     		$state.go('dashboard.instances');
     	}
-    	$timeout($scope.scrollToLogAnchor, 100, false, $scope.filteredLogs[index].id);
+    	var target = record ? record.id : '';
+    	$timeout($scope.scrollToLogAnchor, 100, false, target);
     }
 
     $scope.scrollToLogAnchor = function(index){
