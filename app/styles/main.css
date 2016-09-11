@@ -81,7 +81,7 @@ body {
 
 .nav>li.active>a {
 text-decoration: none;
-background-color: #eee;
+//background-color: #eee;
 }
 
 
@@ -502,7 +502,8 @@ body{
   overflow-y: scroll;
 }
 .panel-maps{
-    max-height:1000px!important;
+    mi-height=600; 
+    
 }
 .tooltip-label{
   font-family: sans-serif !important;
