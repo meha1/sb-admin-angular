@@ -13,48 +13,6 @@ var stagingIp = "52.59.6.66";
 //var ES_URL = "http://" + stagingIp + ":9200/";
 var ES_URL = "http://" + productionIp + ":9200/";
 
-//var app = angular.module('sbAdminApp', ['elasticsearch']);
-//
-//// Create the es service from the esFactory
-//app.service('esFactory', function (esFactory) {
-//  return esFactory({ host: '52.28.149.249:9200' });
-//});
-//
-//app.controller('ImageController', function ($scope, client, esFactory) {
-//    // search for documents
-//        esFactory.search({
-//        index: 'images/images/',
-//        size: 3000,
-//        body: {
-//        "query":
-//            {
-//                "match": {
-//                    title:"Product1"
-//                }   
-//            },
-//        }
-//
-//        })
-//      .then(function (resp) {
-//        $scope.clusterState = resp;
-//        $scope.error = null;
-//      })
-//      .catch(function (err) {
-//        $scope.clusterState = null;
-//        $scope.error = err;
-//        // if the err is a NoConnections error, then the client was not able to
-//        // connect to elasticsearch. In that case, create a more detailed error
-//        // message
-//        if (err instanceof esFactory.errors.NoConnections) {
-//          $scope.error = new Error('Unable to connect to elasticsearch. ' +
-//            'Make sure that it is running and listening at http://localhost:9200');
-//        }
-//      });
-//    });
-
-
-//angular.module('sbAdminApp')
-
 app.factory('NotifyingService', function($rootScope) {
     return {
         subscribe: function(scope, callback) {
@@ -97,6 +55,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     var map = {};
     map.logs = {};
     map.fullLogs = [];
+    var lastTimestamp;
 
     map.resolveType = {
         0x10: 'Details',
@@ -130,12 +89,25 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
         196: 'Signature Check'
     }
 
+    map.resolveAlertText = {
+    	192: 'Debugger attachment was detected',
+    	193: 'Monitored process memory was changed',
+    	194: 'Mailicious shared objected was injected',
+    	195: "Mailicious proccess detected",
+    	196: "Signature doesn't match",
+
+
+
+    }
+
     map.updateLog = function (pass) {
         var that = this == undefined ? pass : this;
         //$http.get(ES_URL + "events*/_search&size=")
         var now = Date.now() / 1000;
         // 24hr in seconds
-        var fromDate = now - (3600 * 24);
+        var TIME_TO_LOG = (3600 * 24) 
+        var fromDate = that.lastTimestamp ? that.lastTimestamp : fromDate = now - TIME_TO_LOG;
+       	
         var searchQuery = {
             "query": {
                 "match_all": {}
@@ -165,19 +137,26 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                 } else {
                     var res = response.data.hits.hits;
                     var len = res.length;
-                    that.logs = {};
-                    that.fullLogs = [];
+                    var fullLogs = [];
+                    //that.logs = {};
+                    //that.fullLogs = [];
+
 
                     that.numOfVerifications = 0;
                     that.numOfAlerts = 0
+
+                    // updating the last query timestamp with the first record (first has the newest timestamp)
+                    if(res[0] && res[0]._source && res[0]._source.timestamp){
+                    	that.lastTimestamp = res[0]._source.timestamp;
+                    }
 
                     for (var i = 0; i < len; i++) {
                         var instanceId = res[i]._source.instance_id
                         if (!instanceId || instanceId == "" || instanceId[0] == '\0')
                             continue;
-                        if (!that.logs[instanceId]) {
-                            that.logs[instanceId] = [];
-                        }
+                        // if (!that.logs[instanceId]) {
+                        //     that.logs[instanceId] = [];
+                        // }
                         //res[i]._source.id = res[i]._id; // adding instance id into the data
                         res[i]._source.instance = ClientFact.getInstanceById[instanceId]
                         if (res[i]._source.instance) {
@@ -187,15 +166,35 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
                         }
-                        that.fullLogs.push(res[i]._source)
-                        that.logs[instanceId].push(res[i]._source);
+                        //that.fullLogs.push(res[i]._source)
+                        fullLogs.push(res[i]._source)
+                        // that.logs[instanceId].push(res[i]._source);
 
-                        if ((res[i]._source.type == 0x10) || (res[i]._source.type == 0x20)) {
-                            that.numOfVerifications++;
-                        } else if ((res[i]._source.type == 0x30) || (res[i]._source.type == 0x40)) {
-                            that.numOfAlerts++;
-                        }
                     }
+                    // adding the new record to the begining of the existing to keep them in descending oreder
+                    that.fullLogs = fullLogs.concat(that.fullLogs);
+
+                	// locate the first record that timestamp > 'fromDate' (too old)
+                    len = that.fullLogs.length;
+                    fromDate = now - TIME_TO_LOG
+                	var i;
+                    for (i = len - 1; i >= 0 ; i--){
+                    	// locating last index that is in the range
+                    	if(fromDate < that.fullLogs[i].timestamp){
+                    		break;
+                    	}
+                    }
+                    that.fullLogs = that.fullLogs.slice(0, i);
+
+                    len = that.fullLogs.length;
+                    for (i = 0 ; i < len ; i++){
+	                    if ((that.fullLogs[i].type == 0x10) || (that.fullLogs[i].type == 0x20)) {
+	                        that.numOfVerifications++;
+	                    } else if ((that.fullLogs[i].type == 0x30) || (that.fullLogs[i].type == 0x40)) {
+	                        that.numOfAlerts++;
+	                    }	
+                    }
+                    
                     that.pollingIsDone(that)
                 }
                 //console.log(that.fullLogs)
@@ -566,329 +565,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 })
 
 
-
-app.factory('ProductsFact', function ($http) {
-    
-    var map = {};
-    map.updateInstances = function () {
-        var that = this;
-        $http.get(ES_URL + "instances/_search?q=*:*&size=1000")
-            .then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                if (response.error) {
-                    console.info(response.error)
-                } else {
-                    var res = response.data.hits.hits;
-                    var len = res.length;
-                    that.productInstances = {};
-                    that.instancesPer
-                        // TODO: DELETE IT!!! - workaround until type will be updated
-                    that.productInstances["vRouter"] = [];
-                    that.productInstances["vSwutch"] = [];
-                    // TODO: DELETE IT!!!
-
-                    for (var i = 0; i < len; i++) {
-                        if (!that.productInstances[res[i]._type]) {
-                            that.productInstances[res[i]._type] = [];
-                        }
-                        res[i]._source.id = res[i]._id; // adding instance id into the data
-                        that.productInstances[res[i]._type].push(res[i]._source);
-
-                        // TODO: DELETE IT!!! - workaround until type will be updated
-                        that.productInstances["vRouter"].push(res[i]._source);
-                        that.productInstances["vSwutch"].push(res[i]._source);
-                        // TODO: DELETE IT!!!
-                    }
-                    that.mapInstanceIdToName();
-                }
-            }, function errorCallback(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-    }
-    map.isLoaded = false;
-    // load products and product images from 
-    map.products = ["vRouter", "vSwitch"],
-        map.productImages = {
-            "vRouter": [
-                {
-                    "id": "1",
-                    "name": "Version 1",
-                    "desc": "This is the vRouter first version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }, {
-                    "id": "2",
-                    "name": "Version 2",
-                    "desc": "This is the vRouter second version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }, {
-                    "id": "3",
-                    "name": "Version 3",
-                    "desc": "This is the vRouter third version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }
-        ],
-            "vSwitch": [
-                {
-                    "id": "4",
-                    "name": "Version 1",
-                    "desc": "This is the vSwitch first version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            },
-                {
-                    "id": "5",
-                    "name": "Version 2",
-                    "desc": "This is the vSwitch second version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }, {
-                    "id": "6",
-                    "name": "Version 3",
-                    "desc": "This is the vSwitch third version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }, {
-                    "id": "7",
-                    "name": "Version 4",
-                    "desc": "This is the vSwitch fourth version",
-                    "sig": "/bower_components/ifds.sig",
-                    "token": "/bower_components/ifds.tkn"
-            }
-        ]
-        }
-
-    map.productInstances = {
-        "vRouter": [
-            {
-                "id": "1",
-                "name": "R-F01A",
-                "ip": "146.23.84.122",
-                "imageId": "1",
-                "cpuLoad": 12,
-                "upTime": "1471151607435",
-                "status": 1
-            }, {
-                "id": "2",
-                "name": "R-F04B",
-                "ip": "146.23.84.51",
-                "imageId": "1",
-                "cpuLoad": 17,
-                "upTime": "1471164607345",
-                "status": 1
-            }, {
-                "id": "3",
-                "name": "R-F03A",
-                "ip": "146.23.82.223",
-                "imageId": "3",
-                "cpuLoad": 23,
-                "upTime": "1471141607555",
-                "status": 2
-            }, {
-                "id": "4",
-                "name": "R-F02F",
-                "ip": "146.23.83.100",
-                "imageId": "2",
-                "cpuLoad": 14,
-                "upTime": "1471161107123",
-                "status": 0
-            }, {
-                "id": "5",
-                "name": "R-F11C",
-                "ip": "146.23.83.97",
-                "imageId": "1",
-                "cpuLoad": 8,
-                "upTime": "1471151207999",
-                "status": 1
-            }
-        ],
-        "vSwitch": [
-            {
-                "id": "6",
-                "name": "S-F12V",
-                "ip": "146.23.83.98",
-                "imageId": "5",
-                "cpuLoad": 11,
-                "upTime": "1471130579111",
-                "status": 1
-            }, {
-                "id": "7",
-                "name": "S-F32C",
-                "ip": "146.23.81.244",
-                "imageId": "5",
-                "cpuLoad": 45,
-                "upTime": "1471160123222",
-                "status": 1
-            }, {
-                "id": "8",
-                "name": "S-F21A",
-                "ip": "146.23.85.32",
-                "imageId": "4",
-                "cpuLoad": 64,
-                "upTime": "1471121540333",
-                "status": 0
-            }, {
-                "id": "9",
-                "name": "S-F06E",
-                "ip": "146.23.84.121",
-                "imageId": "7",
-                "cpuLoad": 5,
-                "upTime": "1471157003444",
-                "status": 1
-            }, {
-                "id": "10",
-                "name": "S-F07Z",
-                "ip": "146.23.82.81",
-                "imageId": "6",
-                "cpuLoad": 10,
-                "upTime": "1471142612555",
-                "status": 2
-            }
-        ]
-    }
-
-    map.log = {
-        "vRouter": [
-            {
-                "id": "123",
-                "instanceId": "1",
-                "timestamp": "1471161607123",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "2",
-                "timestamp": "1471161607531",
-                "type": "log",
-                "message": "Ping!"
-            }, {
-                "id": "123",
-                "instanceId": "2",
-                "timestamp": "1471161607631",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "1",
-                "timestamp": "1471161607435",
-                "type": "log",
-                "message": "Signature verification finished successfully"
-            }, {
-                "id": "123",
-                "instanceId": "3",
-                "timestamp": "1471161607377",
-                "type": "error",
-                "message": "Verification failed - wrong signature"
-            }, {
-                "id": "123",
-                "instanceId": "3",
-                "timestamp": "1471161607878",
-                "type": "log",
-                "message": "New config upload requested"
-            }, {
-                "id": "123",
-                "instanceId": "1",
-                "timestamp": "1471161607999",
-                "type": "log",
-                "message": "New config upload requested"
-            }
-        ],
-        "vSwitch": [
-            {
-                "id": "123",
-                "instanceId": "4",
-                "timestamp": "1471161607121",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "5",
-                "timestamp": "1471161607222",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "5",
-                "timestamp": "1471161607333",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "7",
-                "timestamp": "1471161607666",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "7",
-                "timestamp": "1471161607872",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "6",
-                "timestamp": "1471161607949",
-                "type": "log",
-                "message": "New config load completed"
-            }, {
-                "id": "123",
-                "instanceId": "4",
-                "timestamp": "1471161607303",
-                "type": "log",
-                "message": "New config load completed"
-            }
-        ]
-    }
-
-    map.statusToClass = ["fa-arrow-circle-down", " fa-check", "fa-times"]
-
-    map.selected = [0, 0];
-
-    map.instanceIdToName = {};
-    map.imageIdToName = {};
-
-    map.mapInstanceIdToName = function () {
-        for (var productName in this.productInstances) {
-            var len = this.productInstances[productName].length;
-            for (var i = 0; i < len; i++) {
-                var inst = this.productInstances[productName][i];
-                // this.instanceIdToName[inst.id] = inst.name;
-                this.instanceIdToName[inst._id] = inst.name;
-            }
-        }
-    }
-
-    map.mapImageIdToName = function () {
-        for (var imageName in this.productImages) {
-            var len = this.productImages[imageName].length;
-            for (var i = 0; i < len; i++) {
-                var img = this.productImages[imageName][i];
-                this.imageIdToName[img.id] = img.name;
-            }
-        }
-    }
-
-    map.setSelected = function (productIndex, imageIndex) {
-        this.selected = [productIndex, imageIndex];
-    }
-
-    map.addProductImage = function (serviceName, /*iId,*/ iName, iDesc, iSig, iToken) {
-        this.productImages[serviceName].push({
-            "id": 888, //iId
-            "name": iName,
-            "desc": iDesc,
-            "sig": "https://ourrepo.com/yourSigFile.sig", //iSig
-            "token": "https://ourrepo.com/yourAccessToken.sig" //iToken
-        });
-    }
-
-    return map;
-});
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ProductsFact, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -918,17 +595,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.clients = ClientFact.getAllClients();
     $scope.selectedClient = ClientFact.getSelected();
     $scope.clientName = $scope.selectedClient.name; //$scope.customerName[0]; //"Verizon" //"AT&T"
-    $scope.prod = ProductsFact;
     $scope.searchLog = {};
     $scope.searchLog.id;
-    $scope.statusToClass = ProductsFact.statusToClass;
-    ProductsFact.updateInstances();
-    ProductsFact.mapImageIdToName();
-    $scope.mapInstanceIdToName = ProductsFact.instanceIdToName;
-    $scope.mapImageIdToName = ProductsFact.imageIdToName;
     $scope.imageForm = {};
-
-    //$scope.imageFileUpload;
 
     $scope.populateInstances = function (serviceProviderId) {
         var res = {}
@@ -955,24 +624,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         //console.log("RES INSTANCES: " + res);
         $scope.services = res;
     };
-
-
-    //        $scope.getServiceNames = function () {
-    //        var labels = [];
-    //        if (ClientFact.getSelected().type == "serviceProviders") {
-    //            var services = ClientFact.getSelected().services;
-    //            for (var i = 0, len = services.length; i < len; i++) {
-    //                labels.push(services[i].name);
-    //            }
-    //        } else {
-    //            var services = ClientFact.getSelected().services;
-    //            for (var i = 0, len = services.length; i < len; i++) {
-    //                labels.push(ClientFact.getServiceById[services[i]].name);
-    //            }
-    //        }
-    //        console.log("LABELS: " + labels);
-    //        return labels;
-    //    }
 
     $scope.getServiceNames = function () {
         var labels = [];
