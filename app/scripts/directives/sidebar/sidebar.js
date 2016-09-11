@@ -16,12 +16,10 @@ angular.module('sbAdminApp')
       replace: true,
       scope: {
       },
-      controller: function($scope, ProductsFact, ClientFact){
+      controller: function($scope, ClientFact){
         _DEBUG_SIDE_BAR = $scope;
         console.info("sidebar")
         $scope.ClientFact = ClientFact;
-        $scope.products = ProductsFact.products;
-        $scope.productImages = ProductsFact.productImages;
         $scope.selectedMenu = 'dashboard';
         $scope.collapseVar = 0;
         $scope.multiCollapseVar = 0;
