@@ -542,7 +542,8 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
-    var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
+    //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
+    var CLOUD_WATCH_URL = "http://ec2-54-93-40-187.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
         //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
     var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
@@ -994,6 +995,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 	};
 
     var updateInstanceTimeline = function () {
+    	// ====== TODO: insert two dummy events for color correction!!!
         // if instance data wasn't loaded
         if(!ClientFact.isDoneInitialLoad){
             return;
