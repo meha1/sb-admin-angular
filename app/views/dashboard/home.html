@@ -14,15 +14,14 @@
                 </div>
                 <div class="pie-container">
                     <div class="row center-div">
-                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-labels="pieChart.labels" legend="true">
-                          </canvas>
-                          <div class="num-of-instances">
-                                <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span>
-                            </div>
-                        
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-labels="pieChart.labels" legend="true"></canvas>
+                        <div class="num-of-instances">
+                            <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span>
+                        </div>
+
                     </div>
                     <div id="pieLegend" class="instance-legend">
-                      
+
                     </div>
                 </div>
             </div>
@@ -34,27 +33,29 @@
                 </div>
                 <div class="pie-container">
                     <div class="row center-div">
-                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-colors="cpuChart.colors" chart-options="cpuChart.options" chart-legend="true">
-                        </canvas>
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-colors="cpuChart.colors" chart-options="cpuChart.options" chart-legend="true"></canvas>
                     </div>
                     <div class="cpu-legend">
                         <div>
-                            <div class="cpu-high"> &#9632</div> High</div>
+                            <div class="cpu-high"> &#9632</div> High
+                        </div>
                         <div>
-                            <div class="cpu-med"> &#9632 </div> Med</div>
+                            <div class="cpu-med"> &#9632 </div> Med
+                        </div>
                         <div>
-                            <div class="cpu-low"> &#9632 </div> Low</div>
+                            <div class="cpu-low"> &#9632 </div> Low
+                        </div>
                     </div>
                 </div>
 
             </div>
             <!--
-                <div class="row center-div panel-text">
-                    <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
-                            <span class="percent">{{percentText3}}</span>
-                    </span>
-                </div>
--->
+                            <div class="row center-div panel-text">
+                                <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+                                        <span class="percent">{{percentText3}}</span>
+                                </span>
+                            </div>
+            -->
         </div>
 
 
@@ -110,11 +111,11 @@
         <div class="panel panel-default">
             <div class="panel-heading">Event Timeline </div>
             <div ng-init="reloadTimeline()" class="panel-body center-div">
-                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif""> 
+                <img ng-show="!showTimelineChart" ng-src="scripts/directives/dashboard/img/pie.gif" ">
                 <!-- <div ng-show="chart1.data.length > 0" google-chart chart="chart" style="height:500px;"></div> -->
                 <!-- <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3> -->
                 <h3 ng-show="showTimelineChart && chart1.data.length == 0">No events...</h3>
- 
+
                 <div id="timelineDash" style="height:500px;"></div>
             </div>
         </div>
@@ -129,7 +130,6 @@
             <!-- /.panel-body -->
         </div>
         <!-- /.panel -->
-
         <!-- <chat></chat> -->
         <!-- /.panel .chat-panel -->
     </div>
@@ -148,7 +148,8 @@
             <div class="panel-heading">Event Map</div>
             <div class="panel-body">
                 <!--<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d25017226.9005833!2d-98.5471355262944!3d37.199325073030835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sil!4v1471293145493" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>-->
-                <iframe src="http://52.28.149.249:5601/goto/e1c0d8050689a4136899f8255de35610" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+                <iframe src="http://52.28.149.249:5601/app/kibana#/dashboard/DRM-Dashboard?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-geo,panelIndex:1,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'DRM%20Dashboard',uiState:())" height="450" width="100%"></iframe>
+                <!--<iframe src="http://52.28.149.249:5601/goto/e1c0d8050689a4136899f8255de35610" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>-->
             </div>
         </div>
     </div>
@@ -168,7 +169,7 @@
                 <div class="panel-heading">
                     <i class="fa fa-bell fa-fw"></i> Notifications Panel
                 </div>
-                <notifications></notifications> 
+                <notifications></notifications>
             </div>
 
             <chat></chat>
