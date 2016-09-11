@@ -24,6 +24,10 @@ function preDrawTimelineChart(){
 
 }
 
+function emptyTimelineChart(){
+    $("#timelineDash").empty();
+}
+
 function drawTimelineChart(scope, rows, filters) {
     mainCtrlScope = scope;
     var container = document.getElementById('timelineDash');
