@@ -471,32 +471,6 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
         }
     }
 
-    // map.getImageByIdMapping = function(){
-    // 	for(var clientId in this.getClientById){
-    // 		var images = this.getClientById[clientId].images;
-    // 		if(!images){
-    // 			return;
-    // 		}
-    // 		var imagesLen = images.length;
-    // 		for ( var i = 0 ; i < imagesLen ; i++){
-    // 			this.getImageById[images[i].id] = images[i] 
-    // 		}
-    // 	}
-    // }
-
-    // map.getInstanceByIdMapping = function(){
-    // 	for(var clientId in this.getClientById){
-    // 		var instances = this.getClientById[clientId].instances;
-    // 		if(!instances){
-    // 			return;
-    // 		}
-    // 		var instancesLen = instances.length;
-    // 		for ( var i = 0 ; i < instancesLen ; i++){
-    // 			this.getInstanceById[instances[i].id] = instances[i] 
-    // 		}
-    // 	}
-    // }
-
     map.getDataByIdMapping = function (type, targetDict) {
         for (var clientId in this.getClientById) {
             var array = this.getClientById[clientId][type];
@@ -1045,7 +1019,14 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                 continue;
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
-            instanceName = logRow.instance_id;
+            if( !logRow.instance_id || 
+            	!ClientFact.getInstanceById[logRow.instance_id] || 
+            	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
+            	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id] || 
+            	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
+            	continue;
+            }
+            instanceName = ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
             endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
@@ -1089,6 +1070,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             $scope.showTimelineChart = true;
 		if(chart1.data.length > 0){
 			drawTimelineChart($scope, chart1.data)
+        }else{
+        	emptyTimelineChart();
         }
     }
 
@@ -1146,9 +1129,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         width: "100%",
         height: "500px",
         enableInteractivity: true,
-        select : function(){
-            console("hello from chart1.options.select");
-        },
         // is3D: true,
         // chartArea: {
         //     left: 10,
@@ -1158,15 +1138,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         // },
         // avoidOverlappingGridLines: false
     };
-    chart1.select = function(){
-        console("hello from chart1.select");
-    }
-    // chart1.formatters = {
-    //     number: [{
-    //         columnNum: 1,
-    //         pattern: "$ #,##0.00"
-    //   }]
-    // };
+
 
     $scope.chart = chart1;
 
