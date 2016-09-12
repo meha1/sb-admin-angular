@@ -1,7 +1,7 @@
 <div class="panel-body">
     <div class="list-group">
         <!-- <a href="#" class="list-group-item" ng-repeat="logRow in LogFact.fullLogs | filter:{'type' : 64}  | limitTo : 10"> -->
-        <a href="#" class="list-group-item" ng-repeat="logRow in filteredLogs | filter:{'type' : 64}  | limitTo : 10" ng-click="scrollToAnchor(logRow, true)">
+        <a href="#" class="list-group-item notification-row" ng-repeat="logRow in filteredLogs | filter:{'type' : 64}  | limitTo : 10" ng-click="scrollToAnchor(logRow, true)">
         <!-- <a ng-href="#/dashboard/instances#logAnchor{{logRow.id}}" class="list-group-item" ng-repeat="logRow in filteredLogs | filter:{'type' : 64}  | limitTo : 10"> -->
             <i class="fa fa-warning fa-fw"></i> {{LogFact.resolveAlertText[logRow.subtype]}}
             <span class="pull-right text-muted small"><em>{{LogFact.resolveSubType[logRow.subtype]}}</em>

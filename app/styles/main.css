@@ -536,6 +536,10 @@ tbody{
   width: 98%;
   position: absolute;
 }
+
+.notification-row{
+  height:50px;
+}
 /*
 
 

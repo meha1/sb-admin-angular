@@ -174,7 +174,8 @@
 	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{$index}}"> -->
 	                            <tr ng-repeat="logRow in filteredLogs | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
-	                                <td>{{logRow.instance.pc_id}}</td>
+	                                <!-- <td>{{logRow.instance.pc_id}}</td> -->
+	                                <td>{{logRow.instanceName}}</td>
 									<td>{{logRow.instance.ip_address}}</td>
 									<td>{{logRow.image.name}}</td>
 	                                <td>{{LogFact.resolveType[logRow.type]}}</td>

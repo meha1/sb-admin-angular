@@ -166,8 +166,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                             res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id];
                             res[i]._source.service_id = res[i]._source.image.service_id; 
                             res[i]._source.id = res[i]._id;
-                            if (ClientFact.getServiceById[res[i]._source.instance.service_id]){
-                        		res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.instance.service_id].name + instanceId.hashCode();
+                            if (ClientFact.getServiceById[res[i]._source.service_id]){
+                        		res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
                             }
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
@@ -1057,13 +1057,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                 continue;
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
-            if( !logRow.instance_id || 
-            	!ClientFact.getInstanceById[logRow.instance_id] || 
-            	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
-            	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id] || 
-            	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
-            	continue;
-            }
+            // if( !logRow.instance_id || 
+            // 	!ClientFact.getInstanceById[logRow.instance_id] || 
+            // 	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
+            // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id] || 
+            // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
+            // 	continue;
+            // }
             instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
