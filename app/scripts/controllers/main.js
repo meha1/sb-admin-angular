@@ -755,7 +755,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                 }
             }
             imageData.ip_range = JSON.stringify(ipRanges);
-
+            var that = $scope;
             Upload.upload({
                 url: ADD_IMAGE_URL,
                 data: imageData,
@@ -764,9 +764,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                 //ClientFact.getDataPerClient("images", ClientFact.getSelected().id);
                 $timeout(function () {
                     ClientFact.getDataPerClient("images", ClientFact.getSelected().id)
-                }, 3000)
+                }, 2000)
+    			$scope.imageForm = {};
+    			$scope.imageLimitations = {};
+			    $scope.imageLimitations.ipRange = [{}];
+
             }, function (resp) {
-                console.log('Error status: ' + resp.status);
+                alert('Error status: ' + resp.status);
             }, function (evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                 console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
@@ -774,9 +778,34 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         }
     }
 
+    function b64toBlob(b64Data, contentType, sliceSize) {
+	  contentType = contentType || '';
+	  sliceSize = sliceSize || 512;
+
+	  var byteCharacters = atob(b64Data);
+	  var byteArrays = [];
+
+	  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+	    var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+	    var byteNumbers = new Array(slice.length);
+	    for (var i = 0; i < slice.length; i++) {
+	      byteNumbers[i] = slice.charCodeAt(i);
+	    }
+
+	    var byteArray = new Uint8Array(byteNumbers);
+
+	    byteArrays.push(byteArray);
+	    console.log(byteArrays)
+	  }
+	    
+	  var blob = new Blob(byteArrays, {type: contentType});
+	  return blob;
+	}
+
     $scope.downloadDataFile = function (fileName, data, isAscii) {
         if (isAscii) {
-            data = atob(data)
+            data = b64toBlob(data)
         }
         $scope.downloadFile(fileName, data, "text/plain");
     }
@@ -1033,7 +1062,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
             	continue;
             }
-            instanceName = ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
+            instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
             endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
