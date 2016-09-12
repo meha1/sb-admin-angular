@@ -13,8 +13,8 @@ var stagingIp = "52.59.6.66";
 var producitonCpuIp = "54.93.40.187";
 var stagingCpuIp = "54.93.34.14"; 
 
-var SERVER_IP = stagingIp;
-var CPU_SERVER_IP = stagingCpuIp;
+var SERVER_IP = productionIp;
+var CPU_SERVER_IP = producitonCpuIp;
 
 //var ES_URL = "http://" + stagingIp + ":9200/";
 var ES_URL = "http://" + SERVER_IP + ":9200/";
@@ -880,7 +880,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                             if (instanceData.service_id in $scope.services) {
                                 $scope.services[instanceData.service_id]++;
                             } else {
-                                $scope.services[instanceData.service_id] = 0;
+                                $scope.services[instanceData.service_id] = 1;
                             }
 
                             res.push(instanceData);
@@ -1124,7 +1124,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         LogFact.startLogPolling(10000);
     	//LogFact.stopLogPolling();
         $scope.updateInstances();
-        updateInstanceInterval = $interval($scope.updateInstances, 5000);
+        updateInstanceInterval = $interval($scope.updateInstances, 10000);
     });
 
     $scope.scrollToAnchor = function(index, isFullRow){
