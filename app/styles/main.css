@@ -527,7 +527,7 @@ table-layout: fixed;
 }
 
 table{
- height:490px;              
+ height: 450px;              
  display: -moz-groupbox;    
 }
 tbody{
