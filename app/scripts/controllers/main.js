@@ -10,8 +10,14 @@
 var app = angular.module('sbAdminApp');
 var productionIp = "52.28.149.249";
 var stagingIp = "52.59.6.66";
+var producitonCpuIp = "54.93.40.197";
+var stagingCpuIp = "54.93.34.14"; 
+
+var SERVER_IP = stagingIp;
+var CPU_SERVER_IP = stagingCpuIp;
+
 //var ES_URL = "http://" + stagingIp + ":9200/";
-var ES_URL = "http://" + productionIp + ":9200/";
+var ES_URL = "http://" + SERVER_IP + ":9200/";
 
 app.factory('NotifyingService', function($rootScope) {
     return {
@@ -95,9 +101,6 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     	194: 'Mailicious shared objected was injected',
     	195: "Mailicious proccess detected",
     	196: "Signature doesn't match",
-
-
-
     }
 
     map.updateLog = function (pass) {
@@ -163,6 +166,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                             res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id];
                             res[i]._source.service_id = res[i]._source.image.service_id; 
                             res[i]._source.id = res[i]._id;
+                        	res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.instance.service_id].name + instanceId.hashCode();
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
                         }
@@ -543,9 +547,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     console.info("init MainCtrl!");
 
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
-    var CLOUD_WATCH_URL = "http://ec2-54-93-40-187.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
+    var CLOUD_WATCH_URL = "http://" + CPU_SERVER_IP + ":39739/cpuutilization";
         //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
-    var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
+    //var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
+    var SECURE_SERVER_URL = "http://" + SERVER_IP + ":33555/";
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
     var LAST_X_HOURS = 1;
