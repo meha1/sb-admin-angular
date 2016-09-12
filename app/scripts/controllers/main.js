@@ -675,7 +675,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             colors : ['#E7D6FF', '#C8A3FF','#FFFFFF', '#A970FF','#8B3DFF'],
             data: [],
             legend: [],
-            numOfInstances: 0
+            numOfInstances: ''
         };
 
         var count = 0;
