@@ -666,10 +666,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             data: [$scope.cpuValues['low'], $scope.cpuValues['medium'], $scope.cpuValues['high']],
             colors: ['#00CC00', '#CC6600', '#CC0000'],
             options: {
-                animation: {
-                    animateRotate: true
-                },
-
             }
         };
     };
