@@ -302,7 +302,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 id: 101,
                 spId: 1,
                 name: "Verizon",
-                services: ["Orange"]
+                services: [92, 93]
             },
             {
                 id: 102,
@@ -420,6 +420,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                     continue;
                 } else {
                     map.getClientById[spId].instances = map.getClientById[spId].instances.concat(map.clients.customers[i].instances)
+                    //map.clients.customers[i].instances = map.getClientById[spId].instances.concat(map.clients.customers[i].instances)
                 }
             }
             console.info("Clients Mapping updated with info:")
@@ -664,9 +665,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         return {
             labels: ['low', 'medium', 'high'],
             data: [$scope.cpuValues['low'], $scope.cpuValues['medium'], $scope.cpuValues['high']],
-            colors: ['#00CC00', '#CC6600', '#CC0000'],
-            options: {
-            }
+            colors: ['#00CC00', '#CC6600', '#CC0000']
         };
     };
 
@@ -1027,7 +1026,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 	};
 
     var updateInstanceTimeline = function () {
-    	// ====== TODO: insert two dummy events for color correction!!!
+    	// ====== TODO: insert dummy event for color correction!!!
         // if instance data wasn't loaded
         if(!ClientFact.isDoneInitialLoad){
             return;
@@ -1043,7 +1042,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var instanceName;
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
-        for (var i = 0; i < len; i++) {
+        var insertedDummyRow = false;
+        for (var i = 0; i < len && i < 200; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
             // checking if row has all related data in instances list and that it belongs to the current user
@@ -1099,7 +1099,15 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             			"</div>" +
             		"</div>" + 
         		"</div>"
-            chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
+            if(!insertedDummyRow){
+        		chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime-1), new Date(endTime-1)])
+
+	            //chart1.data.push([instanceName, ' ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
+	            //chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
+            	insertedDummyRow = true;
+            }
+        	chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
+            //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
             $scope.showTimelineChart = true;
 		if(chart1.data.length > 0){
