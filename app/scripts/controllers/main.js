@@ -709,7 +709,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.setSelectedClient = function (type, index) {
 
         ClientFact.setSelected(type, index);
-        ClientFact.getAllClientsInfo();
+        //ClientFact.getAllClientsInfo();
         var servId = 0;
         if (type == 'serviceProviders') {
             servId = $scope.clients[type][index].id;
