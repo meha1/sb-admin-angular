@@ -592,7 +592,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
                     continue;
                 }
                 var instIdArr = $scope.clients['customers'][customer].instances;
-                if (instIdArr) {
+                if (instIdArr && instIdArr.length > 0) {
                     $scope.getFullInstanceInfo(instIdArr);
                     for (var service in $scope.services) {
                         if (service in res) {
@@ -709,6 +709,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.setSelectedClient = function (type, index) {
 
         ClientFact.setSelected(type, index);
+        ClientFact.getAllClientsInfo();
         var servId = 0;
         if (type == 'serviceProviders') {
             servId = $scope.clients[type][index].id;

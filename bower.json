@@ -23,7 +23,7 @@
     "angular-file-upload": "*",
     "angular-google-chart": "*",
     "ng-file-upload": "*",
-    "bootstrap": "*",
+    "bootstrap": "^3.3.7",
     "elasticsearch": "*",
     "moment": "^2.14.1"
   },
