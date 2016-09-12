@@ -719,8 +719,6 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         $scope.populateInstances(servId);
         $scope.pieChart = $scope.buildPieChart(servId);
         $scope.numOfInstances = $scope.pieChart.numOfInstances;
-        $scope.numOfVerifications = LogFact.numOfVerifications;
-        $scope.numOfAlerts = LogFact.numOfAlerts;
         // setValueBySteps('numOfInstances', 0, $scope.numOfInstances, 1000, $scope.numOfInstances/2);
 
         $scope.cpuChart = $scope.buildCpuChart();
@@ -1029,6 +1027,12 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     	console.info("Loaded main view!")
 	};
 
+    var updateVerificationAndAlerts = function()
+    {
+        $scope.numOfVerifications = LogFact.numOfVerifications;
+        $scope.numOfAlerts = LogFact.numOfAlerts;
+    }
+
     var updateInstanceTimeline = function () {
     	// ====== TODO: insert dummy event for color correction!!!
         // if instance data wasn't loaded
@@ -1120,7 +1124,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var updateInstanceInterval;
 
     NotifyingService.subscribe($scope, function clientFullInfoLoaded() {
-    LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+        LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+        LogFact.registerToPollingNotification(updateVerificationAndAlerts.name, updateVerificationAndAlerts);
+        
+
         LogFact.startLogPolling(10000);
     	//LogFact.stopLogPolling();
         $scope.updateInstances();
