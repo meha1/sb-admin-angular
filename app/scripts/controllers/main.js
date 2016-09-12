@@ -726,7 +726,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         //        $scope.pieChart.update();
         $scope.selectedClient = ClientFact.getSelected();
         $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
-        updateInstanceTimeline();
+
+        if (ClientFact.selectedIndex[0] != type || ClientFact.selectedIndex[1] != index) {
+        	updateInstanceTimeline();
+        }
     }
     $scope.numOfInstances = 0;
 
@@ -1043,7 +1046,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
         var insertedDummyRow = false;
-        for (var i = 0; i < len && i < 200; i++) {
+        for (var i = 0; i < len && i < 300; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
             // checking if row has all related data in instances list and that it belongs to the current user
@@ -1099,17 +1102,13 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             			"</div>" +
             		"</div>" + 
         		"</div>"
-            if(!insertedDummyRow){
-        		chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime), new Date(endTime)])
-
-	            //chart1.data.push([instanceName, ' ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
-	            //chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
-            	insertedDummyRow = true;
-            }
         	chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
             //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
-            $scope.showTimelineChart = true;
+            if(chart1.data && chart1.data.length > 0){
+        		chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(endTime-1)])
+            }
+        $scope.showTimelineChart = true;
 		if(chart1.data.length > 0){
 			drawTimelineChart($scope, chart1.data)
         }else{
