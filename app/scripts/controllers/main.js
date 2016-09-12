@@ -10,7 +10,7 @@
 var app = angular.module('sbAdminApp');
 var productionIp = "52.28.149.249";
 var stagingIp = "52.59.6.66";
-var producitonCpuIp = "54.93.40.197";
+var producitonCpuIp = "54.93.40.187";
 var stagingCpuIp = "54.93.34.14"; 
 
 var SERVER_IP = stagingIp;
