@@ -9,74 +9,165 @@
 	<!-- ===== TODO: copy charts from dashboard -->
 	<!-- ===== TODO: Fix navigation from alerts! -->
 	<!-- /.row -->
+	
+	<!-- <div class="row">
+		<div class="col-lg-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    CPU Load Avg.
+                </div>
+                <div class="panel-body">
+                	<div class="row center-div">
+              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadAvg" options="options">
+							<span class="percent">{{toFixed(cpuLoadAvgText, 2)}}</span>
+						</span>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    CPU Load Max.
+                </div>
+                <div class="panel-body">
+          			<div class="row center-div">
+              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadMax" options="options2">
+							<span class="percent">{{toFixed(cpuLoadMaxText, 2)}}</span>
+						</span>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    Important Chart
+                </div>
+                <div class="panel-body">
+          			<div class="row center-div">
+              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+							<span class="percent">{{percentText3}}</span>
+						</span>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-error">
+                <div class="panel-heading">
+                    Very important chart
+                </div>
+                <div class="panel-body">
+          			<div class="row center-div">
+              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent4" options="options4">
+							<span class="percent">{{percentText4}}</span>
+						</span>
+					</div>
+                </div>
+            </div>
+        </div>
+	</div> -->
 	<div class="row">
-		<!-- <div class="col-lg-12"> -->
-			<div class="col-lg-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        CPU Load Avg.
+        <div class="col-lg-3">
+            <div class="panel panel-cpu panel-min-size">
+                <div class="panel-heading">
+                    instances
+                </div>
+                <div class="pie-container">
+                    <div class="row center-div">
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-options="pieChart.options" chart-labels="pieChart.labels" legend="false"></canvas>
+                        <div class="num-of-instances">
+                            <!-- <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span> -->
+                            <span>{{numOfInstances}}</span>
+                        </div>
+
                     </div>
-                    <div class="panel-body">
-                    	<div class="row center-div">
-              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadAvg" options="options">
-								<span class="percent">{{toFixed(cpuLoadAvgText, 2)}}</span>
-							</span>
-							<!-- <input type="range" min="0" max="100" step="0.1" ng-model="cpuLoadAvg" /> -->
-						</div>
+                    <div id="pieLegend" class="instance-legend">
+
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        CPU Load Max.
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-primary panel-min-size">
+                <div class="panel-heading">
+                    CPU Load
+                </div>
+                <div class="pie-container">
+                    <div class="row center-div">
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-options="cpuChart.options" chart-colors="cpuChart.colors" chart-options="cpuChart.options" chart-legend="true"></canvas>
                     </div>
-                    <div class="panel-body">
-              			<!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-              			<div class="row center-div">
-              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="cpuLoadMax" options="options2">
-								<span class="percent">{{toFixed(cpuLoadMaxText, 2)}}</span>
-							</span>
-						</div>
+                    <div class="cpu-legend">
+                        <div>
+                            <div class="cpu-high"> &#9632</div> High
+                        </div>
+                        <div>
+                            <div class="cpu-med"> &#9632 </div> Med
+                        </div>
+                        <div>
+                            <div class="cpu-low"> &#9632 </div> Low
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!--
+                            <div class="row center-div panel-text">
+                                <span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
+                                        <span class="percent">{{percentText3}}</span>
+                                </span>
+                            </div>
+            -->
+        </div>
+
+
+        <!--<div class="col-lg-3">
+            <div class="panel panel-primary panel-min-size">
+                <div class="panel-heading">
+                    Active instances
+                </div>
+                <div class="panel-body">
+                    <div class="row panel-text center-div">
+                        <div class="data-pie">try</div>
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs" data="donut.data" labels="donut.labels" legend="true"></canvas>
+                        <span ng-init="setValueBySteps('numOfInstances', 0, 17, 1000, 17)">{{numOfInstances}}</span>
+                        <span ng-init="setPieValueBySteps('products', 0, numOfInstances, 1000, numOfInstances)"></span>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        Important Chart
-                    </div>
-                    <div class="panel-body">
-              			<!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-              			<div class="row center-div">
-              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent3" options="options3">
-								<span class="percent">{{percentText3}}</span>
-							</span>
-						</div>
+        </div>-->
+        <div class="col-lg-3">
+            <div class="panel panel-info panel-min-size">
+                <div class="panel-heading">
+                    Verifications
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-doughnut chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                        <!-- <span>153</span> -->{{numOfVerifications}}
+                        <!--<span ng-init="setValueBySteps('numOfVerifications', 0, numOfVerifications, 1000, numOfVerifications)">{{numOfVerifications}}</span>-->
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="panel panel-error">
-                    <div class="panel-heading">
-                        Very important chart
-                    </div>
-                    <div class="panel-body">
-              			<!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
-              			<div class="row center-div">
-              			<!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
-	              			<span class="easyChart ng-isolate-scope" easypiechart="" percent="percent4" options="options4">
-								<span class="percent">{{percentText4}}</span>
-							</span>
-						</div>
+        </div>
+        <div class="col-lg-3">
+            <div class="panel panel-error panel-min-size">
+                <div class="panel-heading">
+                    Alerts in 24H
+                </div>
+                <div class="panel-body">
+                    <!-- <canvas class="chart chart-pie chart-xs" data="data" labels="labels" legend="false"></canvas> -->
+                    <div class="row center-div panel-text">
+                        <!-- <canvas class="chart chart-pie chart-xs" chart-data="data" chart-labels="labels" legend="false"></canvas> -->
+                        <!-- <span>7</span> -->
+                        {{numOfAlerts}}
+                        <!--<span ng-init="setValueBySteps('numOfAlerts', 0, numOfAlerts, 1000, numOfAlerts)">{{numOfAlerts}}</span>-->
                     </div>
                 </div>
             </div>
-		<!-- </div> -->
-	</div>
+        </div>
+    </div>
 	<div class="row">
 	    <div class="col-lg-12">
 	        <div class="panel panel-default my-panel">
