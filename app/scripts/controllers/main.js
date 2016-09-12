@@ -1071,7 +1071,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             				"Time: " +
             			"</div>" + 
             			"<div class='col-md-9 tooltip-text'>" +
-            				$filter('date')(logRow.timestamp,'medium') +
+            				$filter('date')(logRow.timestamp*1000,'medium') +
             			"</div>" +
             		"</div>" + 
             		"<div class='row'>" +
@@ -1100,7 +1100,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             		"</div>" + 
         		"</div>"
             if(!insertedDummyRow){
-        		chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime-1), new Date(endTime-1)])
+        		chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime), new Date(endTime)])
 
 	            //chart1.data.push([instanceName, ' ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
 	            //chart1.data.push([instanceName, '  ', tooltip ,new Date(startTime-1), new Date(endTime-1)])	
