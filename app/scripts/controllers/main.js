@@ -549,6 +549,10 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
+    if($state.current.name != 'dashboard.home'){
+        $state.go('dashboard.home');
+    }
+
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
     var CLOUD_WATCH_URL = "http://" + CPU_SERVER_IP + ":39739/cpuutilization";
         //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
@@ -1138,6 +1142,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     $scope.scrollToAnchor = function(index, isFullRow){
     	//console.info("Selected index is: " + index)
     	var record = isFullRow ? index : $scope.filteredLogs[index];
+        ClientFact.getSelected().selectedService = "";
     	if(index){
     		//console.info(record)
     		// filter by service
