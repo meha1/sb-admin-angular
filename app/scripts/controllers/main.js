@@ -556,7 +556,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://" + SERVER_IP + ":33555/";
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 1;
+    var LAST_X_HOURS = 4;
     var LIMIT_LOG_SIZE = $scope.limitLogSize = 300;
 
     $scope.serviceSelect = -1;
