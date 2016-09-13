@@ -14,9 +14,15 @@ function initGoogleChartTimeline(){
 
 function selectEventHandler(){
     var selection = chart.getSelection();
-    console.info("Selection:");
-    var row = dataTable.Lf[selection[0].row].c;
-    console.info(row);
+    if(!selection || !selection[0] || !selection[0].row){
+        mainCtrlScope.scrollToAnchor();
+        return;
+    }
+    // console.info("Selection:");
+    // var row;
+    // if(dataTable.Lf[selection[0].row])
+    // var row = dataTable.Lf[selection[0].row].c;
+    // console.info(row);
     mainCtrlScope.scrollToAnchor(selection[0].row)
 }
 
