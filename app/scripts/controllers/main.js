@@ -1057,8 +1057,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             logRow = $scope.filteredLogs[i];
             // checking if row has all related data in instances list and that it belongs to the current user
             if (!ClientFact.getInstanceById[logRow.instance_id] ||
-                !ClientFact.getInstanceById[logRow.instance_id].pc_id ||
-                logRow.timestamp < startTimestamp) {
+                !ClientFact.getInstanceById[logRow.instance_id].pc_id ){
+        //||                logRow.timestamp < startTimestamp) {
                 continue;
             }
             //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
