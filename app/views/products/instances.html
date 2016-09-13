@@ -78,7 +78,6 @@
                     <div class="row center-div">
                         <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-options="pieChart.options" chart-labels="pieChart.labels" legend="false"></canvas>
                         <div class="num-of-instances">
-                            <!-- <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span> -->
                             <span>{{numOfInstances}}</span>
                         </div>
 
@@ -192,6 +191,7 @@
 	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
 	                            <tr ng-click="openInstanceModal(instance)" ng-repeat="instance in ClientFact.getSelected().instances" ng-click="openInstanceModal(instance)">
+	                                <!-- <td>{{ClientFact.getServiceById[instance.id].name}}</td> -->
 	                                <td>{{instance.pc_id}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
@@ -263,7 +263,7 @@
 	                        </thead>
 	                        <tbody>
 	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{$index}}"> -->
-	                            <tr ng-repeat="logRow in filteredLogs | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
+	                            <tr ng-repeat="logRow in filteredLogs | limitTo:limitLogSize | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
 	                                <!-- <td>{{logRow.instance.pc_id}}</td> -->
 	                                <td>{{logRow.instanceName}}</td>

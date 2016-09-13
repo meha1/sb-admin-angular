@@ -98,8 +98,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     map.resolveAlertText = {
     	192: 'Debugger attachment was detected',
     	193: 'Monitored process memory was changed',
-    	194: 'Mailicious shared objected was injected',
-    	195: "Mailicious proccess detected",
+    	194: 'Malicious shared objected was injected',
+    	195: "Malicious process detected",
     	196: "Signature doesn't match",
     }
 
@@ -557,6 +557,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
     var LAST_X_HOURS = 1;
+    var LIMIT_LOG_SIZE = $scope.limitLogSize = 300;
 
     $scope.serviceSelect = -1;
 
@@ -1050,7 +1051,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
         var insertedDummyRow = false;
-        for (var i = 0; i < len && i < 300; i++) {
+        for (var i = 0; i < len && i < LIMIT_LOG_SIZE; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
             // checking if row has all related data in instances list and that it belongs to the current user
