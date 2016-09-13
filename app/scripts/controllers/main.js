@@ -609,6 +609,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
             console.info("Stopped log polling!")
         }
+        if(toState.name == "dashboard.instances"){
+            $timeout(drawTimelineChart, 300, false, $scope, chart1.data)
+        }
     });
 
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
@@ -1239,6 +1242,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
 			// since $location.hash hasn't changed
 			$anchorScroll();
 		}
+        drawTimelineChart($scope, chart1.data)
     }
 
     $scope.showTimelineChart = false;
