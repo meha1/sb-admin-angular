@@ -229,13 +229,15 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     }
                     var tmpInstancesLog = {};
                     for(var instance_id in that.logsByInstance){
-                        var arr = Object.keys(that.logsByInstance[instance_id]).map(key => that.logsByInstance[instance_id][key]);
+                        // var arr = Object.keys(that.logsByInstance[instance_id]).map(key => that.logsByInstance[instance_id][key]);
+                        var arr = Object.keys(that.logsByInstance[instance_id]).map(function(key){ return that.logsByInstance[instance_id][key]});
                         tmpInstancesLog[instance_id] = arr;
                     }
                     that.logsByInstancePerSecond = [];
-                    Object.keys(tmpInstancesLog).map(key => that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key]));
-                    that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)).reverse();
-                    //TODO: sort by timestamp and limit number of records
+                    // Object.keys(tmpInstancesLog).map(key => that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key]));
+                    Object.keys(tmpInstancesLog).map(function(key){ that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key])});
+                    // that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)).reverse();
+                    that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort(function(a, b){ return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)}).reverse();
                     that.pollingIsDone(that)
                 }
                 //console.log(that.fullLogs)
