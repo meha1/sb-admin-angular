@@ -61,6 +61,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     var map = {};
     map.logs = {};
     map.fullLogs = [];
+    map.logsByInstance = {};
+    map.logsByInstancePerSecond = [];
     var lastTimestamp;
 
     map.resolveType = {
@@ -195,13 +197,45 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
 
                     len = that.fullLogs.length;
                     for (i = 0 ; i < len ; i++){
-	                    if ((that.fullLogs[i].type == 0x10) || (that.fullLogs[i].type == 0x20)) {
+                        // counting alerts anf verifications
+                        var logRow = that.fullLogs[i];
+	                    if ((logRow.type == 0x10) || (logRow.type == 0x20)) {
 	                        that.numOfVerifications++;
-	                    } else if ((that.fullLogs[i].type == 0x30) || (that.fullLogs[i].type == 0x40)) {
+	                    } else if ((logRow.type == 0x30) || (logRow.type == 0x40)) {
 	                        that.numOfAlerts++;
 	                    }	
+                        
+                        //maping logs by instance_id
+                        if(!that.logsByInstance[logRow.instance_id]){
+                            that.logsByInstance[logRow.instance_id] = {};
+                        }
+                        // creating a map of maps for each instance, only one record is a certain second will exist (alert preferably)
+                        // if there is no record for this second or the existing record isn't an alert, replace it
+                        if (!that.logsByInstance[logRow.instance_id][logRow.timestamp] || 
+                            !that.logsByInstance[logRow.instance_id][logRow.timestamp].type ||
+                             that.logsByInstance[logRow.instance_id][logRow.timestamp].type < 0x40){
+                            that.logsByInstance[logRow.instance_id][logRow.timestamp] = logRow;
+                        }
+                        // making the alert BOLD and WIDE
+                        // if(that.logsByInstance[logRow.instance_id][logRow.timestamp].type == 0x40){
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+1]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+2]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+3]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+4]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+5]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+6]
+                        // }
+                        //that.logsByInstance[logRow.instance_id][logRow.timestamp].push(logRow);
                     }
-                    
+                    var tmpInstancesLog = {};
+                    for(var instance_id in that.logsByInstance){
+                        var arr = Object.keys(that.logsByInstance[instance_id]).map(key => that.logsByInstance[instance_id][key]);
+                        tmpInstancesLog[instance_id] = arr;
+                    }
+                    that.logsByInstancePerSecond = [];
+                    Object.keys(tmpInstancesLog).map(key => that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key]));
+                    that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)).reverse();
+                    //TODO: sort by timestamp and limit number of records
                     that.pollingIsDone(that)
                 }
                 //console.log(that.fullLogs)
@@ -556,12 +590,24 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 })
 
 
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     if($state.current.name != 'dashboard.home'){
         $state.go('dashboard.home');
     }
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){ 
+        if(toState.name == "dashboard.home" && fromState.name != "dashboard.home"){
+            // start log polling
+            LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+            console.info("Started log polling!")
+        }else if(fromState.name == "dashboard.home" && toState.name != "dashboard.home"){
+            // stop log polling
+            LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
+            console.info("Stopped log polling!")
+        }
+    });
 
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
     var CLOUD_WATCH_URL = "http://" + CPU_SERVER_IP + ":39739/cpuutilization";
@@ -1036,6 +1082,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         return res;
     }
     $scope.filteredLogs = [];
+    $scope.fullFilteredLogs = [];
 
     $scope.reloadTimeline = function() {
     	updateInstanceTimeline();
@@ -1056,7 +1103,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         }
         // TODO: Filter by user and service -> empty selected service == all servcies
         chart1.data = [];
-        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
+        $scope.fullFilteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
+        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.logsByInstancePerSecond, ClientFact.getSelected().instances)
             //var len = LogFact.fullLogs.length;
         var len = $scope.filteredLogs.length
         var logRow;
