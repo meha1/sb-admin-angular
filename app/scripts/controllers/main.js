@@ -190,7 +190,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     		break;
                     	}
                     }
-                    that.fullLogs = that.fullLogs.slice(0, i);
+                    that.fullLogs = that.fullLogs.slice(0, i+1);
 
                     len = that.fullLogs.length;
                     for (i = 0 ; i < len ; i++){
@@ -560,8 +560,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var SECURE_SERVER_URL = "http://" + SERVER_IP + ":33555/";
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
-    var LAST_X_HOURS = 4;
-    var LIMIT_LOG_SIZE = $scope.limitLogSize = 300;
+    var LAST_X_HOURS = 0.5;
+    var LIMIT_LOG_SIZE = $scope.limitLogSize = 500;
 
     $scope.serviceSelect = -1;
 
@@ -1056,7 +1056,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         var type;
         var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
         var insertedDummyRow = false;
-        for (var i = 0; i < len && i < LIMIT_LOG_SIZE; i++) {
+        for (var i = 0; i < len && chart1.data.length < LIMIT_LOG_SIZE; i++) {
             //logRow = LogFact.fullLogs[i];
             logRow = $scope.filteredLogs[i];
             // checking if row has all related data in instances list and that it belongs to the current user
@@ -1116,7 +1116,9 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
             if(chart1.data && chart1.data.length > 0){
-        		chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(endTime-1)])
+                // Inserting dummy event for color correction and timeline start point fix
+                //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
+        		chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])
             }
         $scope.showTimelineChart = true;
 		if(chart1.data.length > 0){
