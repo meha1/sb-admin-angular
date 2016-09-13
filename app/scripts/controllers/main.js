@@ -167,7 +167,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                             res[i]._source.service_id = res[i]._source.image.service_id; 
                             res[i]._source.id = res[i]._id;
                             if (ClientFact.getServiceById[res[i]._source.service_id]){
-                        		res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
+                                //res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
+                        		res[i]._source.instanceName = ClientFact.getInstanceById[instanceId].instanceName;// + " " + instanceId.hashCode();
                             }
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
@@ -432,6 +433,15 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
             console.info("This is map.getImageById: ")
             console.info(map.getImageById)
             map.isDoneInitialLoad = true;
+
+            //var len = map.getSelected().instances.length;
+            for (var instance_id in map.getInstanceById){
+                if(!map.getInstanceById.hasOwnProperty(instance_id)){
+                    return;
+                }
+                var instance = map.getInstanceById[instance_id]
+                instance.instanceName = map.getServiceById[map.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+            }
             NotifyingService.notify();
         }
     }
@@ -1065,7 +1075,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         //||                logRow.timestamp < startTimestamp) {
                 continue;
             }
-            //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+            instanceName = ClientFact.getInstanceById[logRow.instance_id].instanceName;
             // if( !logRow.instance_id || 
             // 	!ClientFact.getInstanceById[logRow.instance_id] || 
             // 	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
@@ -1073,7 +1083,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
             // 	continue;
             // }
-            instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
+            //instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
             endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
@@ -1120,10 +1130,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             // inserting dummy events for non-active instances
             var len = ClientFact.getSelected().instances.length;
             for (var i = 0 ; i < len ; i++){
-                var instance = ClientFact.getSelected().instances[i];
-                instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+                //var instance = ClientFact.getSelected().instances[i];
+                //instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
                 //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
-                chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
+                chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
             }
         }
 
@@ -1150,26 +1160,25 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     });
 
     $scope.scrollToAnchor = function(index, isFullRow){
-    	//console.info("Selected index is: " + index)
     	var record = isFullRow ? index : $scope.filteredLogs[index];
         ClientFact.getSelected().selectedService = "";
     	if(index){
-    		//console.info(record)
-    		// filter by service
     		var serviceId = record.image.service_id;
     		ClientFact.getSelected().selectedService = serviceId;
-	    	// filter the log by instance id
 	    	$scope.searchLog.instance_id = record.instance_id;
     	}
-    	//TODO: set selcted service
     	if($state.current.name != 'dashboard.instances'){
     		$state.go('dashboard.instances');
     	}
     	var target = record ? record.id : '';
-    	$timeout($scope.scrollToLogAnchor, 100, false, target);
+    	$timeout($scope.scrollToLogAnchor, 50, false, target, record);
     }
 
-    $scope.scrollToLogAnchor = function(index){
+    $scope.scrollToLogAnchor = function(index, record){
+        if($state.current.name != 'dashboard.instances'){
+            $scope.scrollToAnchor(record, true);
+            return;
+        }
     	var newHash = 'logAnchor' + index;
 		if ($location.hash() !== newHash) {
 			// set the $location.hash to `newHash` and

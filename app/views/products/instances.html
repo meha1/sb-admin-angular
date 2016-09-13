@@ -191,8 +191,8 @@
 	                        <tbody ng-show="ClientFact.getSelected().type == 'serviceProviders'">
 	                            <!-- <tr ng-repeat="instance in prod.productInstances[prod.products[prod.selected[0]]]"> -->
 	                            <tr ng-click="openInstanceModal(instance)" ng-repeat="instance in ClientFact.getSelected().instances" ng-click="openInstanceModal(instance)">
-	                                <!-- <td>{{ClientFact.getServiceById[instance.id].name}}</td> -->
-	                                <td>{{instance.pc_id}}</td>
+	                                <!-- <td>{{instance.pc_id}}</td> -->
+	                                <td>{{instance.instanceName}}</td>
 	                                <td>{{instance.ip_address}}</td>
 	                                <!-- <td>{{mapImageIdToName[instance.imageId]}}</td> -->
 	                                <td>{{ClientFact.getImageById[instance.image_id].name}}</td>
