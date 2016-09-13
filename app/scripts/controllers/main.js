@@ -1115,13 +1115,21 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         	chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
             //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
-            if(chart1.data && chart1.data.length > 0){
-                // Inserting dummy event for color correction and timeline start point fix
+        if(chart1.data && chart1.data.length > 0){
+            // Inserting dummy event for color correction and timeline start point fix
+            // inserting dummy events for non-active instances
+            var len = ClientFact.getSelected().instances.length;
+            for (var i = 0 ; i < len ; i++){
+                var instance = ClientFact.getSelected().instances[i];
+                instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
                 //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
-        		chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])
+                chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
             }
+        }
+
         $scope.showTimelineChart = true;
-		if(chart1.data.length > 0){
+		
+        if(chart1.data.length > 0){
 			drawTimelineChart($scope, chart1.data)
         }else{
         	emptyTimelineChart();
