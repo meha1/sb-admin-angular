@@ -405,19 +405,20 @@ body{
 }
 
 .num-of-instances {
-    min-width: 0px!important;
+    min-width: 15px!important;
     min-height: 0px!important;
     position: absolute;
     line-height: 50px;
     z-index: 9999;
     font-size: 15px;
     color: white;
-    right: 100px;
+    right: 95px;
     bottom: 70px;
     margin:auto;
     height: 22%!important;
     width: auto!important;
-
+    text-align:center;
+    align-content:center;
     }
 /*
 .num-of-instances {
