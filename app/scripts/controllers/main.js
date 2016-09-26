@@ -304,6 +304,12 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                         desc: "Cisco secure virtual router"
                     },
                     {
+                        //id: 1,
+                        id: "Apple",
+                        name: "Docker",
+                        desc: "Cisco secure Docker container"
+                    },
+                    {
                         id: 92,
                         name: "vSwitch",
                         desc: "Cisco secure virtual switch"
@@ -333,7 +339,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 id: "014",
                 spId: 1,
                 name: "Cisco",
-                services: ["Orange", 92]
+                services: ["Orange", "Apple", 92]
             },
             {
                 id: 101,
