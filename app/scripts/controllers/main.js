@@ -61,6 +61,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     var map = {};
     map.logs = {};
     map.fullLogs = [];
+    map.logsByInstance = {};
+    map.logsByInstancePerSecond = [];
     var lastTimestamp;
 
     map.resolveType = {
@@ -167,7 +169,8 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                             res[i]._source.service_id = res[i]._source.image.service_id; 
                             res[i]._source.id = res[i]._id;
                             if (ClientFact.getServiceById[res[i]._source.service_id]){
-                        		res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
+                                //res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
+                        		res[i]._source.instanceName = ClientFact.getInstanceById[instanceId].instanceName;// + " " + instanceId.hashCode();
                             }
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
@@ -194,13 +197,47 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
 
                     len = that.fullLogs.length;
                     for (i = 0 ; i < len ; i++){
-	                    if ((that.fullLogs[i].type == 0x10) || (that.fullLogs[i].type == 0x20)) {
+                        // counting alerts anf verifications
+                        var logRow = that.fullLogs[i];
+	                    if ((logRow.type == 0x10) || (logRow.type == 0x20)) {
 	                        that.numOfVerifications++;
-	                    } else if ((that.fullLogs[i].type == 0x30) || (that.fullLogs[i].type == 0x40)) {
+	                    } else if ((logRow.type == 0x30) || (logRow.type == 0x40)) {
 	                        that.numOfAlerts++;
 	                    }	
+                        
+                        //maping logs by instance_id
+                        if(!that.logsByInstance[logRow.instance_id]){
+                            that.logsByInstance[logRow.instance_id] = {};
+                        }
+                        // creating a map of maps for each instance, only one record is a certain second will exist (alert preferably)
+                        // if there is no record for this second or the existing record isn't an alert, replace it
+                        if (!that.logsByInstance[logRow.instance_id][logRow.timestamp] || 
+                            !that.logsByInstance[logRow.instance_id][logRow.timestamp].type ||
+                             that.logsByInstance[logRow.instance_id][logRow.timestamp].type < 0x40){
+                            that.logsByInstance[logRow.instance_id][logRow.timestamp] = logRow;
+                        }
+                        // making the alert BOLD and WIDE
+                        // if(that.logsByInstance[logRow.instance_id][logRow.timestamp].type == 0x40){
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+1]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+2]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+3]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+4]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+5]
+                        //     that.logsByInstance[logRow.instance_id][logRow.timestamp+6]
+                        // }
+                        //that.logsByInstance[logRow.instance_id][logRow.timestamp].push(logRow);
                     }
-                    
+                    var tmpInstancesLog = {};
+                    for(var instance_id in that.logsByInstance){
+                        // var arr = Object.keys(that.logsByInstance[instance_id]).map(key => that.logsByInstance[instance_id][key]);
+                        var arr = Object.keys(that.logsByInstance[instance_id]).map(function(key){ return that.logsByInstance[instance_id][key]});
+                        tmpInstancesLog[instance_id] = arr;
+                    }
+                    that.logsByInstancePerSecond = [];
+                    // Object.keys(tmpInstancesLog).map(key => that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key]));
+                    Object.keys(tmpInstancesLog).map(function(key){ that.logsByInstancePerSecond = that.logsByInstancePerSecond.concat(tmpInstancesLog[key])});
+                    // that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)).reverse();
+                    that.logsByInstancePerSecond = that.logsByInstancePerSecond.sort(function(a, b){ return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? - 1 : 0)}).reverse();
                     that.pollingIsDone(that)
                 }
                 //console.log(that.fullLogs)
@@ -267,6 +304,12 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                         desc: "Cisco secure virtual router"
                     },
                     {
+                        //id: 1,
+                        id: "Apple",
+                        name: "Docker",
+                        desc: "Cisco secure Docker container"
+                    },
+                    {
                         id: 92,
                         name: "vSwitch",
                         desc: "Cisco secure virtual switch"
@@ -296,7 +339,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 id: "014",
                 spId: 1,
                 name: "Cisco",
-                services: ["Orange", 92]
+                services: ["Orange", "Apple", 92]
             },
             {
                 id: 101,
@@ -432,6 +475,15 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
             console.info("This is map.getImageById: ")
             console.info(map.getImageById)
             map.isDoneInitialLoad = true;
+
+            //var len = map.getSelected().instances.length;
+            for (var instance_id in map.getInstanceById){
+                if(!map.getInstanceById.hasOwnProperty(instance_id)){
+                    return;
+                }
+                var instance = map.getInstanceById[instance_id]
+                instance.instanceName = map.getServiceById[map.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+            }
             NotifyingService.notify();
         }
     }
@@ -546,12 +598,27 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
 })
 
 
-app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
+app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $interval, $filter, $anchorScroll, $location, $state, $uibModal, ClientFact, LogFact, Upload, NotifyingService /*FileUploader*/ ) {
     console.info("init MainCtrl!");
 
     if($state.current.name != 'dashboard.home'){
         $state.go('dashboard.home');
     }
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){ 
+        if(toState.name == "dashboard.home" && fromState.name != "dashboard.home"){
+            // start log polling
+            LogFact.registerToPollingNotification(updateInstanceTimeline.name, updateInstanceTimeline);
+            console.info("Started log polling!")
+        }else if(fromState.name == "dashboard.home" && toState.name != "dashboard.home"){
+            // stop log polling
+            LogFact.unRegisterFromPollingNotification(updateInstanceTimeline.name);
+            console.info("Stopped log polling!")
+        }
+        if(toState.name == "dashboard.instances"){
+            $timeout(drawTimelineChart, 300, false, $scope, chart1.data)
+        }
+    });
 
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
     var CLOUD_WATCH_URL = "http://" + CPU_SERVER_IP + ":39739/cpuutilization";
@@ -561,7 +628,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
     var LAST_X_HOURS = 0.5;
-    var LIMIT_LOG_SIZE = $scope.limitLogSize = 500;
+    var LIMIT_LOG_SIZE = $scope.limitLogSize = 1000;
 
     $scope.serviceSelect = -1;
 
@@ -1026,6 +1093,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         return res;
     }
     $scope.filteredLogs = [];
+    $scope.fullFilteredLogs = [];
 
     $scope.reloadTimeline = function() {
     	updateInstanceTimeline();
@@ -1046,7 +1114,8 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         }
         // TODO: Filter by user and service -> empty selected service == all servcies
         chart1.data = [];
-        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
+        $scope.fullFilteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
+        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.logsByInstancePerSecond, ClientFact.getSelected().instances)
             //var len = LogFact.fullLogs.length;
         var len = $scope.filteredLogs.length
         var logRow;
@@ -1065,7 +1134,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
         //||                logRow.timestamp < startTimestamp) {
                 continue;
             }
-            //instanceName = ClientFact.getInstanceById[logRow.instance_id].pc_id;
+            instanceName = ClientFact.getInstanceById[logRow.instance_id].instanceName;
             // if( !logRow.instance_id || 
             // 	!ClientFact.getInstanceById[logRow.instance_id] || 
             // 	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
@@ -1073,7 +1142,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
             // 	continue;
             // }
-            instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
+            //instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
             type = logRow.type > 0x30 ? ' ' : '  ';
             startTime = logRow.timestamp * 1000;
             endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
@@ -1120,10 +1189,10 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
             // inserting dummy events for non-active instances
             var len = ClientFact.getSelected().instances.length;
             for (var i = 0 ; i < len ; i++){
-                var instance = ClientFact.getSelected().instances[i];
-                instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+                //var instance = ClientFact.getSelected().instances[i];
+                //instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
                 //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
-                chart1.data.push([instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
+                chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
             }
         }
 
@@ -1150,26 +1219,25 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
     });
 
     $scope.scrollToAnchor = function(index, isFullRow){
-    	//console.info("Selected index is: " + index)
     	var record = isFullRow ? index : $scope.filteredLogs[index];
         ClientFact.getSelected().selectedService = "";
     	if(index){
-    		//console.info(record)
-    		// filter by service
     		var serviceId = record.image.service_id;
     		ClientFact.getSelected().selectedService = serviceId;
-	    	// filter the log by instance id
 	    	$scope.searchLog.instance_id = record.instance_id;
     	}
-    	//TODO: set selcted service
     	if($state.current.name != 'dashboard.instances'){
     		$state.go('dashboard.instances');
     	}
     	var target = record ? record.id : '';
-    	$timeout($scope.scrollToLogAnchor, 100, false, target);
+    	$timeout($scope.scrollToLogAnchor, 50, false, target, record);
     }
 
-    $scope.scrollToLogAnchor = function(index){
+    $scope.scrollToLogAnchor = function(index, record){
+        if($state.current.name != 'dashboard.instances'){
+            $scope.scrollToAnchor(record, true);
+            return;
+        }
     	var newHash = 'logAnchor' + index;
 		if ($location.hash() !== newHash) {
 			// set the $location.hash to `newHash` and
@@ -1180,6 +1248,7 @@ app.controller('MainCtrl', function ($scope, $timeout, $http, $interval, $filter
 			// since $location.hash hasn't changed
 			$anchorScroll();
 		}
+        drawTimelineChart($scope, chart1.data)
     }
 
     $scope.showTimelineChart = false;

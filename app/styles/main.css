@@ -409,7 +409,7 @@ body{
     min-height: 0px!important;
     position: absolute;
     line-height: 50px;
-    z-index: 9999;
+    z-index: 200;
     font-size: 15px;
     color: white;
     right: 95px;

@@ -192,14 +192,14 @@ angular
         //controller: 'MainCtrl',
         templateUrl:'views/products/instances.html',
         url:'/instances',
-        resolve: {
-          loadMyDirectives:function($ocLazyLoad){
-            return $ocLazyLoad.load({
-              name:'sbAdminApp',
-              files:[/*'scripts/controllers/main.js',*/
-              'scripts/controllers/chartContoller.js']
-            })}
-          }
+        //resolve: {
+        // loadMyDirectives:function($ocLazyLoad){
+        //    return $ocLazyLoad.load({
+        //     name:'sbAdminApp',
+        //      files:[/*'scripts/controllers/main.js',*/
+        //      'scripts/controllers/chartContoller.js']
+        //    })}
+        //  }
    })
       .state('dashboard.services',{
         //controller: 'MainCtrl',
