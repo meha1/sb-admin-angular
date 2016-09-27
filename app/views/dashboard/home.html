@@ -16,7 +16,6 @@
                     <div class="row center-div">
                         <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="pieChart.data" chart-colors="pieChart.colors" chart-options="pieChart.options" chart-labels="pieChart.labels" legend="false"></canvas>
                         <div class="num-of-instances">
-                            <!-- <span ng-init="setValueBySteps('numOfInstances', 0, numOfInstances, 1000, numOfInstances)">{{numOfInstances}}</span> -->
                             <span>{{numOfInstances}}</span>
                         </div>
 
@@ -34,7 +33,7 @@
                 </div>
                 <div class="pie-container">
                     <div class="row center-div">
-                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-options="cpuChart.options" chart-colors="cpuChart.colors" chart-options="cpuChart.options" chart-legend="true"></canvas>
+                        <canvas id="doughnut" class="chart chart-doughnut chart-xs pie-chart" chart-data="cpuChart.data" chart-labels="cpuChart.labels" chart-options="cpuChart.options" chart-colors="cpuChart.colors" chart-legend="true"></canvas>
                     </div>
                     <div class="cpu-legend">
                         <div>
@@ -147,21 +146,22 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <ul class="nav nav-justified nav-pills">
-                <li class="active"><a  data-toggle="pill" href="#varificationTab">Verifications In the IP Range</a></li>
-                <li ><a data-toggle="pill" href="#alertTab">Verifications Out Of the IP Range</a></li>
+                <li class="active"><a data-toggle="pill" href="#varificationTab">Verifications In the IP Range</a></li>
+                <li><a data-toggle="pill" href="#alertTab">Verifications Out Of the IP Range</a></li>
             </ul>
             <div class="panel-maps">
                 <div class="tab-content">
                     <div id="varificationTab" class="tab-pane fade in active">
-                        <iframe src="http://52.59.6.66:5601/app/kibana#/dashboard/instance-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-in-range-view,uiState:())" width="100%" height="580"></iframe>
+                        <iframe src="http://52.59.6.66:5601/app/kibana#/dashboard/instance-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-in-range-view,uiState:())"  height="580"></iframe>
                     </div>
                     <div id="alertTab" class="tab-pane fade active">
-                        <iframe src="http://52.59.6.66:5601/app/kibana#/dashboard/instance-not-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-not-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-not-in-range-view,uiState:())" height="600" width="100%"></iframe>
+                        <iframe src="http://52.59.6.66:5601/app/kibana#/dashboard/instance-not-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-not-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-not-in-range-view,uiState:())" height="600" ></iframe>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     <!-- <div class="row">
             <div class="col-lg-8">
