@@ -487,7 +487,11 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 if (img)
                 {
                     var serv = map.getServiceById[img.service_id]
-                    instance.instanceName = serv.name + " " + instance.id.hashCode();
+                    if (serv) {
+                        instance.instanceName = serv.name + " " + instance.id.hashCode();
+                    } else {
+                        instance.instanceName = "vRouter...1213 ";
+                    }
                 }
 
             }
