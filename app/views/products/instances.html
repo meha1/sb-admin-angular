@@ -264,9 +264,8 @@
 	                        </thead>
 	                        <tbody>
 	                            <!-- <tr ng-repeat="logRow in LogFact.fullLogs | ClientRelatedInstances:ClientFact.getSelected().instances | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{$index}}"> -->
-	                            <tr ng-repeat="logRow in filteredLogs | limitTo:limitLogSize | filter: searchLog | filter: {'service_id' : ClientFact.getSelected().selectedService}" id="logAnchor{{logRow.id}}">
+	                            <tr ng-repeat="logRow in filteredLogs | limitTo:limitLogSize | filter: searchLog" id="logAnchor{{logRow.id}}">
 	                                <td>{{logRow.timestamp * 1000 | date:'medium'}}</td>
-	                                <!-- <td>{{logRow.instance.pc_id}}</td> -->
 	                                <td>{{logRow.instanceName}}</td>
 									<td>{{logRow.instance.ip_address}}</td>
 									<td>{{logRow.image.name}}</td>
@@ -276,7 +275,7 @@
 	                            </tr>
 	                            <!-- <tr ng-repeat="logRow in prod.log[prod.products[prod.selected[0]]] | filter:searchLog">
 	                                <td>{{logRow.timestamp | date:'medium'}}</td>
-	                                <td>{{mapInstanceIdToName[logRow.instanceId]}}</td>
+	                                <td>{{mapInstanceIdToName[logRow.instance_id]}}</td>
 	                                <td>{{logRow.type}}</td>
 	                                <td>{{logRow.message}}</td>
 	                            </tr> -->

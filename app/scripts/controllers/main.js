@@ -13,8 +13,8 @@ var stagingIp = "52.59.6.66";
 var producitonCpuIp = "54.93.40.187";
 var stagingCpuIp = "54.93.34.14"; 
 
-var SERVER_IP = productionIp;
-var CPU_SERVER_IP = producitonCpuIp;
+var SERVER_IP = stagingIp;
+var CPU_SERVER_IP = stagingCpuIp;
 
 //var ES_URL = "http://" + stagingIp + ":9200/";
 var ES_URL = "http://" + SERVER_IP + ":9200/";
@@ -31,31 +31,6 @@ app.factory('NotifyingService', function($rootScope) {
         }
     };
 });
-
-app.filter('ClientRelatedInstances', function (ClientFact) {
-    function filterFunc(items, clientInstances) {
-        var filtered = [];
-        if (!clientInstances) {
-            return filtered;
-        }
-        var len = clientInstances.length;
-        var instanceIdMap = {};
-        // marking all instances that belong to the user
-        for (var i = 0; i < len; i++) {
-            if (clientInstances[i] && clientInstances[i].id) {
-                instanceIdMap[clientInstances[i].id] = true;
-            }
-        }
-        angular.forEach(items, function (item) {
-            if (instanceIdMap[item.instance_id] && ClientFact.getInstanceById[item.instance_id]) {
-                //item.service_id = ClientFact.getInstanceById[item.instance_id].service_id;
-                filtered.push(item);
-            }
-        });
-        return filtered;
-    };
-    return filterFunc
-})
 
 app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     var map = {};
@@ -164,10 +139,10 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                         // }
                         //res[i]._source.id = res[i]._id; // adding instance id into the data
                         res[i]._source.instance = ClientFact.getInstanceById[instanceId]
+                        res[i]._source.id = res[i]._id;
                         if (res[i]._source.instance) {
                             res[i]._source.image = ClientFact.getImageById[res[i]._source.instance.image_id];
                             res[i]._source.service_id = res[i]._source.image.service_id; 
-                            res[i]._source.id = res[i]._id;
                             if (ClientFact.getServiceById[res[i]._source.service_id]){
                                 //res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
                         		res[i]._source.instanceName = ClientFact.getInstanceById[instanceId].instanceName;// + " " + instanceId.hashCode();
@@ -298,16 +273,19 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 name: "Cisco SP",
                 services: [
                     {
-                        //id: 1,
                         id: "Orange",
                         name: "vRouter",
                         desc: "Cisco secure virtual router"
                     },
                     {
-                        //id: 1,
                         id: "Apple",
                         name: "Docker",
                         desc: "Cisco secure Docker container"
+                    },
+                    {
+                        id: "Mango",
+                        name: "nginx Docker",
+                        desc: "Cisco nginx Docker"
                     },
                     {
                         id: 92,
@@ -339,7 +317,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                 id: "014",
                 spId: 1,
                 name: "Cisco",
-                services: ["Orange", "Apple", 92]
+                services: ["Orange", "Apple", "Mango", 92]
             },
             {
                 id: 101,
@@ -490,7 +468,8 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                     if (serv) {
                         instance.instanceName = serv.name + " " + instance.id.hashCode();
                     } else {
-                        instance.instanceName = "vRouter...1213 ";
+                        continue;
+//                        instance.instanceName = "vRouter...1213 ";
                     }
                 }
 
@@ -1117,110 +1096,152 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         $scope.numOfAlerts = LogFact.numOfAlerts;
     }
 
+
     var updateInstanceTimeline = function () {
-    	// ====== TODO: insert dummy event for color correction!!!
-        // if instance data wasn't loaded
-        if(!ClientFact.isDoneInitialLoad){
+        var searchQuery = {
+            "query": {
+                "bool": {
+                    "should": []
+                }
+            },
+            "size": 700,
+
+        }
+        if (LogFact.logsByInstance.length == 0) {
             return;
         }
-        // TODO: Filter by user and service -> empty selected service == all servcies
-        chart1.data = [];
-        $scope.fullFilteredLogs = $filter('ClientRelatedInstances')(LogFact.fullLogs, ClientFact.getSelected().instances)
-        $scope.filteredLogs = $filter('ClientRelatedInstances')(LogFact.logsByInstancePerSecond, ClientFact.getSelected().instances)
-            //var len = LogFact.fullLogs.length;
-        var len = $scope.filteredLogs.length
-        var logRow;
-        var startTime;
-        var endTime;
-        var instanceName;
-        var type;
-        var startTimestamp = ((new Date().getTime())/1000) - (LAST_X_HOURS*3600)
-        var insertedDummyRow = false;
-        for (var i = 0; i < len && chart1.data.length < LIMIT_LOG_SIZE; i++) {
-            //logRow = LogFact.fullLogs[i];
-            logRow = $scope.filteredLogs[i];
-            // checking if row has all related data in instances list and that it belongs to the current user
-            if (!ClientFact.getInstanceById[logRow.instance_id] ||
-                !ClientFact.getInstanceById[logRow.instance_id].pc_id ){
-        //||                logRow.timestamp < startTimestamp) {
-                continue;
-            }
-            instanceName = ClientFact.getInstanceById[logRow.instance_id].instanceName;
-            // if( !logRow.instance_id || 
-            // 	!ClientFact.getInstanceById[logRow.instance_id] || 
-            // 	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
-            // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id] || 
-            // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
-            // 	continue;
-            // }
-            //instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
-            type = logRow.type > 0x30 ? ' ' : '  ';
-            startTime = logRow.timestamp * 1000;
-            endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
-            var tooltip = 
-            	"<div>" +
-            		"<div class='row'>" +
-            			"<div class='col-md-3 tooltip-label'>" +
-            				"Time: " +
-            			"</div>" + 
-            			"<div class='col-md-9 tooltip-text'>" +
-            				$filter('date')(logRow.timestamp*1000,'medium') +
-            			"</div>" +
-            		"</div>" + 
-            		"<div class='row'>" +
-            			"<div class='col-md-3 tooltip-label'>" +
-            				"Type: " +
-            			"</div>" + 
-            			"<div class='col-md-9 tooltip-text'>" +
-            				LogFact.resolveType[logRow.type] +
-            			"</div>" +
-            		"</div>" + 
-            		"<div class='row'>" +
-            			"<div class='col-md-3 tooltip-label'>" +
-            				"Subtype: " +
-            			"</div>" + 
-            			"<div class='col-md-9 tooltip-text'>" +
-            				LogFact.resolveSubType[logRow.subtype] +
-            			"</div>" +
-            		"</div>" + 
-            		"<div class='row'>" +
-            			"<div class='col-md-3 tooltip-label'>" +
-            				"Text: " +
-            			"</div>" + 
-            			"<div class='col-md-9 tooltip-text'>" +
-            				logRow.txt +
-            			"</div>" +
-            		"</div>" + 
-        		"</div>"
-            if (instanceName && type && tooltip && startTime && endTime) {
-                chart1.data.push([instanceName, type, tooltip, new Date(startTime), new Date(endTime)])
-            }
-
-            
-            //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
+        for (var instance_id in LogFact.logsByInstance) {
+            var match_entry = { "match": { "_id": instance_id } };
+            searchQuery.query.bool.should.push(match_entry);
         }
-        if(chart1.data && chart1.data.length > 0){
-            // Inserting dummy event for color correction and timeline start point fix
-            // inserting dummy events for non-active instances
-            var len = ClientFact.getSelected().instances.length;
-            for (var i = 0 ; i < len ; i++){
-                //var instance = ClientFact.getSelected().instances[i];
-                //instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
-                //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
+        $http.post(ES_URL + "instances/_search", searchQuery)
+            .then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                if (response.error) {
+                    console.info(response.error);
+                } else {
+                    var instanceIdMap = {};
+                    angular.forEach(response.data.hits.hits, function (instance_item) {
+                        instanceIdMap[instance_item._id] = instance_item;
+                    });
+                    $scope.filteredLogs = [];
+                    angular.forEach(LogFact.logsByInstancePerSecond, function (item) {
+                        if(instanceIdMap.hasOwnProperty(item.instance_id))
+                        {
+                            $scope.filteredLogs.push(item);
+                        }
+                    });
+                    var len = $scope.filteredLogs.length
+                    var logRow;
+                    var startTime;
+                    var endTime;
+                    var instanceName;
+                    var type;
+                    var startTimestamp = ((new Date().getTime()) / 1000) - (LAST_X_HOURS * 3600)
+                    var insertedDummyRow = false;
+                    for (var i = 0; i < len && chart1.data.length < LIMIT_LOG_SIZE; i++) {
+                        //logRow = LogFact.fullLogs[i];
+                        logRow = $scope.filteredLogs[i];
+                        // checking if row has all related data in instances list and that it belongs to the current user
 
-                if (ClientFact.getSelected().instances[i] && ClientFact.getSelected().instances[i].instanceName && startTime) {
-                    chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "", new Date(startTime - 1), new Date(startTime - 1)])
+
+                        var img = ClientFact.getImageById[instanceIdMap[logRow.instance_id]._source.image_id];
+                        $scope.filteredLogs[i].instance = instanceIdMap[logRow.instance_id]._source;
+
+                        if (img) {
+                            $scope.filteredLogs[i].image = img;
+                            var serv = ClientFact.getServiceById[img.service_id]
+                            if (serv) {
+                                instanceName = serv.name + " " + logRow.instance_id.hashCode();
+                                $scope.filteredLogs[i].instanceName = instanceName;
+                            } else {
+                                instanceName = "vRouter...dummy";
+                            }
+                        }
+                        else {
+                            continue;
+                        }
+
+                        // if( !logRow.instance_id || 
+                        // 	!ClientFact.getInstanceById[logRow.instance_id] || 
+                        // 	!ClientFact.getInstanceById[logRow.instance_id].service_id || 
+                        // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id] || 
+                        // 	!ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name){
+                        // 	continue;
+                        // }
+                        //instanceName = logRow.instanceName;//ClientFact.getServiceById[ClientFact.getInstanceById[logRow.instance_id].service_id].name + " " + logRow.instance_id.hashCode()
+                        type = logRow.type > 0x30 ? ' ' : '  ';
+                        startTime = logRow.timestamp * 1000;
+                        endTime = startTime //+ (logRow.type > 0x30 ? 10 : 0);
+                        var tooltip =
+                            "<div>" +
+                                "<div class='row'>" +
+                                    "<div class='col-md-3 tooltip-label'>" +
+                                        "Time: " +
+                                    "</div>" +
+                                    "<div class='col-md-9 tooltip-text'>" +
+                                        $filter('date')(logRow.timestamp * 1000, 'medium') +
+                                    "</div>" +
+                                "</div>" +
+                                "<div class='row'>" +
+                                    "<div class='col-md-3 tooltip-label'>" +
+                                        "Type: " +
+                                    "</div>" +
+                                    "<div class='col-md-9 tooltip-text'>" +
+                                        LogFact.resolveType[logRow.type] +
+                                    "</div>" +
+                                "</div>" +
+                                "<div class='row'>" +
+                                    "<div class='col-md-3 tooltip-label'>" +
+                                        "Subtype: " +
+                                    "</div>" +
+                                    "<div class='col-md-9 tooltip-text'>" +
+                                        LogFact.resolveSubType[logRow.subtype] +
+                                    "</div>" +
+                                "</div>" +
+                                "<div class='row'>" +
+                                    "<div class='col-md-3 tooltip-label'>" +
+                                        "Text: " +
+                                    "</div>" +
+                                    "<div class='col-md-9 tooltip-text'>" +
+                                        logRow.txt +
+                                    "</div>" +
+                                "</div>" +
+                            "</div>"
+                        if (instanceName && type && tooltip && startTime && endTime) {
+                            chart1.data.push([instanceName, type, tooltip, new Date(startTime), new Date(endTime)])
+                        }
+
+
+                        //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
+                    }
+                    if (chart1.data && chart1.data.length > 0) {
+                        // Inserting dummy event for color correction and timeline start point fix
+                        // inserting dummy events for non-active instances
+                        var len = ClientFact.getSelected().instances.length;
+                        for (var i = 0 ; i < len ; i++) {
+                            //var instance = ClientFact.getSelected().instances[i];
+                            //instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+                            //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
+
+                            if (ClientFact.getSelected().instances[i] && ClientFact.getSelected().instances[i].instanceName && startTime) {
+                                chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "", new Date(startTime - 1), new Date(startTime - 1)])
+                            }
+                        }
+                    }
+
+                    $scope.showTimelineChart = true;
+
+                    if (chart1.data.length > 0) {
+                        drawTimelineChart($scope, chart1.data)
+                    } else {
+                        emptyTimelineChart();
+                    }
                 }
-            }
-        }
+            }, function errorCallback(response) {
 
-        $scope.showTimelineChart = true;
-		
-        if(chart1.data.length > 0){
-			drawTimelineChart($scope, chart1.data)
-        }else{
-        	emptyTimelineChart();
-        }
+            });
     }
 
     var updateInstanceInterval;
