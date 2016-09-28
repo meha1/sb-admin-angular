@@ -1207,7 +1207,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                 //var instance = ClientFact.getSelected().instances[i];
                 //instanceName = ClientFact.getServiceById[ClientFact.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
                 //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
-                chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "" ,new Date(startTime-1), new Date(startTime-1)])  
+
+                if (ClientFact.getSelected().instances[i] && ClientFact.getSelected().instances[i].instanceName && startTime) {
+                    chart1.data.push([ClientFact.getSelected().instances[i].instanceName, '  ', "", new Date(startTime - 1), new Date(startTime - 1)])
+                }
             }
         }
 
