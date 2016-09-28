@@ -1192,7 +1192,11 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             			"</div>" +
             		"</div>" + 
         		"</div>"
-        	chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
+            if (instanceName && type && tooltip && startTime && endTime) {
+                chart1.data.push([instanceName, type, tooltip, new Date(startTime), new Date(endTime)])
+            }
+
+            
             //chart1.data.push([instanceName, type, tooltip ,new Date(startTime), new Date(endTime)])
         }
         if(chart1.data && chart1.data.length > 0){
