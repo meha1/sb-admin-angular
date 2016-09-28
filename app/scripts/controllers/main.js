@@ -482,7 +482,14 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                     return;
                 }
                 var instance = map.getInstanceById[instance_id]
-                instance.instanceName = map.getServiceById[map.getImageById[instance.image_id].service_id].name + " " + instance.id.hashCode();
+                var img = map.getImageById[instance.image_id];
+
+                if (img)
+                {
+                    var serv = map.getServiceById[img.service_id]
+                    instance.instanceName = serv.name + " " + instance.id.hashCode();
+                }
+
             }
             NotifyingService.notify();
         }
