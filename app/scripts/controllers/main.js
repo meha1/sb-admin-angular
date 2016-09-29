@@ -1140,11 +1140,17 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                     var type;
                     var startTimestamp = ((new Date().getTime()) / 1000) - (LAST_X_HOURS * 3600)
                     var insertedDummyRow = false;
+                    chart1.data = [];
                     for (var i = 0; i < len && chart1.data.length < LIMIT_LOG_SIZE; i++) {
+                        
                         //logRow = LogFact.fullLogs[i];
                         logRow = $scope.filteredLogs[i];
                         // checking if row has all related data in instances list and that it belongs to the current user
 
+                        if (logRow.timestamp < startTimestamp)
+                        {
+                            continue;
+                        }
 
                         var img = ClientFact.getImageById[instanceIdMap[logRow.instance_id]._source.image_id];
                         $scope.filteredLogs[i].instance = instanceIdMap[logRow.instance_id]._source;
