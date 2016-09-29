@@ -737,13 +737,13 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             colors : ['#E7D6FF', '#C8A3FF','#FFFFFF', '#A970FF','#8B3DFF'],
             data: [],
             legend: [],
-            numOfInstances: ''
+            numOfInstances: '0'
         };
 
         var count = 0;
       
         var element = angular.element(document.querySelector('#pieLegend'));
-        $(".tempLabel").remove();
+        $(".instanceLegendDiv").remove();
         for (var service in $scope.services) {
             var label = function (spId) {
                 for (var sp in $scope.clients['serviceProviders']) {
@@ -758,8 +758,8 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             }(spId);
             pie.labels.push(label);
             pie.data.push($scope.services[service]);
-            pie.numOfInstances += $scope.services[service];
-            var htmlStr = angular.element("<div class='tempLabel'><div class='tempLabel' style='color:" + String(pie.colors[count]) +
+            pie.numOfInstances = parseInt(pie.numOfInstances) + parseInt($scope.services[service]);
+            var htmlStr = angular.element("<div class='instanceLegendDiv'><div class='tempLabel' style='color:" + String(pie.colors[count]) +
                 "'> &#9632</div> " + String(label) + "</div>");
             count = (count + 1) % pie.colors.length;
             element.append(htmlStr);
