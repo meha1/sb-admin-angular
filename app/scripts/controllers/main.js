@@ -73,11 +73,11 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
     }
 
     map.resolveAlertText = {
-    	192: 'Debugger attachment was detected',
-    	193: 'Monitored process memory was changed',
-    	194: 'Malicious shared objected was injected',
-    	195: "Malicious process detected",
-    	196: "Signature doesn't match",
+        192: 'Debugger attachment was detected',
+        193: 'Monitored process memory was changed',
+        194: 'Malicious shared objected was injected',
+        195: "Malicious process detected",
+        196: "Signature doesn't match",
     }
 
     map.updateLog = function (pass) {
@@ -87,7 +87,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
         // 24hr in seconds
         var TIME_TO_LOG = (3600 * 24) 
         var fromDate = that.lastTimestamp ? that.lastTimestamp : fromDate = now - TIME_TO_LOG;
-       	
+        
         var searchQuery = {
             "query": {
                 "match_all": {}
@@ -127,7 +127,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
 
                     // updating the last query timestamp with the first record (first has the newest timestamp)
                     if(res[0] && res[0]._source && res[0]._source.timestamp){
-                    	that.lastTimestamp = res[0]._source.timestamp;
+                        that.lastTimestamp = res[0]._source.timestamp;
                     }
 
                     for (var i = 0; i < len; i++) {
@@ -145,7 +145,7 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                             res[i]._source.service_id = res[i]._source.image.service_id; 
                             if (ClientFact.getServiceById[res[i]._source.service_id]){
                                 //res[i]._source.instanceName = ClientFact.getServiceById[res[i]._source.service_id].name + " " + instanceId.hashCode();
-                        		res[i]._source.instanceName = ClientFact.getInstanceById[instanceId].instanceName;// + " " + instanceId.hashCode();
+                                res[i]._source.instanceName = ClientFact.getInstanceById[instanceId].instanceName;// + " " + instanceId.hashCode();
                             }
                                 //console.info("Enriched:")
                                 //console.info(res[i]._source)
@@ -158,15 +158,15 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     // adding the new record to the begining of the existing to keep them in descending oreder
                     that.fullLogs = fullLogs.concat(that.fullLogs);
 
-                	// locate the first record that timestamp > 'fromDate' (too old)
+                    // locate the first record that timestamp > 'fromDate' (too old)
                     len = that.fullLogs.length;
                     fromDate = now - TIME_TO_LOG
-                	var i;
+                    var i;
                     for (i = len - 1; i >= 0 ; i--){
-                    	// locating last index that is in the range
-                    	if(fromDate < that.fullLogs[i].timestamp){
-                    		break;
-                    	}
+                        // locating last index that is in the range
+                        if(fromDate < that.fullLogs[i].timestamp){
+                            break;
+                        }
                     }
                     that.fullLogs = that.fullLogs.slice(0, i+1);
 
@@ -174,11 +174,11 @@ app.factory('LogFact', function ($http, $interval, $timeout, ClientFact) {
                     for (i = 0 ; i < len ; i++){
                         // counting alerts anf verifications
                         var logRow = that.fullLogs[i];
-	                    if ((logRow.type == 0x10) || (logRow.type == 0x20)) {
-	                        that.numOfVerifications++;
-	                    } else if ((logRow.type == 0x30) || (logRow.type == 0x40)) {
-	                        that.numOfAlerts++;
-	                    }	
+                        if ((logRow.type == 0x10) || (logRow.type == 0x20)) {
+                            that.numOfVerifications++;
+                        } else if ((logRow.type == 0x30) || (logRow.type == 0x40)) {
+                            that.numOfAlerts++;
+                        }	
                         
                         //maping logs by instance_id
                         if(!that.logsByInstance[logRow.instance_id]){
@@ -467,6 +467,7 @@ app.factory('ClientFact', function ($http, $q, $timeout, NotifyingService) {
                     var serv = map.getServiceById[img.service_id]
                     if (serv) {
                         instance.instanceName = serv.name + " " + instance.id.hashCode();
+                        
                     } else {
                         continue;
 //                        instance.instanceName = "vRouter...1213 ";
@@ -789,7 +790,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         $scope.clientName = $scope.selectedClient.name //$scope.customerName[0]; //"Verizon" //"AT&T"
 
         if (ClientFact.selectedIndex[0] != type || ClientFact.selectedIndex[1] != index) {
-        	updateInstanceTimeline();
+            updateInstanceTimeline();
         }
     }
     $scope.numOfInstances = 0;
@@ -826,9 +827,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                 $timeout(function () {
                     ClientFact.getDataPerClient("images", ClientFact.getSelected().id)
                 }, 2000)
-    			$scope.imageForm = {};
-    			$scope.imageLimitations = {};
-			    $scope.imageLimitations.ipRange = [{}];
+                $scope.imageForm = {};
+                $scope.imageLimitations = {};
+                $scope.imageLimitations.ipRange = [{}];
 
             }, function (resp) {
                 alert('Error status: ' + resp.status);
@@ -840,29 +841,29 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
     }
 
     function b64toBlob(b64Data, contentType, sliceSize) {
-	  contentType = contentType || '';
-	  sliceSize = sliceSize || 512;
+      contentType = contentType || '';
+      sliceSize = sliceSize || 512;
 
-	  var byteCharacters = atob(b64Data);
-	  var byteArrays = [];
+      var byteCharacters = atob(b64Data);
+      var byteArrays = [];
 
-	  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-	    var slice = byteCharacters.slice(offset, offset + sliceSize);
+      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
 
-	    var byteNumbers = new Array(slice.length);
-	    for (var i = 0; i < slice.length; i++) {
-	      byteNumbers[i] = slice.charCodeAt(i);
-	    }
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
 
-	    var byteArray = new Uint8Array(byteNumbers);
+        var byteArray = new Uint8Array(byteNumbers);
 
-	    byteArrays.push(byteArray);
-	    //console.log(byteArrays)
-	  }
-	    
-	  var blob = new Blob(byteArrays, {type: contentType});
-	  return blob;
-	}
+        byteArrays.push(byteArray);
+        //console.log(byteArrays)
+      }
+        
+      var blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    }
 
     $scope.downloadDataFile = function (fileName, data, isAscii) {
         if (isAscii) {
@@ -1086,9 +1087,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
     $scope.fullFilteredLogs = [];
 
     $scope.reloadTimeline = function() {
-    	updateInstanceTimeline();
-    	console.info("Loaded main view!")
-	};
+        updateInstanceTimeline();
+        console.info("Loaded main view!")
+    };
 
     var updateVerificationAndAlerts = function()
     {
@@ -1160,6 +1161,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                             var serv = ClientFact.getServiceById[img.service_id]
                             if (serv) {
                                 instanceName = serv.name + " " + logRow.instance_id.hashCode();
+                                //instanceName = serv.name + " - " + logRow.instance.ip_address;
                                 $scope.filteredLogs[i].instanceName = instanceName;
                             } else {
                                 instanceName = "vRouter...dummy";
@@ -1216,7 +1218,8 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                                 "</div>" +
                             "</div>"
                         if (instanceName && type && tooltip && startTime && endTime) {
-                            chart1.data.push([instanceName, type, tooltip, new Date(startTime), new Date(endTime)])
+                            var nameAndIp = instanceName.slice(0, instanceName.length - 7) + " - " + logRow.instance.ip_address;
+                            chart1.data.push([nameAndIp, type, tooltip, new Date(startTime), new Date(endTime)])
                         }
 
 
@@ -1258,24 +1261,24 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         
 
         LogFact.startLogPolling(10000);
-    	//LogFact.stopLogPolling();
+        //LogFact.stopLogPolling();
         $scope.updateInstances();
         updateInstanceInterval = $interval($scope.updateInstances, 10000);
     });
 
     $scope.scrollToAnchor = function(index, isFullRow){
-    	var record = isFullRow ? index : $scope.filteredLogs[index];
+        var record = isFullRow ? index : $scope.filteredLogs[index];
         ClientFact.getSelected().selectedService = "";
-    	if(index){
-    		var serviceId = record.image.service_id;
-    		ClientFact.getSelected().selectedService = serviceId;
-	    	$scope.searchLog.instance_id = record.instance_id;
-    	}
-    	if($state.current.name != 'dashboard.instances'){
-    		$state.go('dashboard.instances');
-    	}
-    	var target = record ? record.id : '';
-    	$timeout($scope.scrollToLogAnchor, 50, false, target, record);
+        if(index){
+            var serviceId = record.image.service_id;
+            ClientFact.getSelected().selectedService = serviceId;
+            $scope.searchLog.instance_id = record.instance_id;
+        }
+        if($state.current.name != 'dashboard.instances'){
+            $state.go('dashboard.instances');
+        }
+        var target = record ? record.id : '';
+        $timeout($scope.scrollToLogAnchor, 50, false, target, record);
     }
 
     $scope.scrollToLogAnchor = function(index, record){
@@ -1283,16 +1286,16 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             $scope.scrollToAnchor(record, true);
             return;
         }
-    	var newHash = 'logAnchor' + index;
-		if ($location.hash() !== newHash) {
-			// set the $location.hash to `newHash` and
-			// $anchorScroll will automatically scroll to it
-			$location.hash('logAnchor' + index);
-		} else {
-			// call $anchorScroll() explicitly,
-			// since $location.hash hasn't changed
-			$anchorScroll();
-		}
+        var newHash = 'logAnchor' + index;
+        if ($location.hash() !== newHash) {
+            // set the $location.hash to `newHash` and
+            // $anchorScroll will automatically scroll to it
+            $location.hash('logAnchor' + index);
+        } else {
+            // call $anchorScroll() explicitly,
+            // since $location.hash hasn't changed
+            $anchorScroll();
+        }
         drawTimelineChart($scope, chart1.data)
     }
 
