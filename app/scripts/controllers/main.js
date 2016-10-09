@@ -10,11 +10,11 @@
 var app = angular.module('sbAdminApp');
 var productionIp = "52.28.149.249";
 var stagingIp = "52.59.6.66";
-var producitonCpuIp = "54.93.40.187";
+var productionCpuIp = "54.93.40.187";
 var stagingCpuIp = "54.93.34.14"; 
 
-var SERVER_IP = stagingIp;
-var CPU_SERVER_IP = stagingCpuIp;
+var SERVER_IP = productionIp;
+var CPU_SERVER_IP = productionCpuIp;
 
 //var ES_URL = "http://" + stagingIp + ":9200/";
 var ES_URL = "http://" + SERVER_IP + ":9200/";
@@ -870,6 +870,16 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
             data = b64toBlob(data)
         }
         $scope.downloadFile(fileName, data, "text/plain");
+    }
+
+    $scope.downloadZipFile = function (url, fileName) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        document.body.removeChild(a);
     }
 
     $scope.downloadFile = function (fileName, data, contentType) {

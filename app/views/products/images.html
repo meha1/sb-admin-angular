@@ -107,6 +107,7 @@
 	                                <th>Description</th>
 	                                <th class="text-center">Get Signature</th>
 	                                <th class="text-center">Get Token</th>
+                                    <th class="text-center">Get Secure Object Pkg</th>
 	                                <th class="text-center">Protect File</th>
 	                            </tr>
 	                        </thead>
@@ -117,6 +118,7 @@
 	                                <td class="vertical-middle">{{image.desc}}</td>
 	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.sig', image.signature)"><i class="fa fa-key fa-fw"></i></a></td>
 	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.tkn', image.access_token, true)"><i class="fa fa-lock fa-fw"></i></a></td>
+                                    <td class="text-center vertical-middle"><a ng-click="downloadZipFile('../../SecureObjectPkg.zip', 'SecureObjectPkg.zip')"><i class="fa fa-suitcase fa-fw"></i></a></td>
 				      				<!-- <td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td> -->
 				      				<td><input type="file" ngf-select="" ng-model="dataUploadFile" name="file" required="" class="form-control" ng-change="uploadDataFile(image.id, dataUploadFile)"></td>
 	                            </tr>
@@ -128,7 +130,8 @@
 	                                <td class="vertical-middle">{{image.desc}}</td>
 	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.sig', image.signature)"><i class="fa fa-key fa-fw"></i></a></td>
 	                                <td class="text-center vertical-middle"><a ng-click="downloadDataFile(image.name + '.tkn', image.access_token, true)"><i class="fa fa-lock fa-fw"></i></a></td>
-				      				<!-- <td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td> -->
+                                    <td class="text-center vertical-middle"><a ng-click='downloadZipFile("../../SecureObjectPkg.zip", "SecureObjectPkg.zip")'><i class="fa fa-suitcase fa-fw"></i></a></td>
+	<!-- <td><input type="file" nv-file-select uploader="uploader" class="form-control"/></td> -->
 				      				<td><input type="file" ngf-select="" ng-model="dataUploadFile" name="file" required="" class="form-control" ng-change="uploadDataFile(image.id, dataUploadFile)"></td>
 	                            </tr>
 	                        </tbody>
