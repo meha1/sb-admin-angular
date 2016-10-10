@@ -7,9 +7,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN npm install -g grunt-cli
 RUN npm install -g bower
 
-COPY . /usr/src/gui/
+COPY bower.json Gruntfile.js LICENSE package.json README.md /usr/src/gui/
 WORKDIR /usr/src/gui
 RUN npm install
+
+COPY app test /usr/src/gui/
 
 EXPOSE 39738
 
