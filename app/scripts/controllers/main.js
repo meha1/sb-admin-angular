@@ -8,15 +8,7 @@
  */
 
 var app = angular.module('sbAdminApp');
-var productionIp = "52.28.149.249";
-var stagingIp = "52.59.6.66";
-var productionCpuIp = "54.93.40.187";
-var stagingCpuIp = "54.93.34.14"; 
-
-var SERVER_IP = productionIp;
-
-//var ES_URL = "http://" + stagingIp + ":9200/";
-var ES_URL = "http://" + SERVER_IP + ":9200/";
+var ES_URL = "http://" + window.location.hostname + ":9200/";
 
 app.factory('NotifyingService', function($rootScope) {
     return {
@@ -610,11 +602,8 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         }
     });
 
-    //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
     var CLOUD_WATCH_URL = "http://" + window.location.hostname + ":39739/cpuutilization";
-        //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
-    //var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
-    var SECURE_SERVER_URL = "http://" + SERVER_IP + ":33555/";
+    var SECURE_SERVER_URL = "http://" + window.location.hostname + ":33555/";
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
     var LAST_X_HOURS = 0.5;
