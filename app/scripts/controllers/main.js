@@ -14,7 +14,6 @@ var productionCpuIp = "54.93.40.187";
 var stagingCpuIp = "54.93.34.14"; 
 
 var SERVER_IP = productionIp;
-var CPU_SERVER_IP = productionCpuIp;
 
 //var ES_URL = "http://" + stagingIp + ":9200/";
 var ES_URL = "http://" + SERVER_IP + ":9200/";
@@ -612,7 +611,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
     });
 
     //var CLOUD_WATCH_URL = "http://ec2-54-93-178-200.eu-central-1.compute.amazonaws.com:39739/cpuutilization"
-    var CLOUD_WATCH_URL = "http://" + CPU_SERVER_IP + ":39739/cpuutilization";
+    var CLOUD_WATCH_URL = "http://" + window.location.hostname + ":39739/cpuutilization";
         //var ADD_IMAGE_URL = "http://localhost:3000/fileUpload";
     //var SECURE_SERVER_URL = "http://10.56.177.31:33555/"
     var SECURE_SERVER_URL = "http://" + SERVER_IP + ":33555/";
