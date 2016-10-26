@@ -46,6 +46,7 @@ function drawTimelineChart(scope, rows, filters) {
         tooltip : {
             isHtml: true
         },
+        timeline: {rowLabelStyle:{fontSize:12},barLabelStyle:{fontSize: 14}}
     }
     chart = new google.visualization.Timeline(container);
     google.visualization.events.addListener(chart, 'select', selectEventHandler);

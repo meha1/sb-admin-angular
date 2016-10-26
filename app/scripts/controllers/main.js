@@ -1095,7 +1095,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         $scope.numOfAlerts = LogFact.numOfAlerts;
     }
 
-
+    var generateNameAndIP = function (name, ip) {
+	var max = 7;
+	return name.replace(/ /g,'').substring(0,max) + '@'+ ip + '-' + name.substring(max);        
+}
     var updateInstanceTimeline = function () {
         var searchQuery = {
             "query": {
@@ -1214,10 +1217,11 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                                         logRow.txt +
                                     "</div>" +
                                 "</div>" +
-                            "</div>"
+                            "</div>";
+
                         if (instanceName && type && tooltip && startTime && endTime) {
-                            var nameAndIp = instanceName.slice(0, instanceName.length - 7) + " - " + logRow.instance.ip_address;
-                            chart1.data.push([nameAndIp, type, tooltip, new Date(startTime), new Date(endTime)])
+                            var nameAndIp = generateNameAndIP(instanceName,logRow.instance.ip_address);
+                            chart1.data.push([nameAndIp, type, tooltip, new Date(startTime), new Date(endTime)]);
                         }
 
 
@@ -1233,9 +1237,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
                             //startTime = startTime < startTimestamp*1000 ? startTime : startTimestamp*1000;
 
                             if (ClientFact.getSelected().instances[i] && ClientFact.getSelected().instances[i].instanceName && startTime) {
-                                var inst = ClientFact.getSelected().instances[i] 
-                                var nameAndIp = inst.instanceName.slice(0, n.length - 7) + " - " + logRow.instance.ip_address;
-                                chart1.data.push([nameAndIp, '  ', "", new Date(startTime - 1), new Date(startTime - 1)])
+                                var inst = ClientFact.getSelected().instances[i];
+                           	var nameAndIp = generateNameAndIP(inst.instanceName,inst.ip_address);
+                                chart1.data.push([nameAndIp, '  ', "", new Date(startTime - 1), new Date(startTime - 1)]);
                             }
                         }
                     }
