@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 
-var app = angular.module('sbAdminApp');
+var app = angular.module('sbAdminApp',  ['ngSanitize']);
 var ES_URL = "http://" + window.location.hostname + ":9200/";
 
 app.factory('NotifyingService', function($rootScope) {
@@ -602,13 +602,17 @@ app.controller('MainCtrl', function ($scope, $rootScope, $timeout, $http, $inter
         }
     });
 
+    $scope.trustSrc = function(src) {
+       return $sce.trustAsResourceUrl(src);
+    }
+
     var CLOUD_WATCH_URL = "http://" + window.location.hostname + ":39739/cpuutilization";
     var SECURE_SERVER_URL = "http://" + window.location.hostname + ":33555/";
     var ADD_IMAGE_URL = SECURE_SERVER_URL + "secure_server/upload_image";
     var ENCRYPT_DATA_URL = SECURE_SERVER_URL + "secure_server/upload_data";
     var LAST_X_HOURS = 0.5;
     var LIMIT_LOG_SIZE = $scope.limitLogSize = 1000;
-    $scope.kibanaURL = "http://" + window.location.hostname + ":5601/app/kibana#/dashboard/instance-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-in-range-view,uiState:())"
+    $scope.KibanaURL = "http://" + window.location.hostname + ":5601/app/kibana#/dashboard/instance-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-in-range-view,uiState:())"
     $scope.serviceSelect = -1;
 
     $scope.imageLimitations = {};

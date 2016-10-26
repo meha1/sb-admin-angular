@@ -25,7 +25,8 @@
     "ng-file-upload": "*",
     "bootstrap": "^3.3.7",
     "elasticsearch": "*",
-    "moment": "^2.14.1"
+    "moment": "^2.14.1",
+    "angular-sanitize": "*"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
