@@ -158,10 +158,10 @@
                         <iframe src="http://52.59.6.66:5601/app/kibana#/dashboard/instance-not-in-range-view?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:instances-not-in-range,panelIndex:2,row:1,size_x:12,size_y:5,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:instance-not-in-range-view,uiState:())" width="100%" height="600" ></iframe>
                     </div>-->
                     <div id="varificationTab" class="tab-pane fade in active">
-                        <iframe ng-src="{{trustSrc(kibanaURL)}}" width="100%" height="580"></iframe>
+                        <iframe ng-src="{{kibanaURL}}" width="100%" height="580"></iframe>
                     </div>
                     <div id="alertTab" class="tab-pane fade active">
-                        <iframe ng-src="{{trustSrc(kibanaURL)}}" width="100%" height="580"></iframe>
+                        <iframe ng-src="{{kibanaURL}}" width="100%" height="580"></iframe>
                     </div>
 
                 </div>

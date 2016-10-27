@@ -5,13 +5,13 @@
     "angular": "1.5.8",
     "json3": "~3.3.1",
     "es5-shim": "~3.1.0",
-    "angular-resource": "1.2.16",
-    "angular-cookies": "1.2.16",
+    "angular-resource": "1.5.8",
+    "angular-cookies": "1.5.8",
     "angular-chart": "*",
-    "angular-sanitize": "1.2.16",
-    "angular-animate": "1.2.16",
-    "angular-touch": "1.2.16",
-    "angular-route": "1.2.16",
+    "angular-sanitize": "1.5.8",
+    "angular-animate": "1.5.8",
+    "angular-touch": "1.5.8",
+    "angular-route": "1.5.8",
     "font-awesome": "4.3.0",
     "angular-bootstrap": "^2.1.3",
     "oclazyload": "~0.5.2",
@@ -25,12 +25,11 @@
     "ng-file-upload": "*",
     "bootstrap": "^3.3.7",
     "elasticsearch": "*",
-    "moment": "^2.14.1",
-    "angular-sanitize": "*"
+    "moment": "^2.14.1"
   },
   "devDependencies": {
-    "angular-mocks": "1.2.16",
-    "angular-scenario": "1.2.16"
+    "angular-mocks": "1.5.8",
+    "angular-scenario": "1.5.8"
   },
   "resolutions": {
     "bootstrap": "^3.3.7",
