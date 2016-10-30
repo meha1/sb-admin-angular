@@ -906,9 +906,10 @@ app.controller('MainCtrl', function ($scope, $sce, $rootScope, $timeout, $http, 
                     image_id: imageId,
                     file: file
                 },
+                responseType: "arraybuffer",
             }).then(function (resp) {
                 console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
-                $scope.downloadFile(file.name + ".enc", resp.data, "application/octet_stream")
+                $scope.downloadFile(file.name + ".enc", resp.data, "application/octet-stream")
             }, function (resp) {
                 console.log('Error status: ' + resp.status);
             }, function (evt) {
