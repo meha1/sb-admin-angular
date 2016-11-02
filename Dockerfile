@@ -22,5 +22,4 @@ RUN cp -R node_modules/angular-chart.js bower_components/
 
 EXPOSE 9000
 
-CMD ["npm", "start"]
-# CMD ["npm", "run", "dist"] // For deployment
+

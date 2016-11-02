@@ -9,14 +9,18 @@ if [ $# -eq 0 ]
   exit
 fi
 
+sed -i.bak '/^[#]*CMD/d' ./Dockerfile
+
 if [[ $1 == 'DEV' ]]
 then 
    EC2=$DEV
+   echo 'CMD ["npm", "start"]' >> Dockerfile
 fi
 
 if [[ $1 == 'STAG' ]]
 then
    EC2=$STAG
+   echo 'CMD ["npm", "run", "dist"]' >> Dockerfile
 fi
 
 docker build . -t dashboardui-img
